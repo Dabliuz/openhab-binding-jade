@@ -1,0 +1,10 @@
+<binding:binding id="jade"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:binding="http://eclipse.org/smarthome/schemas/binding/v1.0.0"
+        xsi:schemaLocation="http://eclipse.org/smarthome/schemas/binding/v1.0.0 http://eclipse.org/smarthome/schemas/binding-1.0.0.xsd">
+
+    <name>JADE (Java Agent DEvelopment) Binding</name>
+    <description>The JADE binding starts an agent container, which can be used by other Plug-Ins.</description>
+    <author>Hanno - Felix Wagner</author>
+
+</binding:binding>

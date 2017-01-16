@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="wmbus"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+    xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+    <bridge-type id="jadecontainer">
+        <label>JADE agent container</label>
+        <description>The Agent container represents the infrastructure to run an agent in.</description>
+
+        <properties>
+            <property name="someProperty">Some Property</property>
+        </properties>
+        
+        <config-description>
+            <parameter name="someParameter" type="text">
+                <context>network_address</context>
+                <label>someParameter Label</label>
+                <description>Description of someParameter.</description>
+                <required>true</required>
+            </parameter>
+        </config-description>
+    </bridge-type>
+
+</thing:thing-descriptions>
