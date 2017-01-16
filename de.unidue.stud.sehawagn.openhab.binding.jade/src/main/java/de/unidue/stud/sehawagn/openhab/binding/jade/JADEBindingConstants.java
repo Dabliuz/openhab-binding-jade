@@ -10,14 +10,14 @@ public class JADEBindingConstants {
 
     public static final String BINDING_ID = "jade";
 
-    // List all Thing Type UIDs, related to the WMBus Binding
-    public final static ThingTypeUID THING_TYPE_JADE_BRIDGE = new ThingTypeUID(BINDING_ID, "jadebridge");
+    // List all Thing Type UIDs, related to the JADE Binding
+    public final static ThingTypeUID THING_TYPE_JADE_CONTAINER = new ThingTypeUID(BINDING_ID, "jadecontainer");
     public final static ThingTypeUID THING_TYPE_JADE_TESTAGENT = new ThingTypeUID(BINDING_ID, "testagent");
 
     // List all channels
     public static final String CHANNEL_SOMECHANNEL = "some_channel";
 
-    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_JADE_BRIDGE,
+    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_JADE_CONTAINER,
             THING_TYPE_JADE_TESTAGENT);
 
     // Bridge config properties

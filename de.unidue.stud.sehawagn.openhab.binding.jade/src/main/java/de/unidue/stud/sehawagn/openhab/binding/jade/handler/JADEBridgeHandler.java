@@ -24,7 +24,7 @@ import jade.util.leap.Properties;
 import jade.wrapper.ContainerController;
 
 public class JADEBridgeHandler extends ConfigStatusBridgeHandler {
-    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_JADE_BRIDGE);
+    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_JADE_CONTAINER);
 
     private Logger logger = LoggerFactory.getLogger(JADEBridgeHandler.class);
 

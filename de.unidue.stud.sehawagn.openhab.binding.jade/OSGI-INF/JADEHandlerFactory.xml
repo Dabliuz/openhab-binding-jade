@@ -8,9 +8,9 @@
     http://www.eclipse.org/legal/epl-v10.html
 
 -->
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="de.unidue.stud.sehawagn.openhab.binding.jade.internal.WMBusHandlerFactory">
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="de.unidue.stud.sehawagn.openhab.binding.jade.internal.JADEHandlerFactory">
 
-   <implementation class="de.unidue.stud.sehawagn.openhab.binding.jade.internal.WMBusHandlerFactory"/>
+   <implementation class="de.unidue.stud.sehawagn.openhab.binding.jade.internal.JADEHandlerFactory"/>
 
    <service>
       <provide interface="org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory"/>
