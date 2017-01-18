@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="jade" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Generic thing for -->
+	<thing-type id="smarthomeagent">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="jadecontainer" />
+		</supported-bridge-type-refs>
+
+		<label>Smart Home Agent</label>
+		<description>An agent communicating with the grid of a Distribution System operator (DSO).</description>
+
+		<channels>
+			<channel id="power" typeId="power" />
+		</channels>
+
+		<config-description>
+			<parameter name="measurementChannelUID" type="text">
+				<label>Measurement Channel UID</label>
+				<description>The channel read and used by the agent, e.g. yahooweather:weather:38bf473d:temperature.</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="agentId" type="text">
+                <label>Agent ID (AID)</label>
+                <description>The Agent ID (AID) identifies one certain agent.</description>
+                <required>true</required>
+            </parameter>
+		</config-description>
+		
+	</thing-type>
+
+	<channel-type id="power">
+		<item-type>Number</item-type>
+		<label>Power</label>
+		<description>Current power consumption</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f mW">
+		</state>
+	</channel-type>
+</thing:thing-descriptions>
