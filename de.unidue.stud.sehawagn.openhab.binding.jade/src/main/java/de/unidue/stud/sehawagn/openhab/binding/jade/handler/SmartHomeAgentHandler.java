@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Sets;
 
+import de.unidue.stud.sehawagn.openhab.binding.jade.internal.ItemUpdateMonitorImpl;
 import hygrid.agent.smarthome.SmartHomeAgent;
 import jade.core.Agent;
 
@@ -33,9 +34,12 @@ public class SmartHomeAgentHandler extends BaseThingHandler implements RegistryC
 	private JADEBridgeHandler bridgeHandler;
 
 	private String agentId;
+	private ItemUpdateMonitorImpl itemUpdateMonitor;
 
-	public SmartHomeAgentHandler(Thing thing) {
+	public SmartHomeAgentHandler(Thing thing, ItemUpdateMonitorImpl itemUpdateMonitor) {
 		super(thing);
+		this.itemUpdateMonitor = itemUpdateMonitor;
+
 	}
 
 	public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = Sets.newHashSet(THING_TYPE_JADE_SMARTHOMEAGENT);
@@ -94,7 +98,13 @@ public class SmartHomeAgentHandler extends BaseThingHandler implements RegistryC
 	}
 
 	private void tryChannelSupervisionByAgent(ChannelUID currentMeasurementChannelUID) {
-		System.out.println("tryChannelSupervisionByAgent(ChannelUID currentMeasurementChannelUID) : " + currentMeasurementChannelUID);
+		System.out.println("tryChannelSupervisionByAgent(ChannelUID currentMeasurementChannelUID) : "
+				+ currentMeasurementChannelUID);
+
+		ChannelUID displayChannel = new ChannelUID(this.getThing().getUID(), CHANNEL_POWER);
+
+		itemUpdateMonitor.monitorChannel(currentMeasurementChannelUID, displayChannel);
+
 		Set<Item> linkedMeasurementItems = this.linkRegistry.getLinkedItems(currentMeasurementChannelUID);
 
 		if (linkedMeasurementItems.isEmpty()) {
@@ -102,7 +112,8 @@ public class SmartHomeAgentHandler extends BaseThingHandler implements RegistryC
 		}
 
 		for (Item linkedItem : linkedMeasurementItems) {
-			System.out.println(linkedItem.getType() + linkedItem.getName() + linkedItem.getLabel() + linkedItem.getCategory() + linkedItem.getState() + linkedItem.getStateDescription());
+			System.out.println(linkedItem.getType() + linkedItem.getName() + linkedItem.getLabel()
+					+ linkedItem.getCategory() + linkedItem.getState() + linkedItem.getStateDescription());
 
 			DecimalType decimalItem = (DecimalType) linkedItem.getStateAs(DecimalType.class);
 
@@ -113,7 +124,7 @@ public class SmartHomeAgentHandler extends BaseThingHandler implements RegistryC
 
 				readOutMeasurementValue = decimalItem.doubleValue();
 
-				handleCommand(new ChannelUID(this.getThing().getUID(), CHANNEL_POWER), RefreshType.REFRESH);
+				handleCommand(displayChannel, RefreshType.REFRESH);
 
 				getBridgeHandler().startNewAgent(SmartHomeAgent.class);
 				updateStatus(ThingStatus.ONLINE);

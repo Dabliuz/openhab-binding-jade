@@ -17,6 +17,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.unidue.stud.sehawagn.openhab.binding.jade.internal.ItemUpdateMonitorImpl;
 import hygrid.env.agentConfig.dataModel.AgentConfig;
 import hygrid.env.agentConfig.dataModel.AgentOperatingMode;
 import hygrid.env.agentConfig.dataModel.CentralAgentAID;
@@ -37,6 +38,8 @@ public class JADEBridgeHandler extends ConfigStatusBridgeHandler {
 
 	private ContainerController container = null;
 
+	private ItemUpdateMonitorImpl itemUpdateMonitor;
+
 	private static final String DEFAULT_MTPADDRESS = "132.252.61.116";
 	private static final int DEFAULT_MTPPORT = 7778;
 	private static final String DEFAULT_MTPPROTOCOL = "HTTP";
@@ -44,6 +47,11 @@ public class JADEBridgeHandler extends ConfigStatusBridgeHandler {
 	private static final String DEFAULT_CENTRALAGENTNAME = "CeExAg";
 
 	private static final String DEFAULT_AGENTID = "n49";
+
+	public JADEBridgeHandler(Bridge bridge, ItemUpdateMonitorImpl itemUpdateMonitor) {
+		super(bridge);
+		this.itemUpdateMonitor = itemUpdateMonitor;
+	}
 
 	public JADEBridgeHandler(Bridge bridge) {
 		super(bridge);
@@ -113,7 +121,8 @@ public class JADEBridgeHandler extends ConfigStatusBridgeHandler {
 		}
 		AgentController agent = null;
 		try {
-			agent = container.createNewAgent(clazz.getSimpleName(), clazz.getName(), new Object[] { getGeneralAgentConfig() });
+			agent = container.createNewAgent(clazz.getSimpleName(), clazz.getName(),
+					new Object[] { getGeneralAgentConfig() });
 			agent.start();
 
 		} catch (StaleProxyException e) {
