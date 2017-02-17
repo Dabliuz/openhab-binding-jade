@@ -1,5 +1,9 @@
 package de.unidue.stud.sehawagn.openhab.binding.jade.internal;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import org.eclipse.smarthome.core.events.EventPublisher;
 import org.eclipse.smarthome.core.items.GenericItem;
 import org.eclipse.smarthome.core.items.GroupItem;
 import org.eclipse.smarthome.core.items.Item;
@@ -22,66 +26,106 @@ import org.slf4j.LoggerFactory;
  * @author Hanno Felix Wagner - Copy {@link ItemUpdater} as a template
  */
 public class ItemUpdateMonitorImpl extends AbstractItemEventSubscriber implements ItemUpdateMonitor {
+	private final boolean active = true;
 
 	private final Logger logger = LoggerFactory.getLogger(ItemUpdateMonitorImpl.class);
 
 	private ItemRegistry itemRegistry;
 
+	private HashMap<String, ArrayList<UpdateMonitorReceiver>> mirrorRoutes = new HashMap<String, ArrayList<UpdateMonitorReceiver>>();
+
+	private EventPublisher eventPublisher;
+
 	protected void setItemRegistry(ItemRegistry itemRegistry) {
-		logger.error("MONITOR: Should never happen: setItemRegistry()");
+		// logger.error("MONITOR: Should never happen: setItemRegistry()");
 
 		this.itemRegistry = itemRegistry;
 	}
 
 	protected void unsetItemRegistry(ItemRegistry itemRegistry) {
-		logger.error("MONITOR: Should never happen: unsetItemRegistry()");
+		// logger.error("MONITOR: Should never happen: unsetItemRegistry()");
 
 		this.itemRegistry = null;
 	}
 
 	@Override
 	protected void receiveUpdate(ItemStateEvent updateEvent) {
+		if (!active) {
+			return;
+		}
 		String itemName = updateEvent.getItemName();
 		State newState = updateEvent.getItemState();
-		logger.error("MONITOR: Received update for item: {} to new state: {}", itemName, newState);
+		String sourceChannel = updateEvent.getSource();
+		/*
+		 *
+		 * // ntp:ntp:demo:dateTime to jade:smarthomeagent:e6762b74:power
+		 * ArrayList<ChannelUID> mirrorOutputs = getMirrorOutputs(new ChannelUID(""));
+		 *
+		 * if (mirrorOutputs != null) {
+		 * for (ChannelUID channelUID : mirrorOutputs) {
+		 *
+		 * }
+		 * }
+		 */
+		// logger.error("MONITOR: Received update for item: {} to new state: {}", itemName, newState);
 		if (itemRegistry != null) {
 			// String itemName = updateEvent.getItemName();
 			// State newState = updateEvent.getItemState();
-			try {
-				GenericItem item = (GenericItem) itemRegistry.getItem(itemName);
-				boolean isAccepted = false;
-				if (item.getAcceptedDataTypes().contains(newState.getClass())) {
-					isAccepted = true;
-				} else {
-					// Look for class hierarchy
-					for (Class<? extends State> state : item.getAcceptedDataTypes()) {
-						try {
-							if (!state.isEnum()
-									&& state.newInstance().getClass().isAssignableFrom(newState.getClass())) {
-								isAccepted = true;
-								break;
-							}
-						} catch (InstantiationException e) {
-							logger.warn("InstantiationException on {}", e.getMessage()); // Should never happen
-						} catch (IllegalAccessException e) {
-							logger.warn("IllegalAccessException on {}", e.getMessage()); // Should never happen
+			actUponIt(sourceChannel, itemName, newState);
+		}
+	}
+
+	private void actUponIt(String channel, String itemName, State newState) {
+		try {
+			GenericItem item = (GenericItem) itemRegistry.getItem(itemName);
+			boolean isAccepted = false;
+
+			// itemRegistry.getItem(itemName).
+			ArrayList<UpdateMonitorReceiver> mirrorRoute = mirrorRoutes.get(channel);
+			if (mirrorRoute != null) {
+				for (UpdateMonitorReceiver updateMonitorReceiver : mirrorRoute) {
+					logger.error("MONITOR: Hallo Hanno. Monitor channel update from {} to {} ( newState={})", channel,
+							updateMonitorReceiver, newState);
+
+					updateMonitorReceiver.receiveMonitorOutput(newState);
+
+				}
+			}
+			// logger.error("MONITOR: Hallo Hanno. itemName={}, item={}, newState={}", itemName, item, newState);
+
+			if (item.getAcceptedDataTypes().contains(newState.getClass())) {
+				isAccepted = true;
+			} else {
+				// Look for class hierarchy
+				for (Class<? extends State> state : item.getAcceptedDataTypes()) {
+					try {
+						if (!state.isEnum() && state.newInstance().getClass().isAssignableFrom(newState.getClass())) {
+							isAccepted = true;
+							break;
 						}
+					} catch (InstantiationException e) {
+						logger.warn("InstantiationException on {}", e.getMessage()); // Should never happen
+					} catch (IllegalAccessException e) {
+						logger.warn("IllegalAccessException on {}", e.getMessage()); // Should never happen
 					}
 				}
-				if (isAccepted) {
-					item.setState(newState);
-				} else {
-					logger.debug("Received update of a not accepted type (" + newState.getClass().getSimpleName()
-							+ ") for item " + itemName);
-				}
-			} catch (ItemNotFoundException e) {
-				logger.debug("Received update for non-existing item: {}", e.getMessage());
 			}
+			if (isAccepted) {
+				// item.setState(newState);
+			} else {
+				logger.debug("Received update of a not accepted type (" + newState.getClass().getSimpleName()
+						+ ") for item " + itemName);
+			}
+		} catch (ItemNotFoundException e) {
+			logger.debug("Received update for non-existing item: {}", e.getMessage());
 		}
 	}
 
 	@Override
 	protected void receiveCommand(ItemCommandEvent commandEvent) {
+		if (!active) {
+			return;
+		}
 		// if the item is a group, we have to pass the command to it as it needs to pass the command to its members
 		if (itemRegistry != null) {
 			try {
@@ -96,10 +140,21 @@ public class ItemUpdateMonitorImpl extends AbstractItemEventSubscriber implement
 		}
 	}
 
-	public void monitorChannel(ChannelUID inputChannel, ChannelUID displayChannel) {
+	public void mirrorChannel(ChannelUID inputChannel, UpdateMonitorReceiver updateMonitorRecevier) {
 
-		logger.error("MONITOR: Now I want to Mirror the Channel {} to {}", inputChannel, displayChannel);
+		ArrayList<UpdateMonitorReceiver> outputs = getMirrorOutputs(inputChannel);
+		if (outputs == null) {
+			outputs = new ArrayList<UpdateMonitorReceiver>();
+		}
+		outputs.add(updateMonitorRecevier);
 
+		mirrorRoutes.put(inputChannel.getAsString(), outputs);
+
+		logger.error("MONITOR: Now I am mirroring the Channel {} to {}", inputChannel, updateMonitorRecevier);
+	}
+
+	private ArrayList<UpdateMonitorReceiver> getMirrorOutputs(ChannelUID inputChannel) {
+		return mirrorRoutes.get(inputChannel.getAsString());
 	}
 
 }

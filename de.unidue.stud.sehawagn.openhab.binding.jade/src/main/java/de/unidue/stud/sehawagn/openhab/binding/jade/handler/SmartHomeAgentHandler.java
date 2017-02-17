@@ -25,10 +25,11 @@ import org.slf4j.LoggerFactory;
 import com.google.common.collect.Sets;
 
 import de.unidue.stud.sehawagn.openhab.binding.jade.internal.ItemUpdateMonitorImpl;
+import de.unidue.stud.sehawagn.openhab.binding.jade.internal.UpdateMonitorReceiver;
 import hygrid.agent.smarthome.SmartHomeAgent;
 import jade.core.Agent;
 
-public class SmartHomeAgentHandler extends BaseThingHandler implements RegistryChangeListener<ItemChannelLink> { // EventSubscriber seems to be not the right place ...
+public class SmartHomeAgentHandler extends BaseThingHandler implements RegistryChangeListener<ItemChannelLink>, UpdateMonitorReceiver {
 
 	private final Logger logger = LoggerFactory.getLogger(SmartHomeAgentHandler.class);
 	private JADEBridgeHandler bridgeHandler;
@@ -101,14 +102,13 @@ public class SmartHomeAgentHandler extends BaseThingHandler implements RegistryC
 		System.out.println("tryChannelSupervisionByAgent(ChannelUID currentMeasurementChannelUID) : "
 				+ currentMeasurementChannelUID);
 
-		ChannelUID displayChannel = new ChannelUID(this.getThing().getUID(), CHANNEL_POWER);
-
-		itemUpdateMonitor.monitorChannel(currentMeasurementChannelUID, displayChannel);
+		itemUpdateMonitor.mirrorChannel(currentMeasurementChannelUID, this);
 
 		Set<Item> linkedMeasurementItems = this.linkRegistry.getLinkedItems(currentMeasurementChannelUID);
 
 		if (linkedMeasurementItems.isEmpty()) {
-			System.out.println("no linked channels found :-(");
+			System.err.println("no linked items found for channel " + currentMeasurementChannelUID
+					+ " :-(, which shouldn't happen");
 		}
 
 		for (Item linkedItem : linkedMeasurementItems) {
@@ -124,12 +124,25 @@ public class SmartHomeAgentHandler extends BaseThingHandler implements RegistryC
 
 				readOutMeasurementValue = decimalItem.doubleValue();
 
-				handleCommand(displayChannel, RefreshType.REFRESH);
-
 				getBridgeHandler().startNewAgent(SmartHomeAgent.class);
 				updateStatus(ThingStatus.ONLINE);
 			}
 		}
+	}
+
+	@Override
+	public void receiveMonitorOutput(State newState) {
+		ChannelUID displayChannel = new ChannelUID(this.getThing().getUID(), CHANNEL_POWER);
+
+		if (newState instanceof DecimalType) {
+			System.err.println("HANNO: received newState=" + newState + ", want to output to displayChannel=" + displayChannel);
+
+			DecimalType decimalItem = (DecimalType) newState;
+			readOutMeasurementValue = decimalItem.doubleValue();
+
+			handleCommand(displayChannel, RefreshType.REFRESH);
+		}
+
 	}
 
 	private Agent getAgent() {
@@ -147,45 +160,6 @@ public class SmartHomeAgentHandler extends BaseThingHandler implements RegistryC
 
 			tryChannelSupervisionByAgent(measurementChannelUID);
 		}
-
-		/*
-		 *
-		 * String measurementThingName = "someThing";
-		 * String measurementThingUIDString = WMBUS_BINDING_ID + ":" + WMBUS_THING_TYPE_NAME_TECHEM_HKV + ":" +
-		 * measurementThingName;
-		 *
-		 * public static final String WMBUS_BINDING_ID = "wmbus";
-		 * public static final String WMBUS_THING_TYPE_NAME_BRIDGE = "wmbusbridge";
-		 * public static final String WMBUS_THING_TYPE_NAME_TECHEM_HKV = "techem_hkv";
-		 *
-		 * // List all Thing Type UIDs, related to the WMBus Binding
-		 * public final static ThingTypeUID THING_TYPE_WMBUS_BRIDGE = new ThingTypeUID(WMBUS_BINDING_ID, "wmbusbridge");
-		 * public final static ThingTypeUID THING_TYPE_WMBUS_TECHEM_HKV = new ThingTypeUID(WMBUS_BINDING_ID,
-		 * "techem_hkv");
-		 *
-		 * ThingUID measurementThingUID = new ThingUID(measurementThingUIDString);
-		 *
-		 * Thing measurementThing = this.thingRegistry.get(measurementThingUID);
-		 * List<Channel> allChannels = measurementThing.getChannels();
-		 * for (Channel channel : allChannels) {
-		 *
-		 * Set<Item> allLinkedItems = this.linkRegistry.getLinkedItems(channel.getUID());
-		 * for (Item linkedItem : allLinkedItems) {
-		 * // System.out.println(channel.toString() + channel.getChannelTypeUID() + channel.getUID());
-		 * // NumberItem numItem = (NumberItem) linkedItem;
-		 * // List<Class<? extends State>> acceptedDataTypes = numItem.getAcceptedDataTypes();
-		 * // System.out.println("acceptedDataTypes=");
-		 * // for (Class<? extends State> class1 : acceptedDataTypes) {
-		 * // System.out.println(class1);
-		 * // }
-		 *
-		 * // System.out.println("LinkedItem=" + linkedItem);
-		 * // State itemState = linkedItem.getState();
-		 * // linkedItem.getStateDescription();
-		 *
-		 * }
-		 * }
-		 */
 	}
 
 	@Override
