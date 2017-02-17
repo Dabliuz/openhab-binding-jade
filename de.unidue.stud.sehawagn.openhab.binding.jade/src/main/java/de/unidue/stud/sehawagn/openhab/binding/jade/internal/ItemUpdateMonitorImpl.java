@@ -3,7 +3,6 @@ package de.unidue.stud.sehawagn.openhab.binding.jade.internal;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.eclipse.smarthome.core.events.EventPublisher;
 import org.eclipse.smarthome.core.items.GenericItem;
 import org.eclipse.smarthome.core.items.GroupItem;
 import org.eclipse.smarthome.core.items.Item;
@@ -34,7 +33,7 @@ public class ItemUpdateMonitorImpl extends AbstractItemEventSubscriber implement
 
 	private HashMap<String, ArrayList<UpdateMonitorReceiver>> mirrorRoutes = new HashMap<String, ArrayList<UpdateMonitorReceiver>>();
 
-	private EventPublisher eventPublisher;
+	private final Object concurrencyLock = new Object();
 
 	protected void setItemRegistry(ItemRegistry itemRegistry) {
 		// logger.error("MONITOR: Should never happen: setItemRegistry()");
@@ -56,39 +55,29 @@ public class ItemUpdateMonitorImpl extends AbstractItemEventSubscriber implement
 		String itemName = updateEvent.getItemName();
 		State newState = updateEvent.getItemState();
 		String sourceChannel = updateEvent.getSource();
-		/*
-		 *
-		 * // ntp:ntp:demo:dateTime to jade:smarthomeagent:e6762b74:power
-		 * ArrayList<ChannelUID> mirrorOutputs = getMirrorOutputs(new ChannelUID(""));
-		 *
-		 * if (mirrorOutputs != null) {
-		 * for (ChannelUID channelUID : mirrorOutputs) {
-		 *
-		 * }
-		 * }
-		 */
-		// logger.error("MONITOR: Received update for item: {} to new state: {}", itemName, newState);
+
 		if (itemRegistry != null) {
-			// String itemName = updateEvent.getItemName();
-			// State newState = updateEvent.getItemState();
+
 			actUponIt(sourceChannel, itemName, newState);
 		}
 	}
 
-	private void actUponIt(String channel, String itemName, State newState) {
+	private synchronized void actUponIt(String channel, String itemName, State newState) {
 		try {
 			GenericItem item = (GenericItem) itemRegistry.getItem(itemName);
 			boolean isAccepted = false;
 
 			// itemRegistry.getItem(itemName).
-			ArrayList<UpdateMonitorReceiver> mirrorRoute = mirrorRoutes.get(channel);
-			if (mirrorRoute != null) {
-				for (UpdateMonitorReceiver updateMonitorReceiver : mirrorRoute) {
-					logger.error("MONITOR: Hallo Hanno. Monitor channel update from {} to {} ( newState={})", channel,
-							updateMonitorReceiver, newState);
+			synchronized (concurrencyLock) {
+				ArrayList<UpdateMonitorReceiver> mirrorRoute = mirrorRoutes.get(channel);
+				if (mirrorRoute != null) {
+					for (UpdateMonitorReceiver updateMonitorReceiver : mirrorRoute) {
+						logger.error("MONITOR: Hallo Hanno. Monitor channel update from {} to {} ( newState={})", channel,
+								updateMonitorReceiver, newState);
 
-					updateMonitorReceiver.receiveMonitorOutput(newState);
+						updateMonitorReceiver.receiveMonitorOutput(newState);
 
+					}
 				}
 			}
 			// logger.error("MONITOR: Hallo Hanno. itemName={}, item={}, newState={}", itemName, item, newState);
@@ -113,8 +102,7 @@ public class ItemUpdateMonitorImpl extends AbstractItemEventSubscriber implement
 			if (isAccepted) {
 				// item.setState(newState);
 			} else {
-				logger.debug("Received update of a not accepted type (" + newState.getClass().getSimpleName()
-						+ ") for item " + itemName);
+				logger.debug("Received update of a not accepted type (" + newState.getClass().getSimpleName() + ") for item " + itemName);
 			}
 		} catch (ItemNotFoundException e) {
 			logger.debug("Received update for non-existing item: {}", e.getMessage());
@@ -141,20 +129,24 @@ public class ItemUpdateMonitorImpl extends AbstractItemEventSubscriber implement
 	}
 
 	public void mirrorChannel(ChannelUID inputChannel, UpdateMonitorReceiver updateMonitorRecevier) {
+		synchronized (concurrencyLock) {
 
-		ArrayList<UpdateMonitorReceiver> outputs = getMirrorOutputs(inputChannel);
-		if (outputs == null) {
-			outputs = new ArrayList<UpdateMonitorReceiver>();
+			ArrayList<UpdateMonitorReceiver> outputs = getMirrorOutputs(inputChannel);
+			if (outputs == null) {
+				outputs = new ArrayList<UpdateMonitorReceiver>();
+			}
+			outputs.add(updateMonitorRecevier);
+
+			mirrorRoutes.put(inputChannel.getAsString(), outputs);
 		}
-		outputs.add(updateMonitorRecevier);
-
-		mirrorRoutes.put(inputChannel.getAsString(), outputs);
-
 		logger.error("MONITOR: Now I am mirroring the Channel {} to {}", inputChannel, updateMonitorRecevier);
 	}
 
 	private ArrayList<UpdateMonitorReceiver> getMirrorOutputs(ChannelUID inputChannel) {
-		return mirrorRoutes.get(inputChannel.getAsString());
+		synchronized (concurrencyLock) {
+
+			return mirrorRoutes.get(inputChannel.getAsString());
+		}
 	}
 
 }

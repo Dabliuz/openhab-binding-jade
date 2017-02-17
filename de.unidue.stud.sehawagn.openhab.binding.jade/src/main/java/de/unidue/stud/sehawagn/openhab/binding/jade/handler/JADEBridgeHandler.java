@@ -4,6 +4,7 @@ import static de.unidue.stud.sehawagn.openhab.binding.jade.JADEBindingConstants.
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Set;
 
 import org.eclipse.smarthome.config.core.status.ConfigStatusMessage;
@@ -47,6 +48,7 @@ public class JADEBridgeHandler extends ConfigStatusBridgeHandler {
 	private static final String DEFAULT_CENTRALAGENTNAME = "CeExAg";
 
 	private static final String DEFAULT_AGENTID = "n49";
+	private HashMap<Integer, AgentController> myAgents = new HashMap<Integer, AgentController>();
 
 	public JADEBridgeHandler(Bridge bridge, ItemUpdateMonitorImpl itemUpdateMonitor) {
 		super(bridge);
@@ -114,28 +116,21 @@ public class JADEBridgeHandler extends ConfigStatusBridgeHandler {
 		// Runtime.instance().invokeOnTermination(new Terminator());
 	}
 
-	public AgentController startNewAgent(Class<? extends Agent> clazz) {
+	public AgentController startNewAgent(Class<? extends Agent> clazz, SmartHomeAgentHandler smartHomeAgentHandler) throws StaleProxyException {
 		if (container == null) {
 			System.out.println("Container not yet ready, please try again later");
 			return null;
 		}
-		AgentController agent = null;
-		try {
-			agent = container.createNewAgent(clazz.getSimpleName(), clazz.getName(),
-					new Object[] { getGeneralAgentConfig() });
-			agent.start();
+		AgentController agent = myAgents.get(smartHomeAgentHandler.hashCode());
 
-		} catch (StaleProxyException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		if (agent == null) {
+			agent = container.createNewAgent(clazz.getSimpleName() + "-" + smartHomeAgentHandler.getThing().getUID().getId(), clazz.getName(), new Object[] { getGeneralAgentConfig(), smartHomeAgentHandler });
+			myAgents.put(smartHomeAgentHandler.hashCode(), agent);
+			agent.start();
 		}
+
 		return agent;
 
-	}
-
-	public Agent getAgentById(String agentId) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	private AgentConfig getGeneralAgentConfig() {
@@ -154,6 +149,19 @@ public class JADEBridgeHandler extends ConfigStatusBridgeHandler {
 		agentConfig.setTrustStore(null);
 
 		return agentConfig;
+	}
+
+	public void stopAgent(SmartHomeAgentHandler smartHomeAgentHandler) throws StaleProxyException {
+		if (container == null) {
+			System.out.println("Container not yet ready, please try again later");
+		}
+		AgentController agent = myAgents.get(smartHomeAgentHandler.hashCode());
+
+		if (agent != null) {
+			agent.kill();
+			myAgents.remove(smartHomeAgentHandler.hashCode());
+		}
+
 	}
 
 }

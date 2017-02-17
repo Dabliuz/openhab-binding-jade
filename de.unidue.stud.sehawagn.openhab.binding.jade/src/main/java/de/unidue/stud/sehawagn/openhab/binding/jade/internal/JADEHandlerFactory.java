@@ -40,7 +40,6 @@ public class JADEHandlerFactory extends BaseThingHandlerFactory {
 			if (thing instanceof Bridge) {
 
 				JADEBridgeHandler handler = new JADEBridgeHandler((Bridge) thing, itemUpdateMonitor);
-//				JADEBridgeHandler handler = new JADEBridgeHandler((Bridge) thing);
 
 				registerDiscoveryService(handler);
 				return handler;
