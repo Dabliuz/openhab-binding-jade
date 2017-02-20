@@ -18,7 +18,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.unidue.stud.sehawagn.openhab.binding.jade.internal.ItemUpdateMonitorImpl;
+import de.unidue.stud.sehawagn.openhab.channelmirror.ChannelMirror;
 import hygrid.env.agentConfig.dataModel.AgentConfig;
 import hygrid.env.agentConfig.dataModel.AgentOperatingMode;
 import hygrid.env.agentConfig.dataModel.CentralAgentAID;
@@ -39,7 +39,8 @@ public class JADEBridgeHandler extends ConfigStatusBridgeHandler {
 
 	private ContainerController container = null;
 
-	private ItemUpdateMonitorImpl itemUpdateMonitor;
+	@SuppressWarnings("unused")
+	private ChannelMirror channelMirror; // for later use
 
 	private static final String DEFAULT_MTPADDRESS = "132.252.61.116";
 	private static final int DEFAULT_MTPPORT = 7778;
@@ -50,13 +51,9 @@ public class JADEBridgeHandler extends ConfigStatusBridgeHandler {
 	private static final String DEFAULT_AGENTID = "n49";
 	private HashMap<Integer, AgentController> myAgents = new HashMap<Integer, AgentController>();
 
-	public JADEBridgeHandler(Bridge bridge, ItemUpdateMonitorImpl itemUpdateMonitor) {
+	public JADEBridgeHandler(Bridge bridge, ChannelMirror channelMirror) {
 		super(bridge);
-		this.itemUpdateMonitor = itemUpdateMonitor;
-	}
-
-	public JADEBridgeHandler(Bridge bridge) {
-		super(bridge);
+		this.channelMirror = channelMirror;
 	}
 
 	@Override
@@ -66,7 +63,7 @@ public class JADEBridgeHandler extends ConfigStatusBridgeHandler {
 
 	@Override
 	public void handleCommand(ChannelUID channelUID, Command command) {
-		// judging from the hue bridge, this seems to be not needed...?
+		// not needed...?
 	}
 
 	@Override
@@ -75,10 +72,11 @@ public class JADEBridgeHandler extends ConfigStatusBridgeHandler {
 		if (getConfig().get(CONFKEY_MTP_ADDRESS) != null) {
 			if (container == null) {
 				// Initialize jade container profile and start it
-				Properties jadeProperties = new Properties();
-				startJadeContainer(jadeProperties);
 
 				// String someParameter = (String) getConfig().get(CONFKEY_SOME_PARAMETER);
+
+				Properties jadeProperties = new Properties();
+				startJadeContainer(jadeProperties);
 
 				updateStatus(ThingStatus.ONLINE);
 			}
@@ -96,7 +94,7 @@ public class JADEBridgeHandler extends ConfigStatusBridgeHandler {
 			try {
 				container.kill();
 			} catch (StaleProxyException e) {
-				// TODO Auto-generated catch block
+				updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR, "container dispose failed: " + e.getCause());
 				e.printStackTrace();
 			}
 			container = null;
@@ -112,25 +110,23 @@ public class JADEBridgeHandler extends ConfigStatusBridgeHandler {
 			container = Runtime.instance().createAgentContainer(profile);
 		}
 
-		System.out.println("JADE container started.");
 		// Runtime.instance().invokeOnTermination(new Terminator());
 	}
 
-	public AgentController startNewAgent(Class<? extends Agent> clazz, SmartHomeAgentHandler smartHomeAgentHandler) throws StaleProxyException {
+	public AgentController startAgent(String agentName, Class<? extends Agent> agentClass, SmartHomeAgentHandler smartHomeAgentHandler) throws StaleProxyException {
 		if (container == null) {
-			System.out.println("Container not yet ready, please try again later");
+			System.err.println("Container not yet ready, please try again later");
 			return null;
 		}
 		AgentController agent = myAgents.get(smartHomeAgentHandler.hashCode());
 
 		if (agent == null) {
-			agent = container.createNewAgent(clazz.getSimpleName() + "-" + smartHomeAgentHandler.getThing().getUID().getId(), clazz.getName(), new Object[] { getGeneralAgentConfig(), smartHomeAgentHandler });
+			agent = container.createNewAgent(agentName + "-" + smartHomeAgentHandler.getThing().getUID().getId(), agentClass.getName(), new Object[] { getGeneralAgentConfig(), smartHomeAgentHandler });
 			myAgents.put(smartHomeAgentHandler.hashCode(), agent);
 			agent.start();
 		}
 
 		return agent;
-
 	}
 
 	private AgentConfig getGeneralAgentConfig() {
@@ -153,7 +149,7 @@ public class JADEBridgeHandler extends ConfigStatusBridgeHandler {
 
 	public void stopAgent(SmartHomeAgentHandler smartHomeAgentHandler) throws StaleProxyException {
 		if (container == null) {
-			System.out.println("Container not yet ready, please try again later");
+			System.err.println("Container not yet ready, please try again later");
 		}
 		AgentController agent = myAgents.get(smartHomeAgentHandler.hashCode());
 
@@ -161,7 +157,5 @@ public class JADEBridgeHandler extends ConfigStatusBridgeHandler {
 			agent.kill();
 			myAgents.remove(smartHomeAgentHandler.hashCode());
 		}
-
 	}
-
 }
