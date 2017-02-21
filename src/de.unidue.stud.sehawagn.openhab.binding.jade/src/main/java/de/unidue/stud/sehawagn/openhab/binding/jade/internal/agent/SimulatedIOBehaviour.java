@@ -12,34 +12,35 @@ import hygrid.agent.AbstractInternalDataModel;
  */
 public class SimulatedIOBehaviour extends AbstractIOSimulated {
 
-	private static final long serialVersionUID = -6149499361123282249L;
+    private static final long serialVersionUID = -6149499361123282249L;
 
-	public SimulatedIOBehaviour(SmartHomeAgent agent, AbstractInternalDataModel internalDataModel) {
-		super(agent, internalDataModel);
-	}
+    public SimulatedIOBehaviour(SmartHomeAgent agent, AbstractInternalDataModel internalDataModel) {
+        super(agent, internalDataModel);
+    }
 
-	/*
-	 * @see agentgui.simulationService.behaviour.SimulationServiceBehaviour#onEnvironmentNotification(agentgui.simulationService.transaction.EnvironmentNotification)
-	 */
-	@Override
-	protected EnvironmentNotification onEnvironmentNotification(EnvironmentNotification notification) {
-		return super.onEnvironmentNotification(notification);
-	}
+    /*
+     * @see agentgui.simulationService.behaviour.SimulationServiceBehaviour#onEnvironmentNotification(agentgui.
+     * simulationService.transaction.EnvironmentNotification)
+     */
+    @Override
+    protected EnvironmentNotification onEnvironmentNotification(EnvironmentNotification notification) {
+        return super.onEnvironmentNotification(notification);
+    }
 
-	/*
-	 * @see hygrid.agent.AbstractIOSimulated#commitMeasurementsToAgentsManually()
-	 */
-	@Override
-	protected boolean commitMeasurementsToAgentsManually() {
-		return true;
-	}
+    /*
+     * @see hygrid.agent.AbstractIOSimulated#commitMeasurementsToAgentsManually()
+     */
+    @Override
+    protected boolean commitMeasurementsToAgentsManually() {
+        return true;
+    }
 
-	/*
-	 * @see hygrid.agent.AbstractIOSimulated#prepareForSimulation(agentgui.envModel.graph.networkModel.NetworkModel)
-	 */
-	@Override
-	protected void prepareForSimulation(NetworkModel networkModel) {
+    /*
+     * @see hygrid.agent.AbstractIOSimulated#prepareForSimulation(agentgui.envModel.graph.networkModel.NetworkModel)
+     */
+    @Override
+    protected void prepareForSimulation(NetworkModel networkModel) {
 
-	}
+    }
 
 }

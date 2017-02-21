@@ -12,15 +12,15 @@ import jade.core.Agent;
  *
  */
 public class InternalDataModel extends AbstractInternalDataModel {
-	private static final long serialVersionUID = 3913554312467337020L;
-	static final String VAR_VOLTAGE = "Voltage";
+    private static final long serialVersionUID = 3913554312467337020L;
+    static final String VAR_VOLTAGE = "Voltage";
 
-	/** Specification of the internal data model's elements */
+    /** Specification of the internal data model's elements */
 
-	/**
-	 * @param agent the agent
-	 */
-	public InternalDataModel(Agent agent) {
-		super(agent);
-	}
+    /**
+     * @param agent the agent
+     */
+    public InternalDataModel(Agent agent) {
+        super(agent);
+    }
 }
