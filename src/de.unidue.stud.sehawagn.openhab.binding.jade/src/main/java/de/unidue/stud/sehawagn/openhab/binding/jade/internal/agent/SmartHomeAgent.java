@@ -8,6 +8,7 @@ import energy.optionModel.ScheduleList;
 import energy.optionModel.TechnicalSystem;
 import energy.optionModel.TechnicalSystemGroup;
 import hygrid.agent.AbstractEnergyAgent;
+import hygrid.agent.AbstractIOReal;
 import hygrid.agent.AbstractInternalDataModel;
 import hygrid.agent.EnergyAgentIO;
 import hygrid.agent.SimulationConnectorRemote;
@@ -146,14 +147,6 @@ public class SmartHomeAgent extends AbstractEnergyAgent {
                     }
                     case RealSystem: {
                         agentIOBehaviour = new RealIOBehaviour(this, myAgentHandler);
-
-                        if (this.simulationConnector.getEnvironmentModel() != null) {
-                            // Determine simulation start time
-                            TimeModelContinuous timeModel = (TimeModelContinuous) this.simulationConnector
-                                    .getEnvironmentModel().getTimeModel();
-                            ((RealIOBehaviour) agentIOBehaviour).setSimulationStartTime(timeModel.getTimeStart());
-                            this.startMonitoringBehaviourRT();
-                        }
                         break;
                     }
                     default: {
@@ -163,6 +156,15 @@ public class SmartHomeAgent extends AbstractEnergyAgent {
             }
         }
         return agentIOBehaviour;
+    }
+
+    @Override
+    protected void onEnvironmentModelReady() {
+        // Determine simulation start time
+        TimeModelContinuous timeModel = (TimeModelContinuous) this.simulationConnector.getEnvironmentModel()
+                .getTimeModel();
+        ((AbstractIOReal) agentIOBehaviour).setSimulationStartTime(timeModel.getTimeStart());
+        this.startMonitoringBehaviourRT();
     }
 
     /**
