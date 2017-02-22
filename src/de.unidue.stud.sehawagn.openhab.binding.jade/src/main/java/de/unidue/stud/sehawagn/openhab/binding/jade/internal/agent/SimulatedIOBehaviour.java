@@ -32,7 +32,7 @@ public class SimulatedIOBehaviour extends AbstractIOSimulated {
      */
     @Override
     protected boolean commitMeasurementsToAgentsManually() {
-        return true;
+        return false;
     }
 
     /*

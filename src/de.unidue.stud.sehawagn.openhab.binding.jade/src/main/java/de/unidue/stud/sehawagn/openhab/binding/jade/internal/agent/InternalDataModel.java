@@ -4,18 +4,18 @@ import hygrid.agent.AbstractInternalDataModel;
 import jade.core.Agent;
 
 /**
- * This class represents the internal data model of the corresponding agent.
+ * This class represents the internal data model of the agent.
  *
- * It is advised to only specify 'protected final String' elements and use these
- * (within IOSimulated or IOReal) when assigning values to the fixedVariableListMeasurements
- * (within AbstractInternalDataModel).
+ * Only use these String constants when assigning values to the fixedVariableListMeasurements within IOBehaviours
  *
  */
 public class InternalDataModel extends AbstractInternalDataModel {
     private static final long serialVersionUID = 3913554312467337020L;
-    static final String VAR_VOLTAGE = "Voltage";
 
-    /** Specification of the internal data model's elements */
+    /**
+     * elements of the internal data model
+     */
+    protected static final String VAR_VOLTAGE = "Voltage";
 
     /**
      * @param agent the agent

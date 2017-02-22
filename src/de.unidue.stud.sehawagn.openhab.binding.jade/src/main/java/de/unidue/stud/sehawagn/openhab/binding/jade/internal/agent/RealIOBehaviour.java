@@ -7,20 +7,19 @@ import hygrid.agent.EnergyAgentIO;
 import jade.core.behaviours.CyclicBehaviour;
 
 /**
- * This class is used if the current project setup is run on physical hardware
- * It takes real measurements of an energy conversion process.
- *
+ * This class is used if the agent is run inside an openHAB instance
+ * It reads data from it's agent handler
  */
-public class IOReal extends CyclicBehaviour implements EnergyAgentIO {
+public class RealIOBehaviour extends CyclicBehaviour implements EnergyAgentIO {
 
     private static final long serialVersionUID = 5143063807591183507L;
 
-    private SmartHomeAgent myAgent;
-
     private static final long MEASURING_INTERVAL = 1000;
-    private FixedVariableList varList;
+    private long simulationTimeOffset = 0;
 
     private SmartHomeAgentHandler myAgentHandler;
+    private SmartHomeAgent myAgent;
+    private FixedVariableList varList;
 
     /**
      * Instantiates this behaviour.
@@ -28,7 +27,7 @@ public class IOReal extends CyclicBehaviour implements EnergyAgentIO {
      * @param agent the agent
      * @param myAgentHandler
      */
-    public IOReal(SmartHomeAgent agent, SmartHomeAgentHandler myAgentHandler) {
+    public RealIOBehaviour(SmartHomeAgent agent, SmartHomeAgentHandler myAgentHandler) {
         super(agent);
         this.myAgent = agent;
         this.myAgentHandler = myAgentHandler;
@@ -39,8 +38,9 @@ public class IOReal extends CyclicBehaviour implements EnergyAgentIO {
      */
     private FixedVariableList getCurrentMeasurement() {
 
-        // access the actual IO interface
+        // access the data in openHAB's AgentHandler
         double mVoltage = myAgentHandler.getCurrentMeasurement();
+        System.out.println("SmartHomeAgent-RealIOBehaviour-measurement from openHAB:" + mVoltage);
 
         // add measurement to the list
         FixedVariableList newMeasurements = new FixedVariableList();
@@ -48,8 +48,6 @@ public class IOReal extends CyclicBehaviour implements EnergyAgentIO {
         m1.setVariableID(InternalDataModel.VAR_VOLTAGE);
         m1.setValue(mVoltage);
         newMeasurements.add(m1);
-
-        System.out.println("SmartHomeAgent-RealIOBehaviour-measurement from openHAB:" + mVoltage);
 
         return newMeasurements;
     }
@@ -59,10 +57,17 @@ public class IOReal extends CyclicBehaviour implements EnergyAgentIO {
      */
     @Override
     public void action() {
-        long startTime = System.currentTimeMillis();
-        this.setMeasurementsFromSystem(this.getCurrentMeasurement());
-        long waitTime = MEASURING_INTERVAL - (System.currentTimeMillis() - startTime);
-        block(waitTime);
+        this.setMeasurementsFromSystem(this.getCurrentMeasurement()); // set measurements to agent
+        block(MEASURING_INTERVAL);
+    }
+
+    /**
+     * Sets the simulation start time when the simulation starts to set the correct time offset.
+     *
+     * @param simulationStartTime the simulation start time
+     */
+    public void setSimulationStartTime(long simulationStartTime) {
+        this.simulationTimeOffset = System.currentTimeMillis() - simulationStartTime;
     }
 
     /*
@@ -70,7 +75,7 @@ public class IOReal extends CyclicBehaviour implements EnergyAgentIO {
      */
     @Override
     public Long getTime() {
-        return System.currentTimeMillis();
+        return System.currentTimeMillis() - this.simulationTimeOffset;
     }
 
     /*

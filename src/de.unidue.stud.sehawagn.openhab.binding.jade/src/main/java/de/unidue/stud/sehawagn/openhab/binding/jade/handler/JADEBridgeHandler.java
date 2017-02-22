@@ -43,9 +43,9 @@ public class JADEBridgeHandler extends ConfigStatusBridgeHandler {
 	private ChannelMirror channelMirror; // for later use
 
 	private static final String DEFAULT_MTPADDRESS = "132.252.61.116";
-	private static final int DEFAULT_MTPPORT = 7778;
+	private static final int DEFAULT_MTPPORT = 9778; // 7778
 	private static final String DEFAULT_MTPPROTOCOL = "HTTP";
-	private static final String DEFAULT_PLATFORMNAME = "132.252.61.116:1099/JADE";
+	private static final String DEFAULT_PLATFORMNAME = "132.252.61.116:6099/JADE"; // 1099
 	private static final String DEFAULT_CENTRALAGENTNAME = "CeExAg";
 
 	private static final String DEFAULT_AGENTID = "n49";
@@ -76,6 +76,7 @@ public class JADEBridgeHandler extends ConfigStatusBridgeHandler {
 				// String someParameter = (String) getConfig().get(CONFKEY_SOME_PARAMETER);
 
 				Properties jadeProperties = new Properties();
+
 				startJadeContainer(jadeProperties);
 
 				updateStatus(ThingStatus.ONLINE);
@@ -121,7 +122,7 @@ public class JADEBridgeHandler extends ConfigStatusBridgeHandler {
 		AgentController agent = myAgents.get(smartHomeAgentHandler.hashCode());
 
 		if (agent == null) {
-			agent = container.createNewAgent(agentName + "-" + smartHomeAgentHandler.getThing().getUID().getId(), agentClass.getName(), new Object[] { getGeneralAgentConfig(), smartHomeAgentHandler });
+			agent = container.createNewAgent(agentName, agentClass.getName(), new Object[] { getGeneralAgentConfig(), smartHomeAgentHandler }); //
 			myAgents.put(smartHomeAgentHandler.hashCode(), agent);
 			agent.start();
 		}

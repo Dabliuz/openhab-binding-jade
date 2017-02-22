@@ -18,7 +18,7 @@ import energy.optionModel.TechnicalSystemStateEvaluation;
 public class SmartHomeCalculation extends AbstractOptionModelCalculation {
     private static final String VAR_INPUT = "input";
 
-    private static final double POWER_FACTOR = 0.925; // Wirkfaktor P/S = cos(poi)
+    private static final double POWER_FACTOR = 0.925; // Wirkfaktor P/S = cos(phi)
     private static final double PHI = Math.acos(POWER_FACTOR);
     private static final double APPARENT_FACTOR = Math.tan(PHI);
 
