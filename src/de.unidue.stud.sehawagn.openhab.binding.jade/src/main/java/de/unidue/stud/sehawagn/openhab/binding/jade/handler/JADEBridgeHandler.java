@@ -33,130 +33,127 @@ import jade.wrapper.StaleProxyException;
 
 public class JADEBridgeHandler extends ConfigStatusBridgeHandler {
 
-	public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_JADE_CONTAINER);
+    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_JADE_CONTAINER);
 
-	private Logger logger = LoggerFactory.getLogger(JADEBridgeHandler.class);
+    private Logger logger = LoggerFactory.getLogger(JADEBridgeHandler.class);
 
-	private ContainerController container = null;
+    private ContainerController container = null;
 
-	@SuppressWarnings("unused")
-	private ChannelMirror channelMirror; // for later use
+    @SuppressWarnings("unused")
+    private ChannelMirror channelMirror; // for later use
 
-	private static final String DEFAULT_MTPADDRESS = "132.252.61.116";
-	private static final int DEFAULT_MTPPORT = 9778; // 7778
-	private static final String DEFAULT_MTPPROTOCOL = "HTTP";
-	private static final String DEFAULT_PLATFORMNAME = "132.252.61.116:6099/JADE"; // 1099
-	private static final String DEFAULT_CENTRALAGENTNAME = "CeExAg";
+    private HashMap<Integer, AgentController> myAgents = new HashMap<Integer, AgentController>();
 
-	private static final String DEFAULT_AGENTID = "n49";
-	private HashMap<Integer, AgentController> myAgents = new HashMap<Integer, AgentController>();
+    public JADEBridgeHandler(Bridge bridge, ChannelMirror channelMirror) {
+        super(bridge);
+        this.channelMirror = channelMirror;
+    }
 
-	public JADEBridgeHandler(Bridge bridge, ChannelMirror channelMirror) {
-		super(bridge);
-		this.channelMirror = channelMirror;
-	}
+    @Override
+    public Collection<ConfigStatusMessage> getConfigStatus() {
+        return Collections.emptyList(); // all good, otherwise add some messages
+    }
 
-	@Override
-	public Collection<ConfigStatusMessage> getConfigStatus() {
-		return Collections.emptyList(); // all good, otherwise add some messages
-	}
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        // not needed...?
+    }
 
-	@Override
-	public void handleCommand(ChannelUID channelUID, Command command) {
-		// not needed...?
-	}
+    @Override
+    public void initialize() {
+        logger.debug("Initializing JADE bridge handler.");
+        if (getConfig().get(CONFKEY_MTP_ADDRESS) != null) {
+            if (container == null) {
+                // Initialize jade container profile and start it
 
-	@Override
-	public void initialize() {
-		logger.debug("Initializing JADE bridge handler.");
-		if (getConfig().get(CONFKEY_MTP_ADDRESS) != null) {
-			if (container == null) {
-				// Initialize jade container profile and start it
+                // String someParameter = (String) getConfig().get(CONFKEY_SOME_PARAMETER);
 
-				// String someParameter = (String) getConfig().get(CONFKEY_SOME_PARAMETER);
+                Properties jadeProperties = new Properties();
 
-				Properties jadeProperties = new Properties();
+                startJadeContainer(jadeProperties);
 
-				startJadeContainer(jadeProperties);
+                updateStatus(ThingStatus.ONLINE);
+            }
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                    "Cannot start JADE bridge container. Some parameter not given.");
+        }
+    }
 
-				updateStatus(ThingStatus.ONLINE);
-			}
-		} else {
-			updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-					"Cannot start JADE bridge container. Some parameter not given.");
-		}
-	}
+    @Override
+    public void dispose() {
+        logger.debug("JADE bridge Handler disposed.");
 
-	@Override
-	public void dispose() {
-		logger.debug("JADE bridge Handler disposed.");
+        if (container != null) {
+            try {
+                container.kill();
+            } catch (StaleProxyException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
+                        "container dispose failed: " + e.getCause());
+                e.printStackTrace();
+            }
+            container = null;
+        }
+    }
 
-		if (container != null) {
-			try {
-				container.kill();
-			} catch (StaleProxyException e) {
-				updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR, "container dispose failed: " + e.getCause());
-				e.printStackTrace();
-			}
-			container = null;
-		}
-	}
+    private void startJadeContainer(Properties props) {
+        Profile profile = new ProfileImpl(props);
+        Runtime.instance().setCloseVM(false);
+        if (profile.getBooleanProperty(Profile.MAIN, true)) {
+            container = Runtime.instance().createMainContainer(profile);
+        } else {
+            container = Runtime.instance().createAgentContainer(profile);
+        }
 
-	private void startJadeContainer(Properties props) {
-		Profile profile = new ProfileImpl(props);
-		Runtime.instance().setCloseVM(false);
-		if (profile.getBooleanProperty(Profile.MAIN, true)) {
-			container = Runtime.instance().createMainContainer(profile);
-		} else {
-			container = Runtime.instance().createAgentContainer(profile);
-		}
+        // Runtime.instance().invokeOnTermination(new Terminator());
+    }
 
-		// Runtime.instance().invokeOnTermination(new Terminator());
-	}
+    public AgentController startAgent(String agentName, Class<? extends Agent> agentClass,
+            SmartHomeAgentHandler smartHomeAgentHandler) throws StaleProxyException {
+        if (container == null) {
+            System.err.println("Container not yet ready, please try again later");
+            return null;
+        }
+        AgentController agent = myAgents.get(smartHomeAgentHandler.hashCode());
 
-	public AgentController startAgent(String agentName, Class<? extends Agent> agentClass, SmartHomeAgentHandler smartHomeAgentHandler) throws StaleProxyException {
-		if (container == null) {
-			System.err.println("Container not yet ready, please try again later");
-			return null;
-		}
-		AgentController agent = myAgents.get(smartHomeAgentHandler.hashCode());
+        if (agent == null) {
+            agent = container.createNewAgent(agentName, agentClass.getName(),
+                    new Object[] { getGeneralAgentConfig(agentName), smartHomeAgentHandler }); //
+            myAgents.put(smartHomeAgentHandler.hashCode(), agent);
+            agent.start();
+        }
 
-		if (agent == null) {
-			agent = container.createNewAgent(agentName, agentClass.getName(), new Object[] { getGeneralAgentConfig(), smartHomeAgentHandler }); //
-			myAgents.put(smartHomeAgentHandler.hashCode(), agent);
-			agent.start();
-		}
+        return agent;
+    }
 
-		return agent;
-	}
+    private AgentConfig getGeneralAgentConfig(String agentName) {
 
-	private AgentConfig getGeneralAgentConfig() {
-		CentralAgentAID centralAgentAID = new CentralAgentAID();
-		centralAgentAID.setAgentName(DEFAULT_CENTRALAGENTNAME);
-		centralAgentAID.setPlatformName(DEFAULT_PLATFORMNAME);
-		centralAgentAID.setPort(DEFAULT_MTPPORT);
-		centralAgentAID.setUrlOrIp(DEFAULT_MTPADDRESS);
-		centralAgentAID.setHttp4Mtp(DEFAULT_MTPPROTOCOL);
+        CentralAgentAID centralAgentAID = new CentralAgentAID();
+        centralAgentAID.setAgentName((String) getConfig().get(CONFKEY_CENTRAL_AGENT_NAME));
+        centralAgentAID.setPlatformName((String) getConfig().get(CONFKEY_PLATFORM_NAME));
+        centralAgentAID.setPort(Integer.parseInt((String) getConfig().get(CONFKEY_MTP_PORT)));
+        centralAgentAID.setUrlOrIp((String) getConfig().get(CONFKEY_MTP_ADDRESS));
+        centralAgentAID.setHttp4Mtp((String) getConfig().get(CONFKEY_MTP_PROTOCOL));
 
-		AgentConfig agentConfig = new AgentConfig();
-		agentConfig.setAgentID(DEFAULT_AGENTID);
-		agentConfig.setCentralAgentAID(centralAgentAID);
-		agentConfig.setAgentOperatingMode(AgentOperatingMode.RealSystem);
-		agentConfig.setKeyStore(null);
-		agentConfig.setTrustStore(null);
+        AgentConfig agentConfig = new AgentConfig();
+        agentConfig.setAgentID(agentName);
+        agentConfig.setCentralAgentAID(centralAgentAID);
+        agentConfig.setAgentOperatingMode(AgentOperatingMode.RealSystem);
+        agentConfig.setKeyStore(null);
+        agentConfig.setTrustStore(null);
 
-		return agentConfig;
-	}
+        return agentConfig;
+    }
 
-	public void stopAgent(SmartHomeAgentHandler smartHomeAgentHandler) throws StaleProxyException {
-		if (container == null) {
-			System.err.println("Container not yet ready, please try again later");
-		}
-		AgentController agent = myAgents.get(smartHomeAgentHandler.hashCode());
+    public void stopAgent(SmartHomeAgentHandler smartHomeAgentHandler) throws StaleProxyException {
+        if (container == null) {
+            System.err.println("Container not yet ready, please try again later");
+        }
+        AgentController agent = myAgents.get(smartHomeAgentHandler.hashCode());
 
-		if (agent != null) {
-			agent.kill();
-			myAgents.remove(smartHomeAgentHandler.hashCode());
-		}
-	}
+        if (agent != null) {
+            agent.kill();
+            myAgents.remove(smartHomeAgentHandler.hashCode());
+        }
+    }
 }

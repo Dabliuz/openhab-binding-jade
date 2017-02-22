@@ -9,8 +9,12 @@ Bundle-ClassPath: .,
   lib/jade.jar,
   lib/AgentGui.jar,
   lib/eom4AgentGui.jar,
-  lib/AgentHyGrid.jar
+  lib/AgentHyGrid.jar,
+  lib/jung-api-2.0.1.jar,
+  lib/collections-generic-4.01.jar,
+  lib/jung-graph-impl-2.0.1.jar
 Import-Package: com.google.common.collect;version="10.0.1",
+ org.apache.commons.codec.binary,
  org.apache.commons.io,
  org.apache.commons.lang,
  org.eclipse.smarthome.config.core,

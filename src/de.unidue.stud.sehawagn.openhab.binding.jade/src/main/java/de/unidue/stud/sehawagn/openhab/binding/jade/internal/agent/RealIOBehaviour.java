@@ -3,14 +3,14 @@ package de.unidue.stud.sehawagn.openhab.binding.jade.internal.agent;
 import de.unidue.stud.sehawagn.openhab.binding.jade.handler.SmartHomeAgentHandler;
 import energy.FixedVariableList;
 import energy.optionModel.FixedDouble;
+import hygrid.agent.AbstractIOReal;
 import hygrid.agent.EnergyAgentIO;
-import jade.core.behaviours.CyclicBehaviour;
 
 /**
  * This class is used if the agent is run inside an openHAB instance
  * It reads data from it's agent handler
  */
-public class RealIOBehaviour extends CyclicBehaviour implements EnergyAgentIO {
+public class RealIOBehaviour extends AbstractIOReal implements EnergyAgentIO {
 
     private static final long serialVersionUID = 5143063807591183507L;
 
@@ -66,6 +66,7 @@ public class RealIOBehaviour extends CyclicBehaviour implements EnergyAgentIO {
      *
      * @param simulationStartTime the simulation start time
      */
+    @Override
     public void setSimulationStartTime(long simulationStartTime) {
         this.simulationTimeOffset = System.currentTimeMillis() - simulationStartTime;
     }

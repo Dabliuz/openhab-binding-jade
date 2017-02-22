@@ -31,112 +31,115 @@ import jade.wrapper.AgentController;
 import jade.wrapper.StaleProxyException;
 
 public class SmartHomeAgentHandler extends BaseThingHandler implements ChannelMirrorReceiver {
-	public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = Sets.newHashSet(THING_TYPE_JADE_SMARTHOMEAGENT);
+    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = Sets.newHashSet(THING_TYPE_JADE_SMARTHOMEAGENT);
 
-	private static final Class<? extends Agent> AGENT_CLASS = SmartHomeAgent.class;
-	private static final String DISPLAY_CHANNEL = CHANNEL_POWER;  // the channel where the value from the mirrored channel is displayed in OpenHAB
+    private static final Class<? extends Agent> AGENT_CLASS = SmartHomeAgent.class;
+    private static final String DISPLAY_CHANNEL = CHANNEL_POWER; // the channel where the value from the mirrored
+                                                                 // channel is displayed in OpenHAB
 
-	private final Logger logger = LoggerFactory.getLogger(SmartHomeAgentHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(SmartHomeAgentHandler.class);
 
-	private JADEBridgeHandler bridgeHandler;
-	private ChannelMirror channelMirror;
+    private JADEBridgeHandler bridgeHandler;
+    private ChannelMirror channelMirror;
 
-	private ChannelUID measurementChannelUID;
-	private ChannelUID displayChannelUID;
+    private ChannelUID measurementChannelUID;
+    private ChannelUID displayChannelUID;
 
-	private double measurementChannelValue = Double.NEGATIVE_INFINITY; // initialize
-	private AgentController myAgent;
+    private double measurementChannelValue = Double.NEGATIVE_INFINITY; // initialize
+    private AgentController myAgent;
 
-	public SmartHomeAgentHandler(Thing thing, ChannelMirror channelMirror) {
-		super(thing);
-		this.channelMirror = channelMirror;
-	}
+    public SmartHomeAgentHandler(Thing thing, ChannelMirror channelMirror) {
+        super(thing);
+        this.channelMirror = channelMirror;
+    }
 
-	@Override
-	public void initialize() {
-		logger.debug("Initializing SmartHomeAgentHandler.");
-		Configuration config = getConfig();
+    @Override
+    public void initialize() {
+        logger.debug("Initializing SmartHomeAgentHandler.");
+        Configuration config = getConfig();
 
-		measurementChannelUID = new ChannelUID((String) config.getProperties().get(PROPERTY_MEASUREMENT_CHANNEL_UID));
-		displayChannelUID = new ChannelUID(this.getThing().getUID(), DISPLAY_CHANNEL);
+        measurementChannelUID = new ChannelUID((String) config.getProperties().get(PROPERTY_MEASUREMENT_CHANNEL_UID));
+        displayChannelUID = new ChannelUID(this.getThing().getUID(), DISPLAY_CHANNEL);
 
-		State currentState = null;
-		Set<Item> allLinks = this.linkRegistry.getLinkedItems(measurementChannelUID);
-		for (Item item : allLinks) {
-			currentState = item.getState(); // only use the state of the last, usually there is only one
-		}
-		receiveFromMirroredChannel(currentState); // init channel with current value before waiting for the next change
+        State currentState = null;
+        Set<Item> allLinks = this.linkRegistry.getLinkedItems(measurementChannelUID);
+        for (Item item : allLinks) {
+            currentState = item.getState(); // only use the state of the last, usually there is only one
+        }
+        receiveFromMirroredChannel(currentState); // init channel with current value before waiting for the next change
 
-		channelMirror.mirrorChannel(measurementChannelUID, this);
-		String errorCause = null;
+        channelMirror.mirrorChannel(measurementChannelUID, this);
+        String errorCause = null;
 
-		try {
-			myAgent = getBridgeHandler().startAgent((String) config.getProperties().get(PROPERTY_AGENT_ID), AGENT_CLASS, this);
-		} catch (StaleProxyException e) {
-			errorCause = e.getMessage();
-		}
-		if (myAgent != null) {
-			updateStatus(ThingStatus.ONLINE);
-		} else {
-			updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-					"agent start failed: " + errorCause);
+        try {
+            myAgent = getBridgeHandler().startAgent((String) config.getProperties().get(PROPERTY_AGENT_ID), AGENT_CLASS,
+                    this);
+        } catch (StaleProxyException e) {
+            errorCause = e.getMessage();
+        }
+        if (myAgent != null) {
+            updateStatus(ThingStatus.ONLINE);
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
+                    "agent start failed: " + errorCause);
 
-		}
-	}
+        }
+    }
 
-	@Override
-	public void dispose() {
-		logger.debug("Disposing SmartHomeAgentHandler.");
-		try {
-			getBridgeHandler().stopAgent(this);
-		} catch (StaleProxyException e) {
-			updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR, "agent dispose failed: " + e.getCause());
-			e.printStackTrace();
-		}
-	}
+    @Override
+    public void dispose() {
+        logger.debug("Disposing SmartHomeAgentHandler.");
+        try {
+            getBridgeHandler().stopAgent(this);
+        } catch (StaleProxyException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
+                    "agent dispose failed: " + e.getCause());
+            e.printStackTrace();
+        }
+    }
 
-	@Override
-	public void handleCommand(ChannelUID channelUID, Command command) {
-		if (command == RefreshType.REFRESH) {
-			State newState = null;
-			if (measurementChannelValue != Double.NEGATIVE_INFINITY) {
-				switch (channelUID.getId()) {
-				case DISPLAY_CHANNEL: {
-					newState = new DecimalType(measurementChannelValue);
-					break;
-				}
-				}
-				updateState(channelUID.getId(), newState);
-			}
-		}
-	}
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        if (command == RefreshType.REFRESH) {
+            State newState = null;
+            if (measurementChannelValue != Double.NEGATIVE_INFINITY) {
+                switch (channelUID.getId()) {
+                    case DISPLAY_CHANNEL: {
+                        newState = new DecimalType(measurementChannelValue);
+                        break;
+                    }
+                }
+                updateState(channelUID.getId(), newState);
+            }
+        }
+    }
 
-	private synchronized JADEBridgeHandler getBridgeHandler() {
-		if (this.bridgeHandler == null) {
-			Bridge bridge = getBridge();
-			if (bridge == null) {
-				return null;
-			}
-			ThingHandler handler = bridge.getHandler();
-			if (handler instanceof JADEBridgeHandler) {
-				this.bridgeHandler = (JADEBridgeHandler) handler;
-			} else {
-				return null;
-			}
-		}
-		return this.bridgeHandler;
-	}
+    private synchronized JADEBridgeHandler getBridgeHandler() {
+        if (this.bridgeHandler == null) {
+            Bridge bridge = getBridge();
+            if (bridge == null) {
+                return null;
+            }
+            ThingHandler handler = bridge.getHandler();
+            if (handler instanceof JADEBridgeHandler) {
+                this.bridgeHandler = (JADEBridgeHandler) handler;
+            } else {
+                return null;
+            }
+        }
+        return this.bridgeHandler;
+    }
 
-	@Override
-	public void receiveFromMirroredChannel(State newState) {
-		if (newState instanceof DecimalType) {
-			DecimalType decimalItem = (DecimalType) newState;
-			measurementChannelValue = decimalItem.doubleValue();
-			handleCommand(displayChannelUID, RefreshType.REFRESH);
-		}
-	}
+    @Override
+    public void receiveFromMirroredChannel(State newState) {
+        if (newState instanceof DecimalType) {
+            DecimalType decimalItem = (DecimalType) newState;
+            measurementChannelValue = decimalItem.doubleValue();
+            handleCommand(displayChannelUID, RefreshType.REFRESH);
+        }
+    }
 
-	public double getCurrentMeasurement() {
-		return measurementChannelValue;
-	}
+    public double getCurrentMeasurement() {
+        return measurementChannelValue;
+    }
 }
