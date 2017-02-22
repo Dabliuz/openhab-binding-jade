@@ -1,5 +1,7 @@
 package de.unidue.stud.sehawagn.openhab.binding.jade.internal.agent;
 
+import static de.unidue.stud.sehawagn.openhab.binding.jade.internal.agent.InternalDataModel.VAR_VOLTAGE;
+
 import energy.OptionModelController;
 import energy.calculations.AbstractOptionModelCalculation;
 import energy.domain.DefaultDomainModelElectricity;
@@ -16,8 +18,6 @@ import energy.optionModel.TechnicalSystemStateEvaluation;
  * This class calculates the energy flows of a smart house.
  */
 public class SmartHomeCalculation extends AbstractOptionModelCalculation {
-    private static final String VAR_INPUT = "input";
-
     private static final double POWER_FACTOR = 0.925; // Wirkfaktor P/S = cos(phi)
     private static final double PHI = Math.acos(POWER_FACTOR);
     private static final double APPARENT_FACTOR = Math.tan(PHI);
@@ -31,9 +31,9 @@ public class SmartHomeCalculation extends AbstractOptionModelCalculation {
             TechnicalInterface techInt, boolean isManualConfiguration) {
 
         if (techInt.getDomainModel() instanceof DefaultDomainModelElectricity) {
-            FixedDouble inputFD = (FixedDouble) this.getVariable(techSysStaEva.getIOlist(), VAR_INPUT);
+            FixedDouble voltageFD = (FixedDouble) this.getVariable(techSysStaEva.getIOlist(), VAR_VOLTAGE);
 
-            double activePower = 500.0 * inputFD.getValue(); // Wirkleistung P
+            double activePower = 500.0 * voltageFD.getValue(); // Wirkleistung P
             double apparentPower = activePower / POWER_FACTOR; // Scheinleistung S
             double reactivePower = APPARENT_FACTOR * activePower; // Blindleistung Q
 
