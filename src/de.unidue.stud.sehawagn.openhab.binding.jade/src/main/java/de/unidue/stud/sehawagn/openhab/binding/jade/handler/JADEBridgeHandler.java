@@ -138,7 +138,7 @@ public class JADEBridgeHandler extends ConfigStatusBridgeHandler {
         AgentConfig agentConfig = new AgentConfig();
         agentConfig.setAgentID(agentName);
         agentConfig.setCentralAgentAID(centralAgentAID);
-        agentConfig.setAgentOperatingMode(AgentOperatingMode.RealSystem);
+        agentConfig.setAgentOperatingMode(AgentOperatingMode.TestBedReal); // RealSystem
         agentConfig.setKeyStore(null);
         agentConfig.setTrustStore(null);
 

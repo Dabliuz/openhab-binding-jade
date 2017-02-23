@@ -40,6 +40,11 @@ public class RealIOBehaviour extends AbstractIOReal implements EnergyAgentIO {
 
         // access the data in openHAB's AgentHandler
         double mVoltage = myAgentHandler.getCurrentMeasurement();
+
+        if (mVoltage == Double.NEGATIVE_INFINITY) {
+            mVoltage = 0.0;
+        }
+
         System.out.println("SmartHomeAgent-RealIOBehaviour-measurement from openHAB:" + mVoltage);
 
         // add measurement to the list

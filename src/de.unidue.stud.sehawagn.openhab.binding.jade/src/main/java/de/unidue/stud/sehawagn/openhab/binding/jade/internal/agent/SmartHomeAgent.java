@@ -142,7 +142,7 @@ public class SmartHomeAgent extends AbstractEnergyAgent {
                         break;
                     }
                     case TestBedReal: {
-                        // TODO
+                        agentIOBehaviour = new RealIOBehaviour(this, myAgentHandler);
                         break;
                     }
                     case RealSystem: {

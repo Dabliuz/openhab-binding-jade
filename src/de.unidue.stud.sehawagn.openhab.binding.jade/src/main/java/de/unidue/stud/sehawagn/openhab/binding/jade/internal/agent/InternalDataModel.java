@@ -16,6 +16,7 @@ public class InternalDataModel extends AbstractInternalDataModel {
      * elements of the internal data model
      */
     public static final String VAR_VOLTAGE = "Voltage";
+    public static final String VAR_OCCUPIED = "occupied";
 
     /**
      * @param agent the agent
