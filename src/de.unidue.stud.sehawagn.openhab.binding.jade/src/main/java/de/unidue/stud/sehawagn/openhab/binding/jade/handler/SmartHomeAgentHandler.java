@@ -7,6 +7,7 @@ import java.util.Set;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -34,8 +35,11 @@ public class SmartHomeAgentHandler extends BaseThingHandler implements ChannelMi
     public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = Sets.newHashSet(THING_TYPE_JADE_SMARTHOMEAGENT);
 
     private static final Class<? extends Agent> AGENT_CLASS = SmartHomeAgent.class;
-    private static final String DISPLAY_CHANNEL = CHANNEL_POWER; // the channel where the value from the mirrored
-                                                                 // channel is displayed in OpenHAB
+    private static final String MEASUREMENT_MIRROR_CHANNEL = CHANNEL_POWER; // the channel where the value from the
+                                                                            // mirrored
+    // channel is displayed in OpenHAB
+    private static final String ACTUATE_MIRROR_CHANNEL = CHANNEL_ON; // the channel where the value from the mirrored
+                                                                     // channel is displayed in OpenHAB
 
     private final Logger logger = LoggerFactory.getLogger(SmartHomeAgentHandler.class);
 
@@ -43,9 +47,12 @@ public class SmartHomeAgentHandler extends BaseThingHandler implements ChannelMi
     private ChannelMirror channelMirror;
 
     private ChannelUID measurementChannelUID;
-    private ChannelUID displayChannelUID;
+    private ChannelUID measurementMirrorChannelUID;
+    private ChannelUID actuateMirrorChannelUID;
 
+    private boolean actuateChannelValue = false; // initialize
     private double measurementChannelValue = Double.NEGATIVE_INFINITY; // initialize
+
     private AgentController myAgent;
 
     public SmartHomeAgentHandler(Thing thing, ChannelMirror channelMirror) {
@@ -59,7 +66,8 @@ public class SmartHomeAgentHandler extends BaseThingHandler implements ChannelMi
         Configuration config = getConfig();
 
         measurementChannelUID = new ChannelUID((String) config.getProperties().get(PROPERTY_MEASUREMENT_CHANNEL_UID));
-        displayChannelUID = new ChannelUID(this.getThing().getUID(), DISPLAY_CHANNEL);
+        measurementMirrorChannelUID = new ChannelUID(this.getThing().getUID(), MEASUREMENT_MIRROR_CHANNEL);
+        actuateMirrorChannelUID = new ChannelUID(this.getThing().getUID(), ACTUATE_MIRROR_CHANNEL);
 
         State currentState = null;
         Set<Item> allLinks = this.linkRegistry.getLinkedItems(measurementChannelUID);
@@ -68,6 +76,7 @@ public class SmartHomeAgentHandler extends BaseThingHandler implements ChannelMi
         }
         receiveFromMirroredChannel(currentState); // init channel with current value before waiting for the next change
 
+//        channelMirror.mirrorChannel(, this);
         channelMirror.mirrorChannel(measurementChannelUID, this);
         String errorCause = null;
 
@@ -102,13 +111,26 @@ public class SmartHomeAgentHandler extends BaseThingHandler implements ChannelMi
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command == RefreshType.REFRESH) {
             State newState = null;
-            if (measurementChannelValue != Double.NEGATIVE_INFINITY) {
-                switch (channelUID.getId()) {
-                    case DISPLAY_CHANNEL: {
+            switch (channelUID.getId()) {
+                case MEASUREMENT_MIRROR_CHANNEL: {
+                    if (measurementChannelValue != Double.NEGATIVE_INFINITY) {
                         newState = new DecimalType(measurementChannelValue);
-                        break;
                     }
+                    break;
                 }
+                case ACTUATE_MIRROR_CHANNEL: {
+                    if (actuateChannelValue) {
+                        newState = OnOffType.ON;
+                    } else {
+                        newState = OnOffType.OFF;
+                    }
+                    break;
+                }
+                default: {
+                    break;
+                }
+            }
+            if (newState != null) {
                 updateState(channelUID.getId(), newState);
             }
         }
@@ -135,11 +157,16 @@ public class SmartHomeAgentHandler extends BaseThingHandler implements ChannelMi
         if (newState instanceof DecimalType) {
             DecimalType decimalItem = (DecimalType) newState;
             measurementChannelValue = decimalItem.doubleValue();
-            handleCommand(displayChannelUID, RefreshType.REFRESH);
+            handleCommand(measurementMirrorChannelUID, RefreshType.REFRESH);
         }
     }
 
     public double getCurrentMeasurement() {
         return measurementChannelValue;
+    }
+
+    public void setOperationalState(boolean operationalState) {
+        actuateChannelValue = operationalState;
+        handleCommand(actuateMirrorChannelUID, RefreshType.REFRESH);
     }
 }

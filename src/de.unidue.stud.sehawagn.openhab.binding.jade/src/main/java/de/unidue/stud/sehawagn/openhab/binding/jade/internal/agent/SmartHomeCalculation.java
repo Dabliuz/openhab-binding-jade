@@ -18,6 +18,9 @@ import energy.optionModel.TechnicalSystemStateEvaluation;
  * This class calculates the energy flows of a smart house.
  */
 public class SmartHomeCalculation extends AbstractOptionModelCalculation {
+    private static final double FAKE_FACTOR = 500.0; // this is some arbitrarily chosen value to put the measured value
+                                                     // in a range, which makes it interesting for the environment model
+
     private static final double POWER_FACTOR = 0.925; // Wirkfaktor P/S = cos(phi)
     private static final double PHI = Math.acos(POWER_FACTOR);
     private static final double APPARENT_FACTOR = Math.tan(PHI);
@@ -33,7 +36,7 @@ public class SmartHomeCalculation extends AbstractOptionModelCalculation {
         if (techInt.getDomainModel() instanceof DefaultDomainModelElectricity) {
             FixedDouble voltageFD = (FixedDouble) this.getVariable(techSysStaEva.getIOlist(), VAR_VOLTAGE);
 
-            double activePower = 500.0 * voltageFD.getValue(); // Wirkleistung P
+            double activePower = FAKE_FACTOR * voltageFD.getValue(); // Wirkleistung P
             double apparentPower = activePower / POWER_FACTOR; // Scheinleistung S
             double reactivePower = APPARENT_FACTOR * activePower; // Blindleistung Q
 

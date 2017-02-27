@@ -2,7 +2,9 @@ package de.unidue.stud.sehawagn.openhab.binding.jade.internal.agent;
 
 import de.unidue.stud.sehawagn.openhab.binding.jade.handler.SmartHomeAgentHandler;
 import energy.FixedVariableList;
+import energy.optionModel.FixedBoolean;
 import energy.optionModel.FixedDouble;
+import energy.optionModel.FixedVariable;
 import hygrid.agent.AbstractIOReal;
 import hygrid.agent.EnergyAgentIO;
 
@@ -19,11 +21,10 @@ public class RealIOBehaviour extends AbstractIOReal implements EnergyAgentIO {
 
     private SmartHomeAgentHandler myAgentHandler;
     private SmartHomeAgent myAgent;
-    private FixedVariableList varList;
+    private FixedVariableList measurements;
+    private FixedVariableList setPoints;
 
     /**
-     * Instantiates this behaviour.
-     *
      * @param agent the agent
      * @param myAgentHandler
      */
@@ -36,13 +37,13 @@ public class RealIOBehaviour extends AbstractIOReal implements EnergyAgentIO {
     /**
      * @return the current measurement
      */
-    private FixedVariableList getCurrentMeasurement() {
+    private FixedVariableList measure() {
 
         // access the data in openHAB's AgentHandler
         double mVoltage = myAgentHandler.getCurrentMeasurement();
 
         if (mVoltage == Double.NEGATIVE_INFINITY) {
-            mVoltage = 0.0;
+            mVoltage = InternalDataModel.VAR_VOLTAGE_DEFAULT;
         }
 
         System.out.println("SmartHomeAgent-RealIOBehaviour-measurement from openHAB:" + mVoltage);
@@ -57,12 +58,31 @@ public class RealIOBehaviour extends AbstractIOReal implements EnergyAgentIO {
         return newMeasurements;
     }
 
-    /*
-     * @see jade.core.behaviours.Behaviour#action()
-     */
+    private void actuate() {
+        for (FixedVariable fixedVariable : setPoints) {
+            switch (fixedVariable.getVariableID()) {
+                case InternalDataModel.VAR_OCCUPIED: {
+                    if (fixedVariable instanceof FixedBoolean) {
+                        myAgentHandler.setOperationalState(((FixedBoolean) fixedVariable).isValue());
+                    }
+                }
+            }
+        }
+    }
+
+    private FixedVariableList initSetPoints() {
+        FixedVariableList newSetPoints = new FixedVariableList();
+        FixedBoolean sP1 = new FixedBoolean();
+        sP1.setVariableID(InternalDataModel.VAR_OCCUPIED);
+        sP1.setValue(InternalDataModel.VAR_OCCUPIED_DEFAULT);
+        newSetPoints.add(sP1);
+
+        return newSetPoints;
+    }
+
     @Override
     public void action() {
-        this.setMeasurementsFromSystem(this.getCurrentMeasurement()); // set measurements to agent
+        setMeasurementsFromSystem(getMeasurementsFromSystem()); // set measurements to agent
         block(MEASURING_INTERVAL);
     }
 
@@ -73,54 +93,40 @@ public class RealIOBehaviour extends AbstractIOReal implements EnergyAgentIO {
      */
     @Override
     public void setSimulationStartTime(long simulationStartTime) {
-        this.simulationTimeOffset = System.currentTimeMillis() - simulationStartTime;
+        simulationTimeOffset = System.currentTimeMillis() - simulationStartTime;
     }
 
-    /*
-     * @see hygrid.measurements.AgentIO#getTime()
-     */
     @Override
     public Long getTime() {
-        return System.currentTimeMillis() - this.simulationTimeOffset;
+        return System.currentTimeMillis() - simulationTimeOffset;
     }
 
-    /*
-     * @see hygrid.agent.internalDataModel.AgentIO#getInputMeasurements()
-     */
     @Override
     public FixedVariableList getMeasurementsFromSystem() {
-        if (varList == null) {
-            varList = this.getCurrentMeasurement();
+        if (measurements == null) {
+            measurements = measure();
         }
-        return varList;
+        return measurements;
     }
 
-    /*
-     * @see hygrid.agent.EnergyAgentIO#setMeasurementsFromSystem(hygrid.agent.FixedVariableList)
-     */
     @Override
     public void setMeasurementsFromSystem(FixedVariableList newMeasurements) {
-        varList = newMeasurements;
+        measurements = newMeasurements;
         this.myAgent.getInternalDataModel().setMeasurementsFromSystem(newMeasurements);
     }
 
-    /*
-     * @see
-     * hygrid.agent.internalDataModel.AgentIO#setOutputMeasurements(smartHouse.agent.internalDataModel.Measurements)
-     */
     @Override
-    public void setSetPointsToSystem(FixedVariableList newOutputMeasurements) {
-        // TODO Auto-generated method stub
+    public void setSetPointsToSystem(FixedVariableList newSetPoints) {
+        setPoints = newSetPoints;
+        actuate();
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see hygrid.agent.EnergyAgentIO#getSetPointsToSystem()
-     */
     @Override
     public FixedVariableList getSetPointsToSystem() {
-        // TODO Auto-generated method stub
-        return null;
+        if (setPoints == null) {
+            setPoints = initSetPoints();
+        }
+        return setPoints;
     }
+
 }

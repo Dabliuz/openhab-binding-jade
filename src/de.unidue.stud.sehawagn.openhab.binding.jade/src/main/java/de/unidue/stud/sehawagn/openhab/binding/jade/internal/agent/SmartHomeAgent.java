@@ -33,13 +33,14 @@ public class SmartHomeAgent extends AbstractEnergyAgent {
 
     private static final long serialVersionUID = 1730951019391324601L;
 
-    private EnergyAgentIO agentIOBehaviour;
     private InternalDataModel internalDataModel;
+
     private MonitoringBehaviourRT monitoringBehaviourRT;
+    private SimulationConnectorRemote simulationConnector;
+
+    private EnergyAgentIO agentIOBehaviour;
 
     private SmartHomeAgentHandler myAgentHandler;
-
-    private SimulationConnectorRemote simulationConnector;
 
     /*
      * @see jade.core.Agent#setup()
@@ -131,7 +132,6 @@ public class SmartHomeAgent extends AbstractEnergyAgent {
     public EnergyAgentIO getAgentIOBehaviour() {
         if (agentIOBehaviour == null) {
             if (getAgentOperatingMode() != null) {
-
                 switch (this.getAgentOperatingMode()) {
                     case Simulation: {
                         agentIOBehaviour = new SimulatedIOBehaviour(this, this.getInternalDataModel());
@@ -197,22 +197,17 @@ public class SmartHomeAgent extends AbstractEnergyAgent {
                 Object dm = this.getInternalDataModel().getNetworkComponent().getDataModel();
                 if (dm instanceof ScheduleList) {
                     this.internalDataModel.getScheduleController().setScheduleList((ScheduleList) dm);
-
                 } else if (dm instanceof TechnicalSystem) {
                     this.internalDataModel.getOptionModelController().setTechnicalSystem((TechnicalSystem) dm);
                     if (this.internalDataModel.getOptionModelController().getEvaluationStrategyRT() != null) {
                         this.startControlBehaviourRT(); // Add real time control, if configured
-
                     }
-
                 } else if (dm instanceof TechnicalSystemGroup) {
                     this.internalDataModel.getGroupController().setTechnicalSystemGroup((TechnicalSystemGroup) dm);
                     if (this.internalDataModel.getOptionModelController().getEvaluationStrategyRT() != null) {
                         this.startControlBehaviourRT(); // add real time control, if configured
                     }
-
                 }
-
             } else if (updateObject == AbstractInternalDataModel.CHANGED.MeasurementsFromSystem) {
             }
         }
