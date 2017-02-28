@@ -12,6 +12,12 @@
 		</properties>
 
 		<config-description>
+		    <parameter name="localHostAddress" type="text">
+                <context>network_address</context>
+                <label>Local Host Address</label>
+                <description>The local host interface (IP address/hostname) where the platform should bind/listen to. (e.g. 132.252.61.116)</description>
+                <required>true</required>
+            </parameter>
 			<parameter name="mtpAddress" type="text">
 				<context>network_address</context>
 				<label>MTP Address</label>

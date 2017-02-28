@@ -102,7 +102,7 @@ public class SmartHomeAgentHandler extends BaseThingHandler implements ChannelMi
             getBridgeHandler().stopAgent(this);
         } catch (StaleProxyException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-                    "agent dispose failed: " + e.getCause());
+                    "agent dispose failed: " + e.getMessage());
             e.printStackTrace();
         }
     }

@@ -22,6 +22,8 @@ public class JADEBindingConstants {
     public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_JADE_CONTAINER, THING_TYPE_JADE_SMARTHOMEAGENT);
 
     // Bridge config properties
+    public static final String CONFKEY_LOCAL_HOST_ADDRESS = "localHostAddress";
+
     public static final String CONFKEY_MTP_ADDRESS = "mtpAddress";
     public static final String CONFKEY_MTP_PORT = "mtpPort";
     public static final String CONFKEY_MTP_PROTOCOL = "mtpProtocol";

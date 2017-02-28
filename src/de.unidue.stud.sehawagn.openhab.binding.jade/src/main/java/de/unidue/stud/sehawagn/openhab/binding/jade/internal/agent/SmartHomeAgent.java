@@ -105,6 +105,7 @@ public class SmartHomeAgent extends AbstractEnergyAgent {
                     break;
             }
         }
+        System.out.println("SmartHomeAgent stopped");
     }
 
     /**

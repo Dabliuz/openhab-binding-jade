@@ -62,13 +62,15 @@ public class JADEBridgeHandler extends ConfigStatusBridgeHandler {
     @Override
     public void initialize() {
         logger.debug("Initializing JADE bridge handler.");
-        if (getConfig().get(CONFKEY_MTP_ADDRESS) != null) {
+        if (getConfig().containsKey(CONFKEY_LOCAL_HOST_ADDRESS) && getConfig().containsKey(CONFKEY_MTP_ADDRESS)) {
             if (container == null) {
                 // Initialize jade container profile and start it
 
                 // String someParameter = (String) getConfig().get(CONFKEY_SOME_PARAMETER);
 
                 Properties jadeProperties = new Properties();
+                jadeProperties.put(Profile.LOCAL_HOST, getConfig().get(CONFKEY_LOCAL_HOST_ADDRESS));
+//                jadeProperties.put(Profile.MTPS, "jade.mtp.http.MessageTransportProtocol(http://" + Profile.LOCAL_HOST + ":" + 7778 + "/acc)");
 
                 startJadeContainer(jadeProperties);
 
