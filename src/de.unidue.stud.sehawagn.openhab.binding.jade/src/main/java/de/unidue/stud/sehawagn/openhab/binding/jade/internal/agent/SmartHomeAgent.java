@@ -1,15 +1,9 @@
 package de.unidue.stud.sehawagn.openhab.binding.jade.internal.agent;
 
-import java.util.Observable;
-
-import agentgui.simulationService.time.TimeModelContinuous;
 import de.unidue.stud.sehawagn.openhab.binding.jade.handler.SmartHomeAgentHandler;
-import energy.optionModel.ScheduleList;
-import energy.optionModel.TechnicalSystem;
-import energy.optionModel.TechnicalSystemGroup;
 import hygrid.agent.AbstractEnergyAgent;
 import hygrid.agent.AbstractIOReal;
-import hygrid.agent.AbstractInternalDataModel;
+import hygrid.agent.AbstractIOSimulated;
 import hygrid.agent.EnergyAgentIO;
 import hygrid.agent.SimulationConnectorRemote;
 import hygrid.agent.SimulationConnectorRemoteForIOReal;
@@ -22,8 +16,6 @@ import hygrid.ontology.HyGridOntology;
 import jade.content.lang.sl.SLCodec;
 import jade.core.AID;
 import jade.core.behaviours.Behaviour;
-import jade.core.behaviours.CyclicBehaviour;
-import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
 /**
@@ -75,11 +67,10 @@ public class SmartHomeAgent extends AbstractEnergyAgent {
             this.simulationConnector = new SimulationConnectorRemoteForIOReal(this, this.getInternalDataModel());
         }
 
-        Behaviour ioBehaviour = (Behaviour) this.getAgentIOBehaviour();
+        Behaviour ioBehaviour = (Behaviour) this.getEnergyAgentIO();
         if (ioBehaviour != null) {
             this.addBehaviour(ioBehaviour);
         }
-        this.addBehaviour(new MessageReceiveBehaviour()); // additional behaviours
         System.out.println("SmartHomeAgent started");
     }
 
@@ -122,115 +113,27 @@ public class SmartHomeAgent extends AbstractEnergyAgent {
         return this.internalDataModel;
     }
 
-    @Override
-    public EnergyAgentIO getEnergyAgentIO() {
-        return getAgentIOBehaviour();
-    }
-
-    /**
-     * @return the current IO behaviour
-     */
-    public EnergyAgentIO getAgentIOBehaviour() {
-        if (agentIOBehaviour == null) {
-            if (getAgentOperatingMode() != null) {
-                switch (this.getAgentOperatingMode()) {
-                    case Simulation: {
-                        agentIOBehaviour = new SimulatedIOBehaviour(this, this.getInternalDataModel());
-                        break;
-                    }
-                    case TestBedSimulation: {
-                        agentIOBehaviour = new SimulatedIOBehaviour(this, this.getInternalDataModel());
-                        break;
-                    }
-                    case TestBedReal: {
-                        agentIOBehaviour = new RealIOBehaviour(this, myAgentHandler);
-                        break;
-                    }
-                    case RealSystem: {
-                        agentIOBehaviour = new RealIOBehaviour(this, myAgentHandler);
-                        break;
-                    }
-                    default: {
-                        break;
-                    }
-                }
-            }
-        }
-        return agentIOBehaviour;
-    }
-
-    @Override
-    protected void onEnvironmentModelReady() {
-        // Determine simulation start time
-        TimeModelContinuous timeModel = (TimeModelContinuous) this.simulationConnector.getEnvironmentModel()
-                .getTimeModel();
-        ((AbstractIOReal) agentIOBehaviour).setSimulationStartTime(timeModel.getTimeStart());
-        this.startMonitoringBehaviourRT();
-    }
-
     /**
      * Start real time control behaviour MonitoringBehaviourRT, if not already done.
      */
     @Override
     protected void startMonitoringBehaviourRT() {
         if (monitoringBehaviourRT == null) {
-            monitoringBehaviourRT = new MonitoringBehaviourRT(this.getInternalDataModel(), this.getAgentIOBehaviour());
+            monitoringBehaviourRT = new MonitoringBehaviourRT(this.getInternalDataModel(), this.getEnergyAgentIO());
             monitoringBehaviourRT.addMonitoringListener(new MonitoringListenerForLogging());
             monitoringBehaviourRT.addMonitoringListener(new MonitoringListenerForProxy(this.simulationConnector));
             this.getInternalDataModel().addObserver(monitoringBehaviourRT);
             this.addBehaviour(monitoringBehaviourRT);
-            System.out.println("Monitoring Behaviour added");
         }
     }
 
-    /*
-     * Will be invoked if the internal data model has changed
-     *
-     * @see java.util.Observer#update(java.util.Observable, java.lang.Object)
-     */
     @Override
-    public void update(Observable observable, Object updateObject) {
-        if (observable instanceof InternalDataModel) {
-            if (updateObject == AbstractInternalDataModel.CHANGED.NetworModel) {
-
-            } else if (updateObject == AbstractInternalDataModel.CHANGED.NetworkComponent) {
-                // Get the actual data model of the NetworkComponent
-                Object dm = this.getInternalDataModel().getNetworkComponent().getDataModel();
-                if (dm instanceof ScheduleList) {
-                    this.internalDataModel.getScheduleController().setScheduleList((ScheduleList) dm);
-                } else if (dm instanceof TechnicalSystem) {
-                    this.internalDataModel.getOptionModelController().setTechnicalSystem((TechnicalSystem) dm);
-                    if (this.internalDataModel.getOptionModelController().getEvaluationStrategyRT() != null) {
-                        this.startControlBehaviourRT(); // Add real time control, if configured
-                    }
-                } else if (dm instanceof TechnicalSystemGroup) {
-                    this.internalDataModel.getGroupController().setTechnicalSystemGroup((TechnicalSystemGroup) dm);
-                    if (this.internalDataModel.getOptionModelController().getEvaluationStrategyRT() != null) {
-                        this.startControlBehaviourRT(); // add real time control, if configured
-                    }
-                }
-            } else if (updateObject == AbstractInternalDataModel.CHANGED.MeasurementsFromSystem) {
-            }
-        }
+    public AbstractIOSimulated getIOSimulated() {
+        return new SimulatedIOBehaviour(this, this.getInternalDataModel());
     }
 
-    /**
-     * Internal class for message handling
-     */
-    private class MessageReceiveBehaviour extends CyclicBehaviour {
-
-        private static final long serialVersionUID = -6383794735800175272L;
-
-        @Override
-        public void action() {
-            ACLMessage msg = this.myAgent.receive(getMessageTemplate());
-            if (msg != null) {
-                // --- work on the delivered message --------
-
-            } else {
-                // --- wait for the next incoming message ---
-                block();
-            }
-        }
+    @Override
+    public AbstractIOReal getIOReal() {
+        return new RealIOBehaviour(this, myAgentHandler);
     }
 }

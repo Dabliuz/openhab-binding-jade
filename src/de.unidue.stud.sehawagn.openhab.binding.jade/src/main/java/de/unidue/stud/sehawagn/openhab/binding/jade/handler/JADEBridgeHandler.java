@@ -62,15 +62,13 @@ public class JADEBridgeHandler extends ConfigStatusBridgeHandler {
     @Override
     public void initialize() {
         logger.debug("Initializing JADE bridge handler.");
-        if (getConfig().containsKey(CONFKEY_LOCAL_HOST_ADDRESS) && getConfig().containsKey(CONFKEY_MTP_ADDRESS)) {
+        if (getConfig().containsKey(CONFKEY_LOCAL_MTP_ADDRESS) && getConfig().containsKey(CONFKEY_REMOTE_MTP_ADDRESS)) {
             if (container == null) {
                 // Initialize jade container profile and start it
 
-                // String someParameter = (String) getConfig().get(CONFKEY_SOME_PARAMETER);
-
                 Properties jadeProperties = new Properties();
-                jadeProperties.put(Profile.LOCAL_HOST, getConfig().get(CONFKEY_LOCAL_HOST_ADDRESS));
-//                jadeProperties.put(Profile.MTPS, "jade.mtp.http.MessageTransportProtocol(http://" + Profile.LOCAL_HOST + ":" + 7778 + "/acc)");
+
+                jadeProperties.put(Profile.MTPS, String.format(JADE_MTP_STRING_HTTP, getConfig().get(CONFKEY_LOCAL_MTP_ADDRESS)));
 
                 startJadeContainer(jadeProperties);
 
@@ -91,7 +89,7 @@ public class JADEBridgeHandler extends ConfigStatusBridgeHandler {
                 container.kill();
             } catch (StaleProxyException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-                        "container dispose failed: " + e.getCause());
+                        "container dispose failed: " + e.getMessage());
                 e.printStackTrace();
             }
             container = null;
@@ -113,7 +111,7 @@ public class JADEBridgeHandler extends ConfigStatusBridgeHandler {
     public AgentController startAgent(String agentName, Class<? extends Agent> agentClass,
             SmartHomeAgentHandler smartHomeAgentHandler) throws StaleProxyException {
         if (container == null) {
-            System.err.println("Container not yet ready, please try again later");
+            logger.error("Container not yet ready, please try again later");
             return null;
         }
         AgentController agent = myAgents.get(smartHomeAgentHandler.hashCode());
@@ -131,11 +129,11 @@ public class JADEBridgeHandler extends ConfigStatusBridgeHandler {
     private AgentConfig getGeneralAgentConfig(String agentName) {
 
         CentralAgentAID centralAgentAID = new CentralAgentAID();
-        centralAgentAID.setAgentName((String) getConfig().get(CONFKEY_CENTRAL_AGENT_NAME));
-        centralAgentAID.setPlatformName((String) getConfig().get(CONFKEY_PLATFORM_NAME));
-        centralAgentAID.setPort(Integer.parseInt((String) getConfig().get(CONFKEY_MTP_PORT)));
-        centralAgentAID.setUrlOrIp((String) getConfig().get(CONFKEY_MTP_ADDRESS));
-        centralAgentAID.setHttp4Mtp((String) getConfig().get(CONFKEY_MTP_PROTOCOL));
+        centralAgentAID.setAgentName((String) getConfig().get(CONFKEY_REMOTE_GROUP_COORDINATOR_NAME));
+        centralAgentAID.setPlatformName((String) getConfig().get(CONFKEY_REMOTE_PLATFORM_NAME));
+        centralAgentAID.setPort(Integer.parseInt((String) getConfig().get(CONFKEY_REMOTE_MTP_PORT)));
+        centralAgentAID.setUrlOrIp((String) getConfig().get(CONFKEY_REMOTE_MTP_ADDRESS));
+        centralAgentAID.setHttp4Mtp((String) getConfig().get(CONFKEY_REMOTE_MTP_PROTOCOL));
 
         AgentConfig agentConfig = new AgentConfig();
         agentConfig.setAgentID(agentName);
@@ -149,7 +147,7 @@ public class JADEBridgeHandler extends ConfigStatusBridgeHandler {
 
     public void stopAgent(SmartHomeAgentHandler smartHomeAgentHandler) throws StaleProxyException {
         if (container == null) {
-            System.err.println("Container not yet ready, please try again later");
+            logger.error("Container not yet ready, please try again later");
         }
         AgentController agent = myAgents.get(smartHomeAgentHandler.hashCode());
 

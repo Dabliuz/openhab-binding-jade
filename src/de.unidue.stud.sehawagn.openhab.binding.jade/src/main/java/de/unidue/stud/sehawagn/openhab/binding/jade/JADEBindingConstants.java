@@ -22,13 +22,13 @@ public class JADEBindingConstants {
     public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_JADE_CONTAINER, THING_TYPE_JADE_SMARTHOMEAGENT);
 
     // Bridge config properties
-    public static final String CONFKEY_LOCAL_HOST_ADDRESS = "localHostAddress";
+    public static final String CONFKEY_LOCAL_MTP_ADDRESS = "localMTPAddress";
 
-    public static final String CONFKEY_MTP_ADDRESS = "mtpAddress";
-    public static final String CONFKEY_MTP_PORT = "mtpPort";
-    public static final String CONFKEY_MTP_PROTOCOL = "mtpProtocol";
-    public static final String CONFKEY_PLATFORM_NAME = "platformName";
-    public static final String CONFKEY_CENTRAL_AGENT_NAME = "centralAgentName";
+    public static final String CONFKEY_REMOTE_MTP_ADDRESS = "remoteMTPAddress";
+    public static final String CONFKEY_REMOTE_MTP_PORT = "remoteMTPPort";
+    public static final String CONFKEY_REMOTE_MTP_PROTOCOL = "remoteMTPProtocol";
+    public static final String CONFKEY_REMOTE_PLATFORM_NAME = "remotePlatformName";
+    public static final String CONFKEY_REMOTE_GROUP_COORDINATOR_NAME = "remoteGroupCoordinatorName";
 
     // public static final String CONFKEY_POLLING_INTERVAL = "pollingInterval";
 
@@ -36,5 +36,11 @@ public class JADEBindingConstants {
     public static final String PROPERTY_AGENT_ID = "agentId";
     public static final String PROPERTY_ACTUATE_CHANNEL_UID = "actuateChannelUID";
     public static final String PROPERTY_MEASUREMENT_CHANNEL_UID = "measurementChannelUID";
+
+    public static final String JADE_MTP_CLASSNAME_HTTP = "jade.mtp.http.MessageTransportProtocol";
+    public static final String JADE_MTP_PREFIX_HTTP = "http://";
+    public static final String JADE_MTP_PORT = "7778";
+    public static final String JADE_MTP_SUFFIX = "/acc";
+    public static final String JADE_MTP_STRING_HTTP = JADE_MTP_CLASSNAME_HTTP + "(" + JADE_MTP_PREFIX_HTTP + "%s" + ":" + JADE_MTP_PORT + JADE_MTP_SUFFIX + ")";
 
 }

@@ -12,40 +12,40 @@
 		</properties>
 
 		<config-description>
-		    <parameter name="localHostAddress" type="text">
+		    <parameter name="localMTPAddress" type="text">
                 <context>network_address</context>
-                <label>Local Host Address</label>
-                <description>The local host interface (IP address/hostname) where the platform should bind/listen to. (e.g. 132.252.61.116)</description>
+                <label>Local MTP Address</label>
+                <description>The local host interface (IP address/hostname) where the JADE MTP should bind/listen to. (e.g. 132.252.61.116)</description>
                 <required>true</required>
             </parameter>
-			<parameter name="mtpAddress" type="text">
+			<parameter name="remoteMTPAddress" type="text">
 				<context>network_address</context>
 				<label>MTP Address</label>
-				<description>The address of the JADE MTP (message transport protocol), where the GroupCoordinator agent is available. (e.g. 132.252.61.116)</description>
+				<description>The address of the JADE MTP (message transport protocol), where the GroupCoordinator agent is available. (e.g. 132.252.61.126)</description>
 				<required>true</required>
 			</parameter>
-			<parameter name="mtpPort" type="text">
+			<parameter name="remoteMTPPort" type="text">
                 <context>network_address</context>
                 <label>MTP Port</label>
                 <description>The port of the JADE MTP (message transport protocol), where the GroupCoordinator agent is available. (e.g. 7778)</description>
                 <required>true</required>
             </parameter>
-            <parameter name="mtpProtocol" type="text">
+            <parameter name="remoteMTPProtocol" type="text">
                 <context>network_address</context>
                 <label>MTP Protocol</label>
                 <description>The used protocol of the JADE MTP (message transport protocol). (e.g. HTTP/HTTPS)</description>
                 <required>true</required>
             </parameter>
-            <parameter name="platformName" type="text">
+            <parameter name="remotePlatformName" type="text">
                 <context>network_address</context>
                 <label>Platform Name</label>
-                <description>The name of the JADE platform, where the GroupCoordinator agent is available. (e.g. 132.252.61.116:1099/JADE)</description>
+                <description>The name of the JADE platform, where the GroupCoordinator agent is available. (e.g. 132.252.61.126:1099/JADE)</description>
                 <required>true</required>
             </parameter>
-            <parameter name="centralAgentName" type="text">
+            <parameter name="remoteGroupCoordinatorName" type="text">
                 <context>network_address</context>
-                <label>Central Agent Name</label>
-                <description>The name of the CentralExecutiveAgent. (e.g. CeExAg)</description>
+                <label>GroupCoordinator Agent Name</label>
+                <description>The name of the GroupCoordinator. (e.g. CeExAg)</description>
                 <required>true</required>
             </parameter>
 		</config-description>

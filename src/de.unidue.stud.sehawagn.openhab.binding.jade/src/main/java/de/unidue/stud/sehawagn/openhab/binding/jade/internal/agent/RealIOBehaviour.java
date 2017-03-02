@@ -17,7 +17,6 @@ public class RealIOBehaviour extends AbstractIOReal implements EnergyAgentIO {
     private static final long serialVersionUID = 5143063807591183507L;
 
     private static final long MEASURING_INTERVAL = 1000;
-    private long simulationTimeOffset = 0;
 
     private SmartHomeAgentHandler myAgentHandler;
     private SmartHomeAgent myAgent;
@@ -46,7 +45,7 @@ public class RealIOBehaviour extends AbstractIOReal implements EnergyAgentIO {
             mVoltage = InternalDataModel.VAR_VOLTAGE_DEFAULT;
         }
 
-        System.out.println("SmartHomeAgent-RealIOBehaviour-measurement from openHAB:" + mVoltage);
+        System.out.println("SmartHomeAgent-RealIOBehaviour-measurement:" + mVoltage);
 
         // add measurement to the list
         FixedVariableList newMeasurements = new FixedVariableList();
@@ -84,21 +83,6 @@ public class RealIOBehaviour extends AbstractIOReal implements EnergyAgentIO {
     public void action() {
         setMeasurementsFromSystem(getMeasurementsFromSystem()); // set measurements to agent
         block(MEASURING_INTERVAL);
-    }
-
-    /**
-     * Sets the simulation start time when the simulation starts to set the correct time offset.
-     *
-     * @param simulationStartTime the simulation start time
-     */
-    @Override
-    public void setSimulationStartTime(long simulationStartTime) {
-        simulationTimeOffset = System.currentTimeMillis() - simulationStartTime;
-    }
-
-    @Override
-    public Long getTime() {
-        return System.currentTimeMillis() - simulationTimeOffset;
     }
 
     @Override

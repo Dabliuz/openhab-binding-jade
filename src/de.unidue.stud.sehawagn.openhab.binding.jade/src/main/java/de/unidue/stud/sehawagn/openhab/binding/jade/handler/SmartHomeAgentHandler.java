@@ -65,8 +65,15 @@ public class SmartHomeAgentHandler extends BaseThingHandler implements ChannelMi
         logger.debug("Initializing SmartHomeAgentHandler.");
         Configuration config = getConfig();
 
-        measurementChannelUID = new ChannelUID((String) config.getProperties().get(PROPERTY_MEASUREMENT_CHANNEL_UID));
+        try {
+            measurementChannelUID = new ChannelUID((String) config.getProperties().get(PROPERTY_MEASUREMENT_CHANNEL_UID));
+        } catch (IllegalArgumentException e) {
+            fail("start", e.getMessage());
+
+            return;
+        }
         measurementMirrorChannelUID = new ChannelUID(this.getThing().getUID(), MEASUREMENT_MIRROR_CHANNEL);
+
         actuateMirrorChannelUID = new ChannelUID(this.getThing().getUID(), ACTUATE_MIRROR_CHANNEL);
 
         State currentState = null;
@@ -81,28 +88,36 @@ public class SmartHomeAgentHandler extends BaseThingHandler implements ChannelMi
         String errorCause = null;
 
         try {
-            myAgent = getBridgeHandler().startAgent((String) config.getProperties().get(PROPERTY_AGENT_ID), AGENT_CLASS,
-                    this);
+            if (getBridgeHandler() == null) {
+                errorCause = "no bridge given";
+            } else {
+                myAgent = getBridgeHandler().startAgent((String) config.getProperties().get(PROPERTY_AGENT_ID), AGENT_CLASS,
+                        this);
+            }
         } catch (StaleProxyException e) {
             errorCause = e.getMessage();
         }
         if (myAgent != null) {
             updateStatus(ThingStatus.ONLINE);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-                    "agent start failed: " + errorCause);
-
+            fail("start", errorCause);
         }
+    }
+
+    private void fail(String when, String cause) {
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
+                "agent " + when + " failed: " + cause);
     }
 
     @Override
     public void dispose() {
         logger.debug("Disposing SmartHomeAgentHandler.");
         try {
-            getBridgeHandler().stopAgent(this);
+            if (getBridgeHandler() != null) {
+                getBridgeHandler().stopAgent(this);
+            }
         } catch (StaleProxyException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-                    "agent dispose failed: " + e.getMessage());
+            fail("dispose", e.getMessage());
             e.printStackTrace();
         }
     }

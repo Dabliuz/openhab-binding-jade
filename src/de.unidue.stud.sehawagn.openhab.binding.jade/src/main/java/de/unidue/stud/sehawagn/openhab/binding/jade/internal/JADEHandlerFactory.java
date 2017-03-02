@@ -7,6 +7,8 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Sets;
 
@@ -16,53 +18,54 @@ import de.unidue.stud.sehawagn.openhab.binding.jade.handler.SmartHomeAgentHandle
 import de.unidue.stud.sehawagn.openhab.channelmirror.ChannelMirror;
 
 public class JADEHandlerFactory extends BaseThingHandlerFactory {
+    private final Logger logger = LoggerFactory.getLogger(JADEHandlerFactory.class);
 
-	private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets
-			.union(JADEBridgeHandler.SUPPORTED_THING_TYPES, SmartHomeAgentHandler.SUPPORTED_THING_TYPES);
-	private ChannelMirror channelMirror = null;
+    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets
+            .union(JADEBridgeHandler.SUPPORTED_THING_TYPES, SmartHomeAgentHandler.SUPPORTED_THING_TYPES);
+    private ChannelMirror channelMirror = null;
 
-	@Override
-	public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-		return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
-	}
+    @Override
+    public boolean supportsThingType(ThingTypeUID thingTypeUID) {
+        return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
+    }
 
-	@Override
-	protected ThingHandler createHandler(Thing thing) {
-		ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+    @Override
+    protected ThingHandler createHandler(Thing thing) {
+        ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-		if (channelMirror == null) {
-			System.err.println("No ChannelMirror available, refraining to create Things or Bridges");
-			return null;
-		}
+        if (channelMirror == null) {
+            logger.error("No ChannelMirror available, refraining to create Things or Bridges");
+            return null;
+        }
 
-		if (thingTypeUID.equals(JADEBindingConstants.THING_TYPE_JADE_CONTAINER)) {
-			if (thing instanceof Bridge) {
+        if (thingTypeUID.equals(JADEBindingConstants.THING_TYPE_JADE_CONTAINER)) {
+            if (thing instanceof Bridge) {
 
-				JADEBridgeHandler handler = new JADEBridgeHandler((Bridge) thing, channelMirror);
+                JADEBridgeHandler handler = new JADEBridgeHandler((Bridge) thing, channelMirror);
 
-				return handler;
-			} else {
-				return null;
-			}
-		} else if (thingTypeUID.equals(JADEBindingConstants.THING_TYPE_JADE_SMARTHOMEAGENT)) {
-			return new SmartHomeAgentHandler(thing, channelMirror);
-		} else {
-			return null;
-		}
-	}
+                return handler;
+            } else {
+                return null;
+            }
+        } else if (thingTypeUID.equals(JADEBindingConstants.THING_TYPE_JADE_SMARTHOMEAGENT)) {
+            return new SmartHomeAgentHandler(thing, channelMirror);
+        } else {
+            return null;
+        }
+    }
 
-	/*
-	 * this is called automagically on activation by the OSGi framework (see OSGI-INF/JADEHandlerFactory)
-	 */
-	protected void setChannelMirror(ChannelMirror channelMirror) {
-		this.channelMirror = channelMirror;
-	}
+    /*
+     * this is called automagically on activation by the OSGi framework (see OSGI-INF/JADEHandlerFactory)
+     */
+    protected void setChannelMirror(ChannelMirror channelMirror) {
+        this.channelMirror = channelMirror;
+    }
 
-	/*
-	 * this is called automagically on deactivation by the OSGi framework (see OSGI-INF/JADEHandlerFactory)
-	 */
-	protected void unsetChannelMirror(ChannelMirror channelMirror) {
-		this.channelMirror = null;
-	}
+    /*
+     * this is called automagically on deactivation by the OSGi framework (see OSGI-INF/JADEHandlerFactory)
+     */
+    protected void unsetChannelMirror(ChannelMirror channelMirror) {
+        this.channelMirror = null;
+    }
 
 }
