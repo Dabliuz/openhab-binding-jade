@@ -18,6 +18,8 @@
 	<modules>
 		<module>./de.unidue.stud.sehawagn.openhab.binding.jade</module>
 		<module>./de.unidue.stud.sehawagn.openhab.binding.jade.target</module>
+		<module>./de.unidue.stud.sehawagn.openhab.binding.jadelibs</module>
+        <module>./de.unidue.stud.sehawagn.openhab.binding.jadelibs.target</module>
 	</modules>
 
 	<build>
