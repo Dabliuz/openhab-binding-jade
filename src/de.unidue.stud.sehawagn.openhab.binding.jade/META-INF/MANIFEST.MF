@@ -5,14 +5,22 @@ Bundle-SymbolicName: de.unidue.stud.sehawagn.openhab.binding.jade
 Bundle-Vendor: Eclipse.org/SmartHome
 Bundle-Version: 2.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Bundle-ClassPath: .,
-  lib/jade.jar
+Bundle-ClassPath: .
 Import-Package: com.google.common.collect;version="10.0.1",
+ hygrid.agent,
+ hygrid.agent.monitoring,
+ jade.content.lang.sl,
+ jade.core,
+ jade.core.behaviours,
+ jade.lang.acl,
+ jade.util.leap,
+ jade.wrapper,
  org.apache.commons.codec.binary,
  org.apache.commons.io,
  org.apache.commons.lang,
  org.eclipse.smarthome.config.core,
  org.eclipse.smarthome.config.core.status,
+ org.eclipse.smarthome.config.discovery,
  org.eclipse.smarthome.core.common.registry,
  org.eclipse.smarthome.core.events,
  org.eclipse.smarthome.core.items,
@@ -31,5 +39,4 @@ Service-Component: OSGI-INF/*.xml
 Bundle-ActivationPolicy: lazy
 Export-Package: de.unidue.stud.sehawagn.openhab.binding.jade,
  de.unidue.stud.sehawagn.openhab.binding.jade.handler
-Require-Bundle:  org.eclipse.smarthome.config.discovery,
- de.unidue.stud.sehawagn.openhab.binding.jadelibs
+Require-Bundle: de.unidue.stud.sehawagn.openhab.binding.jadelibs

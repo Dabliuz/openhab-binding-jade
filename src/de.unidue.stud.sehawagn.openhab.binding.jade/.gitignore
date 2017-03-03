@@ -1,7 +1,5 @@
-.project
 target/
 .settings
-.classpath
 
 # because of unclear copyright:
 lib/
