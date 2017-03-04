@@ -1,5 +1,8 @@
 package de.unidue.stud.sehawagn.openhab.binding.jade.internal.agent;
 
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceException;
+
 import de.unidue.stud.sehawagn.openhab.binding.jade.handler.SmartHomeAgentHandler;
 import hygrid.agent.AbstractEnergyAgent;
 import hygrid.agent.AbstractIOReal;
@@ -13,10 +16,12 @@ import hygrid.agent.monitoring.MonitoringListenerForProxy;
 import hygrid.env.agentConfig.dataModel.AgentConfig;
 import hygrid.env.agentConfig.dataModel.AgentOperatingMode;
 import hygrid.ontology.HyGridOntology;
+import jade.content.ContentManager;
 import jade.content.lang.sl.SLCodec;
 import jade.core.AID;
 import jade.core.behaviours.Behaviour;
 import jade.lang.acl.MessageTemplate;
+import jade.osgi.OSGIBridgeHelper;
 
 /**
  * An energy agent, representing a "smart home", using the configured EOM.
@@ -49,9 +54,19 @@ public class SmartHomeAgent extends AbstractEnergyAgent {
             }
         }
 
+        try {
+            OSGIBridgeHelper afHelper = (OSGIBridgeHelper) getHelper(OSGIBridgeHelper.SERVICE_NAME);
+            afHelper.init(this);
+            BundleContext context = afHelper.getBundleContext();
+            System.out.println(this.getLocalName() + " is packaged in bundle " + context.getBundle().getSymbolicName());
+        } catch (ServiceException | jade.core.ServiceException e) {
+        }
+
+        ContentManager contentManager = this.getContentManager();
+
         // prepare communication with other platforms
-        this.getContentManager().registerLanguage(new SLCodec());
-        this.getContentManager().registerOntology(HyGridOntology.getInstance());
+        contentManager.registerLanguage(new SLCodec());
+        contentManager.registerOntology(HyGridOntology.getInstance());
 
         // If in testbed messages from the central agent are handled by a different behaviour
         AgentOperatingMode operatingMode = this.getAgentOperatingMode();

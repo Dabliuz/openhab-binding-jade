@@ -15,6 +15,9 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.ConfigStatusBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,6 +29,7 @@ import jade.core.Agent;
 import jade.core.Profile;
 import jade.core.ProfileImpl;
 import jade.core.Runtime;
+import jade.osgi.service.runtime.JadeRuntimeService;
 import jade.util.leap.Properties;
 import jade.wrapper.AgentController;
 import jade.wrapper.ContainerController;
@@ -100,12 +104,35 @@ public class JADEBridgeHandler extends ConfigStatusBridgeHandler {
         Profile profile = new ProfileImpl(props);
         Runtime.instance().setCloseVM(false);
         if (profile.getBooleanProperty(Profile.MAIN, true)) {
-            container = Runtime.instance().createMainContainer(profile);
+//            container = Runtime.instance().createMainContainer(profile);
         } else {
-            container = Runtime.instance().createAgentContainer(profile);
+//            container = Runtime.instance().createAgentContainer(profile);
         }
 
         // Runtime.instance().invokeOnTermination(new Terminator());
+    }
+
+    public AgentController startAgent(String agentName, String agentClassName,
+            SmartHomeAgentHandler smartHomeAgentHandler) throws StaleProxyException {
+
+        BundleContext context = FrameworkUtil.getBundle(this.getClass()).getBundleContext();
+
+        ServiceReference<?> serviceReference = context.getServiceReference(JadeRuntimeService.class.getName());
+
+        ServiceReference<JadeRuntimeService> reference = (ServiceReference<JadeRuntimeService>) serviceReference;
+
+        JadeRuntimeService jrs = context.getService(reference);
+        AgentController ac = null;
+        try {
+            System.out.println("Hiermit kreiere ich einen neuen Agenten.");
+            ac = jrs.createNewAgent(agentName, agentClassName, null, "de.unidue.stud.sehawagn.openhab.binding.jade");
+            ac.start();
+            System.out.println("Agent sollte gestartet worden sein.");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return ac;
     }
 
     public AgentController startAgent(String agentName, Class<? extends Agent> agentClass,
@@ -114,6 +141,7 @@ public class JADEBridgeHandler extends ConfigStatusBridgeHandler {
             logger.error("Container not yet ready, please try again later");
             return null;
         }
+
         AgentController agent = myAgents.get(smartHomeAgentHandler.hashCode());
 
         if (agent == null) {

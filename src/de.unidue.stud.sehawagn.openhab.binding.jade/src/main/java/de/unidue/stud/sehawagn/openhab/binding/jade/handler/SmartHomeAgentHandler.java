@@ -24,17 +24,16 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Sets;
 
-import de.unidue.stud.sehawagn.openhab.binding.jade.internal.agent.SmartHomeAgent;
 import de.unidue.stud.sehawagn.openhab.channelmirror.ChannelMirror;
 import de.unidue.stud.sehawagn.openhab.channelmirror.ChannelMirrorReceiver;
-import jade.core.Agent;
 import jade.wrapper.AgentController;
 import jade.wrapper.StaleProxyException;
 
 public class SmartHomeAgentHandler extends BaseThingHandler implements ChannelMirrorReceiver {
     public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = Sets.newHashSet(THING_TYPE_JADE_SMARTHOMEAGENT);
 
-    private static final Class<? extends Agent> AGENT_CLASS = SmartHomeAgent.class;
+//    private static final Class<? extends Agent> AGENT_CLASS = SmartHomeAgent.class;
+    private static final String AGENT_CLASS_NAME = "de.unidue.stud.sehawagn.openhab.binding.jade.internal.agent.SmartHomeAgent";
     private static final String MEASUREMENT_MIRROR_CHANNEL = CHANNEL_POWER; // the channel where the value from the
                                                                             // mirrored
     // channel is displayed in OpenHAB
@@ -91,7 +90,9 @@ public class SmartHomeAgentHandler extends BaseThingHandler implements ChannelMi
             if (getBridgeHandler() == null) {
                 errorCause = "no bridge given";
             } else {
-                myAgent = getBridgeHandler().startAgent((String) config.getProperties().get(PROPERTY_AGENT_ID), AGENT_CLASS,
+//                myAgent = getBridgeHandler().startAgent((String) config.getProperties().get(PROPERTY_AGENT_ID), AGENT_CLASS,
+//                        this);
+                myAgent = getBridgeHandler().startAgent((String) config.getProperties().get(PROPERTY_AGENT_ID), AGENT_CLASS_NAME,
                         this);
             }
         } catch (StaleProxyException e) {
