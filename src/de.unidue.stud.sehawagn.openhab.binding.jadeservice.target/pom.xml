@@ -5,8 +5,8 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<relativePath>../pom.xml</relativePath>
-		<groupId>de.unidue.stud.sehawagn.openhab.binding.jadeservice</groupId>
-		<artifactId>de.unidue.stud.sehawagn.openhab.binding.jadeservice.parent</artifactId>
+		<groupId>de.unidue.stud.sehawagn.openhab.binding.jade</groupId>
+		<artifactId>de.unidue.stud.sehawagn.openhab.binding.jade.parent</artifactId>
 		<version>2.0.0-SNAPSHOT</version>
 	</parent>
 
