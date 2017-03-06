@@ -1,5 +1,2 @@
 target/
 .settings
-
-# because of unclear copyright:
-lib/

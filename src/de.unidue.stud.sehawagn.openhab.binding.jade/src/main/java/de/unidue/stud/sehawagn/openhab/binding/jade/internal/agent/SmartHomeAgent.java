@@ -1,8 +1,5 @@
 package de.unidue.stud.sehawagn.openhab.binding.jade.internal.agent;
 
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceException;
-
 import de.unidue.stud.sehawagn.openhab.binding.jade.handler.SmartHomeAgentHandler;
 import hygrid.agent.AbstractEnergyAgent;
 import hygrid.agent.AbstractIOReal;
@@ -21,7 +18,6 @@ import jade.content.lang.sl.SLCodec;
 import jade.core.AID;
 import jade.core.behaviours.Behaviour;
 import jade.lang.acl.MessageTemplate;
-import jade.osgi.OSGIBridgeHelper;
 
 /**
  * An energy agent, representing a "smart home", using the configured EOM.
@@ -54,14 +50,6 @@ public class SmartHomeAgent extends AbstractEnergyAgent {
             }
         }
 
-        try {
-            OSGIBridgeHelper afHelper = (OSGIBridgeHelper) getHelper(OSGIBridgeHelper.SERVICE_NAME);
-            afHelper.init(this);
-            BundleContext context = afHelper.getBundleContext();
-            System.out.println(this.getLocalName() + " is packaged in bundle " + context.getBundle().getSymbolicName());
-        } catch (ServiceException | jade.core.ServiceException e) {
-        }
-
         ContentManager contentManager = this.getContentManager();
 
         // prepare communication with other platforms
@@ -70,7 +58,6 @@ public class SmartHomeAgent extends AbstractEnergyAgent {
 
         // If in testbed messages from the central agent are handled by a different behaviour
         AgentOperatingMode operatingMode = this.getAgentOperatingMode();
-
         if (operatingMode == AgentOperatingMode.TestBedSimulation || operatingMode == AgentOperatingMode.TestBedReal
                 || operatingMode == AgentOperatingMode.RealSystem) {
             AID centralAgent = this.getAgentConfigController().getCentralAgentAID();
@@ -79,7 +66,7 @@ public class SmartHomeAgent extends AbstractEnergyAgent {
 
         // initialize SimulationConnector
         if (operatingMode == AgentOperatingMode.TestBedReal || operatingMode == AgentOperatingMode.RealSystem) {
-            this.simulationConnector = new SimulationConnectorRemoteForIOReal(this, this.getInternalDataModel());
+            this.simulationConnector = new SimulationConnectorRemoteForIOReal(this);
         }
 
         Behaviour ioBehaviour = (Behaviour) this.getEnergyAgentIO();
