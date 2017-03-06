@@ -34,10 +34,35 @@ Export-Package: jade.content,
  jade.util,
  jade.util.leap,
  jade.wrapper,
- jade.wrapper.gateway
+ jade.wrapper.gateway,
+ hygrid.agent,
+ hygrid.agent.monitoring,
+ hygrid.env.agentConfig.dataModel,
+ agentgui.envModel.graph.networkModel,
+ agentgui.simulationService.transaction,
+ energy,
+ energy.calculations,
+ energy.domain,
+ energy.optionModel,
+ hygrid.agent,
+ hygrid.agent.monitoring,
+ hygrid.env.agentConfig.controller,
+ hygrid.env.agentConfig.dataModel,
+ hygrid.ontology,
+ hygrid.env,
+ agentgui.simulationService.environment,
+ energy.schedule,
+ hygrid.plugin,
+ agentgui.envModel.graph.controller
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .,
- lib/jade.jar
+  lib/jade.jar,
+  lib/AgentGui.jar,
+  lib/eom4AgentGui.jar,
+  lib/AgentHyGrid.jar,
+  lib/jung-api-2.0.1.jar,
+  lib/collections-generic-4.01.jar,
+  lib/jung-graph-impl-2.0.1.jar
 Bundle-Activator: jade.osgi.internal.JadeActivator
 Import-Package: jade.content,
  jade.content.abs,
@@ -71,7 +96,8 @@ Import-Package: jade.content,
  jade.util.leap,
  jade.wrapper,
  jade.wrapper.gateway,
+ org.apache.commons.codec.binary,
+ org.apache.commons.io,
+ org.apache.commons.lang,
  org.osgi.framework;version="1.8.0",
  org.osgi.service.component.annotations;version="1.2.0"
-
-

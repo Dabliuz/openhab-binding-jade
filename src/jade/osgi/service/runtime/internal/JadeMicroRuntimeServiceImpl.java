@@ -7,6 +7,7 @@ import jade.core.MicroRuntime;
 import jade.osgi.service.agentFactory.AgentFactoryService;
 import jade.osgi.service.runtime.JadeRuntimeService;
 import jade.util.Logger;
+import jade.util.leap.Properties;
 import jade.wrapper.AgentController;
 
 public class JadeMicroRuntimeServiceImpl implements JadeRuntimeService {
@@ -85,6 +86,12 @@ public class JadeMicroRuntimeServiceImpl implements JadeRuntimeService {
         System.out.println(vector instanceof String[]);
         vector = null;
         System.out.println(vector instanceof String[]);
+    }
+
+    @Override
+    public void startPlatform(Properties jadeProperties) throws Exception {
+        // TODO Auto-generated method stub
+
     }
 
 }

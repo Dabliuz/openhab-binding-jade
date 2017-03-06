@@ -1,12 +1,5 @@
 package jade.osgi.internal;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.util.Iterator;
-import java.util.Map.Entry;
-import java.util.Set;
-
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -16,26 +9,19 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceFactory;
 import org.osgi.framework.ServiceRegistration;
 
-import jade.core.MicroRuntime;
-import jade.core.Profile;
-import jade.core.ProfileImpl;
-import jade.core.Runtime;
 import jade.osgi.service.runtime.JadeRuntimeService;
 import jade.osgi.service.runtime.internal.JadeRuntimeServiceFactory;
 import jade.osgi.service.runtime.internal.OsgiEventHandler;
 import jade.osgi.service.runtime.internal.OsgiEventHandlerFactory;
 import jade.util.Logger;
 import jade.util.ObjectManager;
-import jade.util.leap.Properties;
 import jade.wrapper.ContainerController;
 
 public class JadeActivator implements BundleActivator, BundleListener {
 
-    private static final String PROFILE_PARAMETER_PREFIX = "jade.";
-    private static final String JADE_CONF = PROFILE_PARAMETER_PREFIX + "conf";
     private static final String RESTART_AGENTS_ON_UPDATE_KEY = "restart-agents-on-update";
     private static final String RESTART_AGENTS_TIMEOUT_KEY = "restart-agents-timeout";
-    private static final String SPLIT_CONTAINER_KEY = "split-container";
+    public static final String SPLIT_CONTAINER_KEY = "split-container";
 
     private static final boolean RESTART_AGENTS_ON_UPDATE_DEFAULT = true;
     private static final long RESTART_AGENTS_TIMEOUT_DEFAULT = 10000;
@@ -82,17 +68,6 @@ public class JadeActivator implements BundleActivator, BundleListener {
             agentLoader = new OSGIAgentLoader(context, agentManager);
             ObjectManager.addLoader(ObjectManager.AGENT_TYPE, agentLoader);
 
-            // Initialize jade container profile and start it
-            Properties jadeProperties = new Properties();
-            addJadeSystemProperties(jadeProperties);
-            addJadeFileProperties(jadeProperties);
-            addOSGIBridgeService(jadeProperties);
-            if (isSplitContainer()) {
-                startJadeSplitContainer(jadeProperties);
-            } else {
-                startJadeContainer(jadeProperties);
-            }
-
             // Register JRS service
             registerJadeRuntimeService();
 
@@ -109,15 +84,15 @@ public class JadeActivator implements BundleActivator, BundleListener {
     @Override
     public void stop(BundleContext context) throws Exception {
         synchronized (terminationLock) {
-            if (isSplitContainer()) {
-                MicroRuntime.stopJADE();
-            } else {
-                try {
-                    // If JADE has already termnated we get an exception and simply ignore it
-                    container.kill();
-                } catch (Exception e) {
-                }
+//            if (isSplitContainer()) {
+//                MicroRuntime.stopJADE();
+//            } else {
+            try {
+                // If JADE has already termnated we get an exception and simply ignore it
+                container.kill();
+            } catch (Exception e) {
             }
+//            }
         }
         handlerFactory.stop();
         if (jrs != null) {
@@ -150,72 +125,6 @@ public class JadeActivator implements BundleActivator, BundleListener {
         handler.handleEvent(event);
     }
 
-    private void addOSGIBridgeService(Properties pp) {
-        String services = pp.getProperty(Profile.SERVICES);
-        String defaultServices = isSplitContainer() ? ""
-                : ";" + jade.core.mobility.AgentMobilityService.class.getName() + ";"
-                        + jade.core.event.NotificationService.class.getName();
-        String serviceName = isSplitContainer() ? OSGIBridgeFEService.class.getName()
-                : OSGIBridgeService.class.getName();
-        if (services == null) {
-            pp.setProperty(Profile.SERVICES, serviceName + defaultServices);
-        } else if (services.indexOf(serviceName) == -1) {
-            pp.setProperty(Profile.SERVICES, services + ";" + serviceName);
-        }
-    }
-
-    private void addJadeSystemProperties(Properties props) {
-        Set<Entry<Object, Object>> entrySet = System.getProperties().entrySet();
-        for (Entry<Object, Object> entry : entrySet) {
-            String key = (String) entry.getKey();
-            if (key.startsWith(PROFILE_PARAMETER_PREFIX)) {
-                props.setProperty(key.substring(PROFILE_PARAMETER_PREFIX.length()), (String) entry.getValue());
-            }
-        }
-    }
-
-    private void addJadeFileProperties(Properties props) throws Exception {
-        String profileConf = System.getProperty(JADE_CONF);
-        if (profileConf != null) {
-            // find profile configuration in classpath
-            InputStream input = ClassLoader.getSystemResourceAsStream(profileConf);
-            if (input == null) {
-                File f = new File(profileConf);
-                if (f.exists()) {
-                    input = new FileInputStream(f);
-                }
-            }
-            if (input != null) {
-                Properties pp = new Properties();
-                pp.load(input);
-                Iterator<Object> it = pp.keySet().iterator();
-                while (it.hasNext()) {
-                    String key = (String) it.next();
-                    if (!props.containsKey(key)) {
-                        props.setProperty(key, pp.getProperty(key));
-                    }
-                }
-
-            }
-        }
-
-    }
-
-    private void startJadeContainer(Properties props) {
-        Profile profile = new ProfileImpl(props);
-        Runtime.instance().setCloseVM(false);
-        if (profile.getBooleanProperty(Profile.MAIN, true)) {
-            container = Runtime.instance().createMainContainer(profile);
-        } else {
-            container = Runtime.instance().createAgentContainer(profile);
-        }
-        Runtime.instance().invokeOnTermination(new Terminator());
-    }
-
-    private void startJadeSplitContainer(Properties jadeProperties) {
-        MicroRuntime.startJADE(jadeProperties, new Terminator());
-    }
-
     private void registerJadeRuntimeService() {
         ServiceFactory<?> factory;
         if (isSplitContainer()) {
@@ -228,30 +137,6 @@ public class JadeActivator implements BundleActivator, BundleListener {
 
     private boolean isSplitContainer() {
         return "true".equalsIgnoreCase(System.getProperty(SPLIT_CONTAINER_KEY));
-    }
-
-    private class Terminator implements Runnable {
-        @Override
-        public void run() {
-            synchronized (terminationLock) {
-                if (!isSplitContainer()) {
-                    Runtime.instance().resetTerminators();
-                }
-                System.out.println("JADE termination invoked!");
-                try {
-                    Bundle myBundle = context.getBundle();
-                    if (myBundle.getState() == Bundle.ACTIVE) {
-                        myBundle.stop(Bundle.STOP_TRANSIENT);
-                    }
-                } catch (IllegalStateException ise) {
-                    // This exception is thrown when jadeOsgi bundle is invalid. This case happens
-                    // when user stop the bundle from the osgi ui. Depends on the execution time of the
-                    // thread listening jade termination, jadeOsgi bundle can be already stopped.
-                } catch (Exception e) {
-                    logger.log(Logger.SEVERE, "Error stopping bundle", e);
-                }
-            }
-        }
     }
 
 }
