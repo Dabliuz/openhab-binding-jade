@@ -1,8 +1,8 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: OHJADEService
-Bundle-SymbolicName: de.unidue.stud.sehawagn.openhab.agentation.service
-Bundle-Version: 1.0.0.qualifier
+Bundle-SymbolicName: de.unidue.stud.sehawagn.openhab.binding.jadeservice
+Bundle-Version: 2.0.0.qualifier
 Export-Package: jade.content,
  jade.content.abs,
  jade.content.frame,
