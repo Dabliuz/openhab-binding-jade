@@ -42,6 +42,6 @@ Service-Component: OSGI-INF/*.xml
 Bundle-ActivationPolicy: lazy
 Export-Package: de.unidue.stud.sehawagn.openhab.binding.jade,
  de.unidue.stud.sehawagn.openhab.binding.jade.handler
-Require-Bundle: de.unidue.stud.sehawagn.openhab.agentation.service
+Require-Bundle: de.unidue.stud.sehawagn.openhab.binding.jadeservice
 Bundle-Activator: de.unidue.stud.sehawagn.openhab.binding.jade.AgentHolderActivator
 
