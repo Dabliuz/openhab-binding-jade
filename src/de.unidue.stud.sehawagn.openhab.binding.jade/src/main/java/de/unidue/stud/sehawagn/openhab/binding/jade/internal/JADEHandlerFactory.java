@@ -55,14 +55,14 @@ public class JADEHandlerFactory extends BaseThingHandlerFactory {
     }
 
     /*
-     * this is called automagically on activation by the OSGi framework (see OSGI-INF/JADEHandlerFactory)
+     * this is called automagically on activation by the OSGi framework (see OSGI-INF/JADEHandlerFactory.xml)
      */
     protected void setChannelMirror(ChannelMirror channelMirror) {
         this.channelMirror = channelMirror;
     }
 
     /*
-     * this is called automagically on deactivation by the OSGi framework (see OSGI-INF/JADEHandlerFactory)
+     * this is called automagically on deactivation by the OSGi framework (see OSGI-INF/JADEHandlerFactory.xml)
      */
     protected void unsetChannelMirror(ChannelMirror channelMirror) {
         this.channelMirror = null;

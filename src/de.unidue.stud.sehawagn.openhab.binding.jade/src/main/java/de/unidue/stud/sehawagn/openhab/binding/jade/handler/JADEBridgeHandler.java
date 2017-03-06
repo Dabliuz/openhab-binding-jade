@@ -27,8 +27,6 @@ import hygrid.env.agentConfig.dataModel.AgentOperatingMode;
 import hygrid.env.agentConfig.dataModel.CentralAgentAID;
 import jade.core.Agent;
 import jade.core.Profile;
-import jade.core.ProfileImpl;
-import jade.core.Runtime;
 import jade.osgi.service.runtime.JadeRuntimeService;
 import jade.util.leap.Properties;
 import jade.wrapper.AgentController;
@@ -48,9 +46,15 @@ public class JADEBridgeHandler extends ConfigStatusBridgeHandler {
 
     private HashMap<Integer, AgentController> myAgents = new HashMap<Integer, AgentController>();
 
+    private BundleContext context;
+
+    private JadeRuntimeService jrs;
+
     public JADEBridgeHandler(Bridge bridge, ChannelMirror channelMirror) {
         super(bridge);
         this.channelMirror = channelMirror;
+        context = FrameworkUtil.getBundle(this.getClass()).getBundleContext();
+
     }
 
     @Override
@@ -101,31 +105,43 @@ public class JADEBridgeHandler extends ConfigStatusBridgeHandler {
     }
 
     private void startJadeContainer(Properties props) {
-        Profile profile = new ProfileImpl(props);
-        Runtime.instance().setCloseVM(false);
-        if (profile.getBooleanProperty(Profile.MAIN, true)) {
-//            container = Runtime.instance().createMainContainer(profile);
-        } else {
-//            container = Runtime.instance().createAgentContainer(profile);
-        }
-
-        // Runtime.instance().invokeOnTermination(new Terminator());
-    }
-
-    public AgentController startAgent(String agentName, String agentClassName,
-            SmartHomeAgentHandler smartHomeAgentHandler) throws StaleProxyException {
-
-        BundleContext context = FrameworkUtil.getBundle(this.getClass()).getBundleContext();
+        System.out.println("Hiermit starte ich einen neuen Container.");
 
         ServiceReference<?> serviceReference = context.getServiceReference(JadeRuntimeService.class.getName());
 
         ServiceReference<JadeRuntimeService> reference = (ServiceReference<JadeRuntimeService>) serviceReference;
 
-        JadeRuntimeService jrs = context.getService(reference);
+        jrs = context.getService(reference);
+        try {
+            jrs.startPlatform(props);
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        System.out.println("Container sollte gestartet sein.");
+
+/*
+Profile profile = new ProfileImpl(props);
+Runtime.instance().setCloseVM(false);
+if (profile.getBooleanProperty(Profile.MAIN, true)) {
+
+
+//            container = Runtime.instance().createMainContainer(profile);
+} else {
+//            container = Runtime.instance().createAgentContainer(profile);
+}
+
+// Runtime.instance().invokeOnTermination(new Terminator());
+ */
+    }
+
+    public AgentController startAgent(String agentName, String agentClassName,
+            SmartHomeAgentHandler smartHomeAgentHandler) throws StaleProxyException {
+
         AgentController ac = null;
         try {
             System.out.println("Hiermit kreiere ich einen neuen Agenten.");
-            ac = jrs.createNewAgent(agentName, agentClassName, null, "de.unidue.stud.sehawagn.openhab.binding.jade");
+            ac = jrs.createNewAgent(agentName, agentClassName, new Object[] { getGeneralAgentConfig(agentName), smartHomeAgentHandler }, "de.unidue.stud.sehawagn.openhab.binding.jade");
             ac.start();
             System.out.println("Agent sollte gestartet worden sein.");
 

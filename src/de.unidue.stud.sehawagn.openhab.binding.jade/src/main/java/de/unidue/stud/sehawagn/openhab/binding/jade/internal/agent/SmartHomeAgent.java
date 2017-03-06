@@ -139,6 +139,7 @@ public class SmartHomeAgent extends AbstractEnergyAgent {
             monitoringBehaviourRT.addMonitoringListener(new MonitoringListenerForProxy(this.simulationConnector));
             this.getInternalDataModel().addObserver(monitoringBehaviourRT);
             this.addBehaviour(monitoringBehaviourRT);
+            monitoringBehaviourRT.getMonitoringStrategyRT().setOptionModelCalculationClass(SmartHomeCalculation.class);
         }
     }
 
