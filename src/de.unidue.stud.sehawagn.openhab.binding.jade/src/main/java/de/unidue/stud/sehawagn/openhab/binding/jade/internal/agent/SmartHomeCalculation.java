@@ -35,27 +35,29 @@ public class SmartHomeCalculation extends AbstractOptionModelCalculation {
 
         if (techInt.getDomainModel() instanceof DefaultDomainModelElectricity) {
             FixedDouble voltageFD = (FixedDouble) this.getVariable(techSysStaEva.getIOlist(), VAR_VOLTAGE);
+            if (voltageFD != null) {
+                double activePower = FAKE_FACTOR * voltageFD.getValue(); // Wirkleistung P
+                double apparentPower = activePower / POWER_FACTOR; // Scheinleistung S
+                double reactivePower = APPARENT_FACTOR * activePower; // Blindleistung Q
 
-            double activePower = FAKE_FACTOR * voltageFD.getValue(); // Wirkleistung P
-            double apparentPower = activePower / POWER_FACTOR; // Scheinleistung S
-            double reactivePower = APPARENT_FACTOR * activePower; // Blindleistung Q
+                // double reactivePower = Math.sqrt(Math.pow(apparentPower, 2) - Math.pow(activePower, 2)); //
+                // Blindleistung
+                // Q
 
-            // double reactivePower = Math.sqrt(Math.pow(apparentPower, 2) - Math.pow(activePower, 2)); // Blindleistung
-            // Q
+                EnergyFlowInWatt currentEnergyFlow = new EnergyFlowInWatt();
+                currentEnergyFlow.setSIPrefix(EnergyUnitFactorPrefixSI.NONE_0);
 
-            EnergyFlowInWatt currentEnergyFlow = new EnergyFlowInWatt();
-            currentEnergyFlow.setSIPrefix(EnergyUnitFactorPrefixSI.NONE_0);
+                PowerType powerType = ((DefaultDomainModelElectricity) techInt.getDomainModel()).getPowerType();
+                if (powerType == PowerType.ActivePower) { // Wirkleistung P
+                    currentEnergyFlow.setValue(activePower);
+                } else if (powerType == PowerType.ApparentPower) { // Scheinleistung S
+                    currentEnergyFlow.setValue(apparentPower);
+                } else if (powerType == PowerType.ReactivePower) { // Blindleistung Q
+                    currentEnergyFlow.setValue(reactivePower);
+                }
 
-            PowerType powerType = ((DefaultDomainModelElectricity) techInt.getDomainModel()).getPowerType();
-            if (powerType == PowerType.ActivePower) { // Wirkleistung P
-                currentEnergyFlow.setValue(activePower);
-            } else if (powerType == PowerType.ApparentPower) { // Scheinleistung S
-                currentEnergyFlow.setValue(apparentPower);
-            } else if (powerType == PowerType.ReactivePower) { // Blindleistung Q
-                currentEnergyFlow.setValue(reactivePower);
+                return currentEnergyFlow;
             }
-
-            return currentEnergyFlow;
         }
         return null;
     }

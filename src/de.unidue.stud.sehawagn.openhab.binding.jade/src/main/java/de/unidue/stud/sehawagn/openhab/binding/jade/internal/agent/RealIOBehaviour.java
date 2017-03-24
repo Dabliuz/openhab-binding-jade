@@ -45,7 +45,7 @@ public class RealIOBehaviour extends AbstractIOReal implements EnergyAgentIO {
             mVoltage = InternalDataModel.VAR_VOLTAGE_DEFAULT;
         }
 
-        System.out.println("SmartHomeAgent-RealIOBehaviour-measurement:" + mVoltage);
+//        System.out.println("SmartHomeAgent-RealIOBehaviour-measurement:" + mVoltage);
 
         // add measurement to the list
         FixedVariableList newMeasurements = new FixedVariableList();
@@ -87,9 +87,7 @@ public class RealIOBehaviour extends AbstractIOReal implements EnergyAgentIO {
 
     @Override
     public FixedVariableList getMeasurementsFromSystem() {
-        if (measurements == null) {
-            measurements = measure();
-        }
+        measurements = measure();
         return measurements;
     }
 

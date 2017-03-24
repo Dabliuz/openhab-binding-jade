@@ -15,8 +15,6 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.ConfigStatusBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +22,6 @@ import de.unidue.stud.sehawagn.openhab.channelmirror.ChannelMirror;
 import hygrid.env.agentConfig.dataModel.AgentConfig;
 import hygrid.env.agentConfig.dataModel.AgentOperatingMode;
 import hygrid.env.agentConfig.dataModel.CentralAgentAID;
-import jade.core.Agent;
 import jade.core.Profile;
 import jade.osgi.service.runtime.JadeRuntimeService;
 import jade.util.leap.Properties;
@@ -36,6 +33,8 @@ public class JADEBridgeHandler extends ConfigStatusBridgeHandler {
 
     public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_JADE_CONTAINER);
 
+    private final static String BUNDLE_SYMBOLIC_NAME = "de.unidue.stud.sehawagn.openhab.binding.jade";
+
     private Logger logger = LoggerFactory.getLogger(JADEBridgeHandler.class);
 
     private ContainerController container = null;
@@ -45,16 +44,12 @@ public class JADEBridgeHandler extends ConfigStatusBridgeHandler {
 
     private HashMap<Integer, AgentController> myAgents = new HashMap<Integer, AgentController>();
 
-    private BundleContext context;
-
     private JadeRuntimeService jrs;
 
     public JADEBridgeHandler(Bridge bridge, ChannelMirror channelMirror, JadeRuntimeService jrs) {
         super(bridge);
         this.channelMirror = channelMirror;
         this.jrs = jrs;
-        context = FrameworkUtil.getBundle(this.getClass()).getBundleContext();
-
     }
 
     @Override
@@ -78,14 +73,17 @@ public class JADEBridgeHandler extends ConfigStatusBridgeHandler {
 
                 jadeProperties.put(Profile.MTPS, String.format(JADE_MTP_STRING_HTTP, getConfig().get(CONFKEY_LOCAL_MTP_ADDRESS)));
 
-                startJadeContainer(jadeProperties);
-
-                updateStatus(ThingStatus.ONLINE);
+                try {
+                    startJadeContainer(jadeProperties);
+                    updateStatus(ThingStatus.ONLINE);
+                    return;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "Cannot start JADE bridge container. Some parameter not given.");
         }
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                "Cannot start JADE bridge container. Some parameter not given.");
     }
 
     @Override
@@ -104,16 +102,10 @@ public class JADEBridgeHandler extends ConfigStatusBridgeHandler {
         }
     }
 
-    private void startJadeContainer(Properties props) {
+    private void startJadeContainer(Properties props) throws Exception {
         System.out.println("Hiermit starte ich einen neuen Container.");
-
         if (jrs != null) {
-            try {
-                jrs.startPlatform(props);
-            } catch (Exception e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+            jrs.startPlatform(props);
         }
         System.out.println("Container sollte gestartet sein.");
 
@@ -135,38 +127,23 @@ if (profile.getBooleanProperty(Profile.MAIN, true)) {
     public AgentController startAgent(String agentName, String agentClassName,
             SmartHomeAgentHandler smartHomeAgentHandler) throws StaleProxyException {
 
-        AgentController ac = null;
-        try {
-            System.out.println("Hiermit kreiere ich einen neuen Agenten.");
-            if (jrs != null) {
-                ac = jrs.createNewAgent(agentName, agentClassName, new Object[] { getGeneralAgentConfig(agentName), smartHomeAgentHandler }, "de.unidue.stud.sehawagn.openhab.binding.jade");
-                ac.start();
-                System.out.println("Agent sollte gestartet worden sein.");
-            } else {
-                logger.error("JADE runtime service == null, agent can't be created");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return ac;
-    }
-
-    public AgentController startAgent(String agentName, Class<? extends Agent> agentClass,
-            SmartHomeAgentHandler smartHomeAgentHandler) throws StaleProxyException {
-        if (container == null) {
-            logger.error("Container not yet ready, please try again later");
-            return null;
-        }
-
         AgentController agent = myAgents.get(smartHomeAgentHandler.hashCode());
-
         if (agent == null) {
-            agent = container.createNewAgent(agentName, agentClass.getName(),
-                    new Object[] { getGeneralAgentConfig(agentName), smartHomeAgentHandler }); //
-            myAgents.put(smartHomeAgentHandler.hashCode(), agent);
-            agent.start();
-        }
 
+            try {
+                System.out.println("Hiermit kreiere ich einen neuen Agenten.");
+                if (jrs != null) {
+                    agent = jrs.createNewAgent(agentName, agentClassName, new Object[] { getGeneralAgentConfig(agentName), smartHomeAgentHandler }, BUNDLE_SYMBOLIC_NAME);
+                    myAgents.put(smartHomeAgentHandler.hashCode(), agent);
+                    agent.start();
+                    System.out.println("Agent sollte gestartet worden sein.");
+                } else {
+                    logger.error("JADE runtime service == null, agent can't be created, please try again later");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         return agent;
     }
 

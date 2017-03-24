@@ -90,8 +90,6 @@ public class SmartHomeAgentHandler extends BaseThingHandler implements ChannelMi
             if (getBridgeHandler() == null) {
                 errorCause = "no bridge given";
             } else {
-//                myAgent = getBridgeHandler().startAgent((String) config.getProperties().get(PROPERTY_AGENT_ID), AGENT_CLASS,
-//                        this);
                 myAgent = getBridgeHandler().startAgent((String) config.getProperties().get(PROPERTY_AGENT_ID), AGENT_CLASS_NAME,
                         this);
             }

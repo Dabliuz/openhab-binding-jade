@@ -11,12 +11,10 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
 import jade.core.Agent;
-import jade.core.MicroRuntime;
 import jade.core.Profile;
 import jade.core.ProfileImpl;
 import jade.core.Runtime;
 import jade.osgi.internal.AgentManager;
-import jade.osgi.internal.OSGIBridgeFEService;
 import jade.osgi.internal.OSGIBridgeService;
 import jade.osgi.service.agentFactory.AgentFactoryService;
 import jade.osgi.service.runtime.JadeRuntimeService;
@@ -28,7 +26,6 @@ import jade.wrapper.ContainerController;
 public class JadeRuntimeServiceImpl implements JadeRuntimeService {
 
     private static final String PROFILE_PARAMETER_PREFIX = "jade.";
-    private static final String SPLIT_CONTAINER_KEY = "split-container";
     private static final String JADE_CONF = PROFILE_PARAMETER_PREFIX + "conf";
 
     private ContainerController container;
@@ -113,21 +110,16 @@ public class JadeRuntimeServiceImpl implements JadeRuntimeService {
         addJadeSystemProperties(jadeProperties);
         addJadeFileProperties(jadeProperties);
         addOSGIBridgeService(jadeProperties);
-        if (isSplitContainer()) {
-            startJadeSplitContainer(jadeProperties);
-        } else {
-            startJadeContainer(jadeProperties);
-        }
+
+        startJadeContainer(jadeProperties);
 
     }
 
     private void addOSGIBridgeService(Properties pp) {
         String services = pp.getProperty(Profile.SERVICES);
-        String defaultServices = isSplitContainer() ? ""
-                : ";" + jade.core.mobility.AgentMobilityService.class.getName() + ";"
-                        + jade.core.event.NotificationService.class.getName();
-        String serviceName = isSplitContainer() ? OSGIBridgeFEService.class.getName()
-                : OSGIBridgeService.class.getName();
+        String defaultServices = ";" + jade.core.mobility.AgentMobilityService.class.getName() + ";"
+                + jade.core.event.NotificationService.class.getName();
+        String serviceName = OSGIBridgeService.class.getName();
         if (services == null) {
             pp.setProperty(Profile.SERVICES, serviceName + defaultServices);
         } else if (services.indexOf(serviceName) == -1) {
@@ -183,21 +175,11 @@ public class JadeRuntimeServiceImpl implements JadeRuntimeService {
         Runtime.instance().invokeOnTermination(new Terminator());
     }
 
-    private void startJadeSplitContainer(Properties jadeProperties) {
-        MicroRuntime.startJADE(jadeProperties, new Terminator());
-    }
-
-    private boolean isSplitContainer() {
-        return "true".equalsIgnoreCase(System.getProperty(SPLIT_CONTAINER_KEY));
-    }
-
     private class Terminator implements Runnable {
         @Override
         public void run() {
             synchronized (terminationLock) {
-                if (!isSplitContainer()) {
-                    Runtime.instance().resetTerminators();
-                }
+                Runtime.instance().resetTerminators();
                 System.out.println("JADE termination invoked!");
                 try {
 
