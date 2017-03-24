@@ -39,14 +39,10 @@ public class JadeRuntimeServiceImpl implements JadeRuntimeService {
 
     private static Logger logger = Logger.getMyLogger(JadeRuntimeServiceImpl.class.getName());
 
+    /*
+     * called automagically by OSGi
+     */
     public JadeRuntimeServiceImpl() {
-        ;
-    }
-
-    public JadeRuntimeServiceImpl(ContainerController container, AgentManager agentManager, Bundle bundle) {
-        this.container = container;
-        this.agentManager = agentManager;
-        this.bundle = bundle;
     }
 
     @Override

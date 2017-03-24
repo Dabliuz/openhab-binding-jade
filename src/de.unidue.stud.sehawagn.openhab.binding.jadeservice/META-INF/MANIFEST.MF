@@ -97,3 +97,5 @@ Import-Package: jade.content,
  org.apache.commons.io,
  org.apache.commons.lang,
  org.osgi.framework;version="1.8.0"
+Service-Component: OSGI-INF/*.xml
+Bundle-ActivationPolicy: lazy

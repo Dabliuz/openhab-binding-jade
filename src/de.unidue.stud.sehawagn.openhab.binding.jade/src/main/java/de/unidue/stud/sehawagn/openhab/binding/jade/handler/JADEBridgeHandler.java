@@ -17,7 +17,6 @@ import org.eclipse.smarthome.core.thing.binding.ConfigStatusBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
-import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,9 +49,10 @@ public class JADEBridgeHandler extends ConfigStatusBridgeHandler {
 
     private JadeRuntimeService jrs;
 
-    public JADEBridgeHandler(Bridge bridge, ChannelMirror channelMirror) {
+    public JADEBridgeHandler(Bridge bridge, ChannelMirror channelMirror, JadeRuntimeService jrs) {
         super(bridge);
         this.channelMirror = channelMirror;
+        this.jrs = jrs;
         context = FrameworkUtil.getBundle(this.getClass()).getBundleContext();
 
     }
@@ -107,12 +107,7 @@ public class JADEBridgeHandler extends ConfigStatusBridgeHandler {
     private void startJadeContainer(Properties props) {
         System.out.println("Hiermit starte ich einen neuen Container.");
 
-        ServiceReference<?> serviceReference = context.getServiceReference(JadeRuntimeService.class.getName());
-
-        ServiceReference<JadeRuntimeService> reference = (ServiceReference<JadeRuntimeService>) serviceReference;
-        // TODO replace this by declarative services
-        if (reference != null) {
-            jrs = context.getService(reference);
+        if (jrs != null) {
             try {
                 jrs.startPlatform(props);
             } catch (Exception e) {

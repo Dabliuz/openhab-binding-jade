@@ -6,11 +6,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.BundleListener;
 import org.osgi.framework.Constants;
-import org.osgi.framework.ServiceFactory;
-import org.osgi.framework.ServiceRegistration;
 
-import jade.osgi.service.runtime.JadeRuntimeService;
-import jade.osgi.service.runtime.internal.JadeRuntimeServiceFactory;
 import jade.osgi.service.runtime.internal.OsgiEventHandler;
 import jade.osgi.service.runtime.internal.OsgiEventHandlerFactory;
 import jade.util.Logger;
@@ -35,7 +31,6 @@ public class JadeActivator implements BundleActivator, BundleListener {
     private static Logger logger = Logger.getMyLogger(JadeActivator.class.getName());
 
     private Object terminationLock = new Object();
-    private ServiceRegistration<?> jrs;
     private OSGIAgentLoader agentLoader;
 
     @Override
@@ -68,9 +63,6 @@ public class JadeActivator implements BundleActivator, BundleListener {
             agentLoader = new OSGIAgentLoader(context, agentManager);
             ObjectManager.addLoader(ObjectManager.AGENT_TYPE, agentLoader);
 
-            // Register JRS service
-            registerJadeRuntimeService();
-
             // Listen to bundle events
             context.addBundleListener(this);
 
@@ -84,20 +76,14 @@ public class JadeActivator implements BundleActivator, BundleListener {
     @Override
     public void stop(BundleContext context) throws Exception {
         synchronized (terminationLock) {
-//            if (isSplitContainer()) {
-//                MicroRuntime.stopJADE();
-//            } else {
             try {
                 // If JADE has already terminated we get an exception and simply ignore it
                 container.kill();
             } catch (Exception e) {
             }
-//            }
         }
         handlerFactory.stop();
-        if (jrs != null) {
-            jrs.unregister();
-        }
+
         context.removeBundleListener(this);
         if (agentLoader != null && !ObjectManager.removeLoader(ObjectManager.AGENT_TYPE, agentLoader)) {
             logger.log(Logger.SEVERE, "Error removing osgi agent loader");
@@ -123,20 +109,6 @@ public class JadeActivator implements BundleActivator, BundleListener {
         OsgiEventHandler handler = handlerFactory.getOsgiEventHandler(b.getSymbolicName(),
                 b.getHeaders().get(Constants.BUNDLE_VERSION));
         handler.handleEvent(event);
-    }
-
-    private void registerJadeRuntimeService() {
-        ServiceFactory<?> factory;
-        if (isSplitContainer()) {
-            factory = new JadeRuntimeServiceFactory(agentManager);
-        } else {
-            factory = new JadeRuntimeServiceFactory(container, agentManager);
-        }
-        jrs = context.registerService(JadeRuntimeService.class.getName(), factory, null);
-    }
-
-    private boolean isSplitContainer() {
-        return "true".equalsIgnoreCase(System.getProperty(SPLIT_CONTAINER_KEY));
     }
 
 }

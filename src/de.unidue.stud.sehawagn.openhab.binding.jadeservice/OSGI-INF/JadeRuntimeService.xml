@@ -8,14 +8,14 @@
     http://www.eclipse.org/legal/epl-v10.html
 
 -->
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="de.unidue.stud.sehawagn.openhab.binding.jade.internal.JADEHandlerFactory">
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" immediate="true" name="jade.osgi.service.runtime.JadeRuntimeService">
 
-   <implementation class="de.unidue.stud.sehawagn.openhab.binding.jade.internal.JADEHandlerFactory"/>
+   <implementation class="jade.osgi.service.runtime.internal.JadeRuntimeServiceImpl"/>
+<!--
    <reference bind="setChannelMirror"  unbind="unsetChannelMirror" cardinality="1..1" interface="de.unidue.stud.sehawagn.openhab.channelmirror.ChannelMirror" name="ChannelMirror" />
-   <reference bind="setJadeRuntimeService"  unbind="unsetJadeRuntimeService" cardinality="1..1" interface="jade.osgi.service.runtime.JadeRuntimeService" name="JadeRuntimeService" />
-
+-->
    <service>
-      <provide interface="org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory"/>
+      <provide interface="jade.osgi.service.runtime.JadeRuntimeService"/>
    </service>
 
 </scr:component>

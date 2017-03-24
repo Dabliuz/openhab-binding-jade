@@ -16,6 +16,7 @@ import de.unidue.stud.sehawagn.openhab.binding.jade.JADEBindingConstants;
 import de.unidue.stud.sehawagn.openhab.binding.jade.handler.JADEBridgeHandler;
 import de.unidue.stud.sehawagn.openhab.binding.jade.handler.SmartHomeAgentHandler;
 import de.unidue.stud.sehawagn.openhab.channelmirror.ChannelMirror;
+import jade.osgi.service.runtime.JadeRuntimeService;
 
 public class JADEHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(JADEHandlerFactory.class);
@@ -23,6 +24,8 @@ public class JADEHandlerFactory extends BaseThingHandlerFactory {
     private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets
             .union(JADEBridgeHandler.SUPPORTED_THING_TYPES, SmartHomeAgentHandler.SUPPORTED_THING_TYPES);
     private ChannelMirror channelMirror = null;
+
+    private JadeRuntimeService jrs;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -41,7 +44,7 @@ public class JADEHandlerFactory extends BaseThingHandlerFactory {
         if (thingTypeUID.equals(JADEBindingConstants.THING_TYPE_JADE_CONTAINER)) {
             if (thing instanceof Bridge) {
 
-                JADEBridgeHandler handler = new JADEBridgeHandler((Bridge) thing, channelMirror);
+                JADEBridgeHandler handler = new JADEBridgeHandler((Bridge) thing, channelMirror, jrs);
 
                 return handler;
             } else {
@@ -66,6 +69,20 @@ public class JADEHandlerFactory extends BaseThingHandlerFactory {
      */
     protected void unsetChannelMirror(ChannelMirror channelMirror) {
         this.channelMirror = null;
+    }
+
+    /*
+     * this is called automagically on activation by the OSGi framework (see OSGI-INF/JADEHandlerFactory.xml)
+     */
+    protected void setJadeRuntimeService(JadeRuntimeService jrs) {
+        this.jrs = jrs;
+    }
+
+    /*
+     * this is called automagically on deactivation by the OSGi framework (see OSGI-INF/JADEHandlerFactory.xml)
+     */
+    protected void unsetJadeRuntimeService(JadeRuntimeService jrs) {
+        this.jrs = null;
     }
 
 }
