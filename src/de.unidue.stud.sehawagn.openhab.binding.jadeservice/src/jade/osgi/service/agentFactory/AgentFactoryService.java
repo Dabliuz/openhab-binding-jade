@@ -49,8 +49,8 @@ public class AgentFactoryService {
         Dictionary<String, String> properties = new Hashtable<String, String>();
         properties.put(JADE_AFS_BUNDLE_NAME, myBundle.getSymbolicName());
         properties.put(JADE_AFS_BUNDLE_VERSION, myBundle.getHeaders().get(Constants.BUNDLE_VERSION));
-        if (logger.isLoggable(Logger.FINE)) {
-            logger.log(Logger.FINE, "Registering JADE AFS with properties " + properties);
+        if (logger.isLoggable(Logger.INFO)) {
+            logger.log(Logger.INFO, "Registering JADE AFS with properties " + properties);
         }
         this.serviceRegistration = context.registerService(AgentFactoryService.class.getName(), this, properties);
         logger.log(Logger.INFO, myBundle.getSymbolicName() + " register JADE AFS");

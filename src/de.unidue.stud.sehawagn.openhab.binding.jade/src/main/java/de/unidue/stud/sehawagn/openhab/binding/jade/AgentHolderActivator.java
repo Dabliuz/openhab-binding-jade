@@ -12,7 +12,8 @@ public class AgentHolderActivator implements BundleActivator {
 
     @Override
     public void start(BundleContext context) throws Exception {
-        System.out.println("FooBarActivator");
+//        System.out.println("FooBarActivator");
+        // It seems, that this is necessary for the AgentFactoryService to really start?!
         // Register AgentFactory service
         Bundle b = context.getBundle();
         agentFactory = new AgentFactoryService();

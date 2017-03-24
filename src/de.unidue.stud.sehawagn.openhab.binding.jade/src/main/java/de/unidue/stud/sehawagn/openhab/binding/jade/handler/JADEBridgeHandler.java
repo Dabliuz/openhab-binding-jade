@@ -110,13 +110,15 @@ public class JADEBridgeHandler extends ConfigStatusBridgeHandler {
         ServiceReference<?> serviceReference = context.getServiceReference(JadeRuntimeService.class.getName());
 
         ServiceReference<JadeRuntimeService> reference = (ServiceReference<JadeRuntimeService>) serviceReference;
-
-        jrs = context.getService(reference);
-        try {
-            jrs.startPlatform(props);
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        // TODO replace this by declarative services
+        if (reference != null) {
+            jrs = context.getService(reference);
+            try {
+                jrs.startPlatform(props);
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
         System.out.println("Container sollte gestartet sein.");
 
@@ -141,10 +143,13 @@ if (profile.getBooleanProperty(Profile.MAIN, true)) {
         AgentController ac = null;
         try {
             System.out.println("Hiermit kreiere ich einen neuen Agenten.");
-            ac = jrs.createNewAgent(agentName, agentClassName, new Object[] { getGeneralAgentConfig(agentName), smartHomeAgentHandler }, "de.unidue.stud.sehawagn.openhab.binding.jade");
-            ac.start();
-            System.out.println("Agent sollte gestartet worden sein.");
-
+            if (jrs != null) {
+                ac = jrs.createNewAgent(agentName, agentClassName, new Object[] { getGeneralAgentConfig(agentName), smartHomeAgentHandler }, "de.unidue.stud.sehawagn.openhab.binding.jade");
+                ac.start();
+                System.out.println("Agent sollte gestartet worden sein.");
+            } else {
+                logger.error("JADE runtime service == null, agent can't be created");
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

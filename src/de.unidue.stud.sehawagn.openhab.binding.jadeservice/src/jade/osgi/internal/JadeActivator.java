@@ -78,7 +78,7 @@ public class JadeActivator implements BundleActivator, BundleListener {
             logger.log(Logger.SEVERE, "Error during bundle startup", e);
             throw e;
         }
-        System.out.println("ICH BIN GESTARTET!!");
+        System.out.println("jadeservice: The JadeActivator has been started!");
     }
 
     @Override
@@ -88,7 +88,7 @@ public class JadeActivator implements BundleActivator, BundleListener {
 //                MicroRuntime.stopJADE();
 //            } else {
             try {
-                // If JADE has already termnated we get an exception and simply ignore it
+                // If JADE has already terminated we get an exception and simply ignore it
                 container.kill();
             } catch (Exception e) {
             }
