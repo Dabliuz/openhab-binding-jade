@@ -5,6 +5,7 @@ import static de.unidue.stud.sehawagn.openhab.binding.jade.internal.agent.Intern
 import energy.OptionModelController;
 import energy.calculations.AbstractOptionModelCalculation;
 import energy.domain.DefaultDomainModelElectricity;
+import energy.domain.DefaultDomainModelElectricity.Phase;
 import energy.domain.DefaultDomainModelElectricity.PowerType;
 import energy.optionModel.AbstractInterfaceFlow;
 import energy.optionModel.Duration;
@@ -34,9 +35,10 @@ public class SmartHomeCalculation extends AbstractOptionModelCalculation {
             TechnicalInterface techInt, boolean isManualConfiguration) {
 
         if (techInt.getDomainModel() instanceof DefaultDomainModelElectricity) {
-            FixedDouble voltageFD = (FixedDouble) this.getVariable(techSysStaEva.getIOlist(), VAR_POWER_CONSUMPTION);
-            if (voltageFD != null) {
-                double activePower = FAKE_FACTOR * voltageFD.getValue(); // Wirkleistung P
+            FixedDouble powerConsumptionFD = (FixedDouble) this.getVariable(techSysStaEva.getIOlist(), VAR_POWER_CONSUMPTION);
+            if (powerConsumptionFD != null) {
+                double activePower = powerConsumptionFD.getValue(); // Wirkleistung P
+//                activePower = FAKE_FACTOR * activePower;
                 double apparentPower = activePower / POWER_FACTOR; // Scheinleistung S
                 double reactivePower = APPARENT_FACTOR * activePower; // Blindleistung Q
 
@@ -48,14 +50,20 @@ public class SmartHomeCalculation extends AbstractOptionModelCalculation {
                 currentEnergyFlow.setSIPrefix(EnergyUnitFactorPrefixSI.NONE_0);
 
                 PowerType powerType = ((DefaultDomainModelElectricity) techInt.getDomainModel()).getPowerType();
-                if (powerType == PowerType.ActivePower) { // Wirkleistung P
-                    currentEnergyFlow.setValue(activePower);
-                } else if (powerType == PowerType.ApparentPower) { // Scheinleistung S
-                    currentEnergyFlow.setValue(apparentPower);
-                } else if (powerType == PowerType.ReactivePower) { // Blindleistung Q
-                    currentEnergyFlow.setValue(reactivePower);
-                }
 
+                Phase phase = ((DefaultDomainModelElectricity) techInt.getDomainModel()).getPhase();
+
+                if (phase == Phase.L1) {
+                    if (powerType == PowerType.ActivePower) { // Wirkleistung P
+                        currentEnergyFlow.setValue(activePower);
+                    } else if (powerType == PowerType.ApparentPower) { // Scheinleistung S
+                        currentEnergyFlow.setValue(apparentPower);
+                    } else if (powerType == PowerType.ReactivePower) { // Blindleistung Q
+                        currentEnergyFlow.setValue(reactivePower);
+                    }
+                } else {
+                    currentEnergyFlow.setValue(0.0);
+                }
                 return currentEnergyFlow;
             }
         }

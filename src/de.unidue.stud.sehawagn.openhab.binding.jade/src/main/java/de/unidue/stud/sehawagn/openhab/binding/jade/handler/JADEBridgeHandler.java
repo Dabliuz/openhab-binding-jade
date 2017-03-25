@@ -136,8 +136,9 @@ public class JADEBridgeHandler extends ConfigStatusBridgeHandler {
         CentralAgentAID centralAgentAID = new CentralAgentAID();
         centralAgentAID.setAgentName((String) getConfig().get(CONFKEY_REMOTE_GROUP_COORDINATOR_NAME));
         centralAgentAID.setPlatformName((String) getConfig().get(CONFKEY_REMOTE_PLATFORM_NAME));
-        centralAgentAID.setPort(Integer.parseInt((String) getConfig().get(CONFKEY_REMOTE_MTP_PORT)));
         centralAgentAID.setUrlOrIp((String) getConfig().get(CONFKEY_REMOTE_MTP_ADDRESS));
+        centralAgentAID.setPort(1099);
+        centralAgentAID.setMtpPort(Integer.parseInt((String) getConfig().get(CONFKEY_REMOTE_MTP_PORT)));
         centralAgentAID.setHttp4Mtp((String) getConfig().get(CONFKEY_REMOTE_MTP_PROTOCOL));
 
         AgentConfig agentConfig = new AgentConfig();

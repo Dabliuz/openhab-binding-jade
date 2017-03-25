@@ -4,6 +4,6 @@ import org.eclipse.smarthome.core.types.State;
 
 public interface ChannelMirrorReceiver {
 
-	void receiveFromMirroredChannel(State newState);
+    void receiveFromMirroredChannel(String sourceChannel, State newState);
 
 }
