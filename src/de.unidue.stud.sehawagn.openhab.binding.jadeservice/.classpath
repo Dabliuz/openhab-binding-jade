@@ -3,7 +3,11 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry exported="true" kind="lib" path="lib/jade.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jade.jar" sourcepath="/home/friesenkiwi/Downloads/jade/JADE-all-4.4.0/JADE-src-4.4.0.zip">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/friesenkiwi/workspace/AgentGUI/lib/jade/doc/JADE-doc-4.4.0.zip!/jade/doc"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="lib/AgentGui.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/AgentHyGrid.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/collections-generic-4.01.jar"/>

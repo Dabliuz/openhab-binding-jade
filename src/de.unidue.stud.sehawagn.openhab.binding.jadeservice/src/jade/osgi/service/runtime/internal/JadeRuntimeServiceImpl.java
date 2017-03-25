@@ -1,12 +1,5 @@
 package jade.osgi.service.runtime.internal;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.util.Iterator;
-import java.util.Map.Entry;
-import java.util.Set;
-
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
@@ -22,6 +15,8 @@ import jade.util.Logger;
 import jade.util.leap.Properties;
 import jade.wrapper.AgentController;
 import jade.wrapper.ContainerController;
+import jade.wrapper.ControllerException;
+import jade.wrapper.StaleProxyException;
 
 public class JadeRuntimeServiceImpl implements JadeRuntimeService {
 
@@ -43,13 +38,12 @@ public class JadeRuntimeServiceImpl implements JadeRuntimeService {
     }
 
     @Override
-    public AgentController createNewAgent(String name, String className, Object[] args) throws Exception {
+    public AgentController createNewAgent(String name, String className, Object[] args) throws StaleProxyException {
         return container.createNewAgent(name, className, args);
     }
 
     @Override
-    public AgentController createNewAgent(String name, String className, Object[] args, String bundleSymbolicName)
-            throws Exception {
+    public AgentController createNewAgent(String name, String className, Object[] args, String bundleSymbolicName) throws StaleProxyException {
         if (logger.isLoggable(Logger.FINE)) {
             logger.log(Logger.FINE, "createAgent(name = " + name + " bundle = " + bundleSymbolicName + ") via JRS");
         }
@@ -59,7 +53,7 @@ public class JadeRuntimeServiceImpl implements JadeRuntimeService {
 
     @Override
     public AgentController createNewAgent(String name, String className, Object[] args, String bundleSymbolicName,
-            String bundleVersion) throws Exception {
+            String bundleVersion) throws StaleProxyException {
         if (logger.isLoggable(Logger.FINE)) {
             logger.log(Logger.FINE, "createAgent(name = " + name + " bundle = " + bundleSymbolicName + ") via JRS");
         }
@@ -87,7 +81,7 @@ public class JadeRuntimeServiceImpl implements JadeRuntimeService {
     }
 
     @Override
-    public String getContainerName() throws Exception {
+    public String getContainerName() throws ControllerException {
         return container.getContainerName();
     }
 
@@ -97,18 +91,19 @@ public class JadeRuntimeServiceImpl implements JadeRuntimeService {
     }
 
     @Override
-    public void kill() throws Exception {
-        container.kill();
+    public void kill() throws StaleProxyException {
+        if (isRunning()) {
+            container.kill();
+            container = null;
+        }
     }
 
     @Override
-    public void startPlatform(Properties jadeProperties) throws Exception {
+    public void startPlatform(Properties jadeProperties) {
         // Initialize jade container profile and start it
         if (jadeProperties == null) {
             jadeProperties = new Properties();
         }
-        addJadeSystemProperties(jadeProperties);
-        addJadeFileProperties(jadeProperties);
         addOSGIBridgeService(jadeProperties);
 
         startJadeContainer(jadeProperties);
@@ -127,52 +122,29 @@ public class JadeRuntimeServiceImpl implements JadeRuntimeService {
         }
     }
 
-    private void addJadeSystemProperties(Properties props) {
-        Set<Entry<Object, Object>> entrySet = System.getProperties().entrySet();
-        for (Entry<Object, Object> entry : entrySet) {
-            String key = (String) entry.getKey();
-            if (key.startsWith(PROFILE_PARAMETER_PREFIX)) {
-                props.setProperty(key.substring(PROFILE_PARAMETER_PREFIX.length()), (String) entry.getValue());
-            }
-        }
-    }
-
-    private void addJadeFileProperties(Properties props) throws Exception {
-        String profileConf = System.getProperty(JADE_CONF);
-        if (profileConf != null) {
-            // find profile configuration in classpath
-            InputStream input = ClassLoader.getSystemResourceAsStream(profileConf);
-            if (input == null) {
-                File f = new File(profileConf);
-                if (f.exists()) {
-                    input = new FileInputStream(f);
-                }
-            }
-            if (input != null) {
-                Properties pp = new Properties();
-                pp.load(input);
-                Iterator<Object> it = pp.keySet().iterator();
-                while (it.hasNext()) {
-                    String key = (String) it.next();
-                    if (!props.containsKey(key)) {
-                        props.setProperty(key, pp.getProperty(key));
-                    }
-                }
-
-            }
-        }
-
-    }
-
     private void startJadeContainer(Properties props) {
         Profile profile = new ProfileImpl(props);
         Runtime.instance().setCloseVM(false);
-        if (profile.getBooleanProperty(Profile.MAIN, true)) {
-            container = Runtime.instance().createMainContainer(profile);
-        } else {
-            container = Runtime.instance().createAgentContainer(profile);
+        if (!isRunning()) {
+            if (profile.getBooleanProperty(Profile.MAIN, true)) {
+                container = Runtime.instance().createMainContainer(profile);
+            } else {
+                container = Runtime.instance().createAgentContainer(profile);
+            }
+//            Runtime.instance().invokeOnTermination(new Terminator());
         }
-        Runtime.instance().invokeOnTermination(new Terminator());
+    }
+
+    public boolean isRunning() {
+        if (container != null) {
+            try {
+                getContainerName();
+                return true;
+            } catch (ControllerException e) {
+                return false;
+            }
+        }
+        return false;
     }
 
     private class Terminator implements Runnable {
@@ -191,6 +163,7 @@ public class JadeRuntimeServiceImpl implements JadeRuntimeService {
                     // This exception is thrown when jadeOsgi bundle is invalid. This case happens
                     // when user stop the bundle from the osgi ui. Depends on the execution time of the
                     // thread listening jade termination, jadeOsgi bundle can be already stopped.
+                    logger.log(Logger.WARNING, "jadeOsgi bundle is invalid");
                 } catch (Exception e) {
                     logger.log(Logger.SEVERE, "Error stopping bundle", e);
                 }

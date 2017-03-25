@@ -3,6 +3,8 @@ package jade.osgi.service.runtime;
 import jade.core.Agent;
 import jade.util.leap.Properties;
 import jade.wrapper.AgentController;
+import jade.wrapper.ControllerException;
+import jade.wrapper.StaleProxyException;
 
 /**
  * This is an osgi service provided by jadeOsgi bundle that helps bundle to create agents
@@ -17,7 +19,7 @@ import jade.wrapper.AgentController;
  */
 public interface JadeRuntimeService {
 
-    public void startPlatform(Properties jadeProperties) throws Exception;
+    public void startPlatform(Properties jadeProperties);
 
     /**
      * Create a jade agent.
@@ -26,7 +28,7 @@ public interface JadeRuntimeService {
      * @param className The fully qualified name of the class that implements the agent.
      * @param args An object array, containing initialization parameters to pass to the new agent.
      * @return A proxy object allowing access to the JADE agent
-     * @throws Exception
+     * @throws StaleProxyException
      */
     public AgentController createNewAgent(String name, String className, Object[] args) throws Exception;
 
@@ -39,7 +41,7 @@ public interface JadeRuntimeService {
      * @param args An object array, containing initialization parameters to pass to the new agent.
      * @param bundleSymbolicName name of the bundle containing agent code
      * @return A proxy object allowing access to the JADE agent
-     * @throws Exception
+     * @throws StaleProxyException
      */
     public AgentController createNewAgent(String name, String className, Object[] args, String bundleSymbolicName) throws Exception;
 
@@ -52,7 +54,7 @@ public interface JadeRuntimeService {
      * @param bundleSymbolicName name of the bundle containing agent code
      * @param bundleVersion version of the bundle containing agent code
      * @return A proxy object allowing access to the JADE agent
-     * @throws Exception
+     * @throws StaleProxyException
      */
     public AgentController createNewAgent(String name, String className, Object[] args, String bundleSymbolicName, String bundleVersion) throws Exception;
 
@@ -62,7 +64,7 @@ public interface JadeRuntimeService {
      * @param name A platform-unique nickname for the newly created agent.
      * @param agent The agent to be added to this agent container.
      * @return A proxy object allowing access to the JADE agent
-     * @throws Exception
+     * @throws ControllerException
      */
     public AgentController acceptNewAgent(String name, Agent agent) throws Exception;
 
@@ -77,7 +79,7 @@ public interface JadeRuntimeService {
     /**
      * Shuts down the jade container running in the osgi runtime.
      *
-     * @throws Exception
+     * @throws StaleProxyException
      */
     public void kill() throws Exception;
 
@@ -85,7 +87,7 @@ public interface JadeRuntimeService {
      * Retrieve the name of the wrapped container.
      *
      * @return the name of this platform container.
-     * @throws Exception
+     * @throws ControllerException
      */
     public String getContainerName() throws Exception;
 

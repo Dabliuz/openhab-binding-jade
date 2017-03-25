@@ -39,19 +39,19 @@ public class RealIOBehaviour extends AbstractIOReal implements EnergyAgentIO {
     private FixedVariableList measure() {
 
         // access the data in openHAB's AgentHandler
-        double mVoltage = myAgentHandler.getCurrentMeasurement();
+        double mPowerConsumption = myAgentHandler.getCurrentMeasurement();
 
-        if (mVoltage == Double.NEGATIVE_INFINITY) {
-            mVoltage = InternalDataModel.VAR_VOLTAGE_DEFAULT;
+        if (mPowerConsumption == Double.NEGATIVE_INFINITY) {
+            mPowerConsumption = InternalDataModel.VAR_POWER_CONSUMPTION_DEFAULT;
         }
 
-//        System.out.println("SmartHomeAgent-RealIOBehaviour-measurement:" + mVoltage);
+//        System.out.println("SmartHomeAgent-RealIOBehaviour-measurement:" + mPowerConsumption);
 
         // add measurement to the list
         FixedVariableList newMeasurements = new FixedVariableList();
         FixedDouble m1 = new FixedDouble();
-        m1.setVariableID(InternalDataModel.VAR_VOLTAGE);
-        m1.setValue(mVoltage);
+        m1.setVariableID(InternalDataModel.VAR_POWER_CONSUMPTION);
+        m1.setValue(mPowerConsumption);
         newMeasurements.add(m1);
 
         return newMeasurements;

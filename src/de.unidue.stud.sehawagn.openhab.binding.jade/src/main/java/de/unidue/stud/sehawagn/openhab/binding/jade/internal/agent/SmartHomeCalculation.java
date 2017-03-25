@@ -1,6 +1,6 @@
 package de.unidue.stud.sehawagn.openhab.binding.jade.internal.agent;
 
-import static de.unidue.stud.sehawagn.openhab.binding.jade.internal.agent.InternalDataModel.VAR_VOLTAGE;
+import static de.unidue.stud.sehawagn.openhab.binding.jade.internal.agent.InternalDataModel.VAR_POWER_CONSUMPTION;
 
 import energy.OptionModelController;
 import energy.calculations.AbstractOptionModelCalculation;
@@ -34,7 +34,7 @@ public class SmartHomeCalculation extends AbstractOptionModelCalculation {
             TechnicalInterface techInt, boolean isManualConfiguration) {
 
         if (techInt.getDomainModel() instanceof DefaultDomainModelElectricity) {
-            FixedDouble voltageFD = (FixedDouble) this.getVariable(techSysStaEva.getIOlist(), VAR_VOLTAGE);
+            FixedDouble voltageFD = (FixedDouble) this.getVariable(techSysStaEva.getIOlist(), VAR_POWER_CONSUMPTION);
             if (voltageFD != null) {
                 double activePower = FAKE_FACTOR * voltageFD.getValue(); // Wirkleistung P
                 double apparentPower = activePower / POWER_FACTOR; // Scheinleistung S

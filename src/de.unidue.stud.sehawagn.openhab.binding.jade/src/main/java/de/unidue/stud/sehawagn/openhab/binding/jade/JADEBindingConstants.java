@@ -15,7 +15,7 @@ public class JADEBindingConstants {
     public final static ThingTypeUID THING_TYPE_JADE_SMARTHOMEAGENT = new ThingTypeUID(BINDING_ID, "smarthomeagent");
 
     // List all channels
-    public static final String CHANNEL_POWER = "power";
+    public static final String CHANNEL_POWER_CONSUMMPTION = "powerConsumption";
     public static final String CHANNEL_ALIVE = "alive"; // whether the agent is alive
     public static final String CHANNEL_ON = "on"; // whether the mirrored device is switched on
 

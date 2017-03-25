@@ -74,6 +74,7 @@ public class SmartHomeAgent extends AbstractEnergyAgent {
             this.addBehaviour(ioBehaviour);
         }
         System.out.println("SmartHomeAgent started");
+        myAgentHandler.onAgentStart();
     }
 
     /*
@@ -99,6 +100,7 @@ public class SmartHomeAgent extends AbstractEnergyAgent {
             }
         }
         System.out.println("SmartHomeAgent stopped");
+        myAgentHandler.onAgentStop();
     }
 
     /**

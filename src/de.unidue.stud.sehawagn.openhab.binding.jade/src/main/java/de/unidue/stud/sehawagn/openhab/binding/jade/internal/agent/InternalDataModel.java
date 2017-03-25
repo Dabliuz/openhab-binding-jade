@@ -15,10 +15,10 @@ public class InternalDataModel extends AbstractInternalDataModel {
     /**
      * elements of the internal data model
      */
-    public static final String VAR_VOLTAGE = "Voltage";
+    public static final String VAR_POWER_CONSUMPTION = "PowerConsumption";
     public static final String VAR_OCCUPIED = "occupied";
     public static final boolean VAR_OCCUPIED_DEFAULT = true;
-    public static final double VAR_VOLTAGE_DEFAULT = 0.0;
+    public static final double VAR_POWER_CONSUMPTION_DEFAULT = 0.0;
 
     /**
      * @param agent the agent

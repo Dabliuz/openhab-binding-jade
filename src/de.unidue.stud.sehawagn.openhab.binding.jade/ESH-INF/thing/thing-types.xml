@@ -15,7 +15,7 @@
 		<channels>
 			<channel id="alive" typeId="alive" />
 			<channel id="on" typeId="on" />
-	        <channel id="power" typeId="power" />
+	        <channel id="powerConsumption" typeId="powerConsumption" />
 		</channels>
 
 		<config-description>
@@ -53,12 +53,12 @@
         <state readOnly="false">
         </state>
     </channel-type>
-    <channel-type id="power">
+    <channel-type id="powerConsumption">
         <item-type>Number</item-type>
-        <label>Power</label>
+        <label>Power Consumption</label>
         <description>Current power consumption (mirrored)</description>
         <category>Energy</category>
-        <state readOnly="true" pattern="%.2f mW">
+        <state readOnly="true" pattern="%.2f W">
         </state>
     </channel-type>
 </thing:thing-descriptions>

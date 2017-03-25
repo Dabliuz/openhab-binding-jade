@@ -4,7 +4,6 @@ import static de.unidue.stud.sehawagn.openhab.binding.jade.JADEBindingConstants.
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Set;
 
 import org.eclipse.smarthome.config.core.status.ConfigStatusMessage;
@@ -26,7 +25,6 @@ import jade.core.Profile;
 import jade.osgi.service.runtime.JadeRuntimeService;
 import jade.util.leap.Properties;
 import jade.wrapper.AgentController;
-import jade.wrapper.ContainerController;
 import jade.wrapper.StaleProxyException;
 
 public class JADEBridgeHandler extends ConfigStatusBridgeHandler {
@@ -37,12 +35,10 @@ public class JADEBridgeHandler extends ConfigStatusBridgeHandler {
 
     private Logger logger = LoggerFactory.getLogger(JADEBridgeHandler.class);
 
-    private ContainerController container = null;
-
     @SuppressWarnings("unused")
     private ChannelMirror channelMirror; // for later use
 
-    private HashMap<Integer, AgentController> myAgents = new HashMap<Integer, AgentController>();
+//    private HashMap<Integer, AgentController> myAgents = new HashMap<Integer, AgentController>();
 
     private JadeRuntimeService jrs;
 
@@ -64,85 +60,73 @@ public class JADEBridgeHandler extends ConfigStatusBridgeHandler {
 
     @Override
     public void initialize() {
-        logger.debug("Initializing JADE bridge handler.");
+        logger.info("Initializing JADE bridge handler.");
         if (getConfig().containsKey(CONFKEY_LOCAL_MTP_ADDRESS) && getConfig().containsKey(CONFKEY_REMOTE_MTP_ADDRESS)) {
-            if (container == null) {
-                // Initialize jade container profile and start it
+            // Initialize jade container profile and start it
 
-                Properties jadeProperties = new Properties();
+            Properties jadeProperties = new Properties();
 
-                jadeProperties.put(Profile.MTPS, String.format(JADE_MTP_STRING_HTTP, getConfig().get(CONFKEY_LOCAL_MTP_ADDRESS)));
+            jadeProperties.put(Profile.MTPS, String.format(JADE_MTP_STRING_HTTP, getConfig().get(CONFKEY_LOCAL_MTP_ADDRESS)));
 
-                try {
-                    startJadeContainer(jadeProperties);
-                    updateStatus(ThingStatus.ONLINE);
-                    return;
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
+            startJadeContainer(jadeProperties);
+            updateStatus(ThingStatus.ONLINE);
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                    "Cannot start JADE bridge container. Some parameter not given.");
         }
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                "Cannot start JADE bridge container. Some parameter not given.");
     }
 
     @Override
     public void dispose() {
-        logger.debug("JADE bridge Handler disposed.");
+        logger.info("JADE bridge handler disposed, kill JADE container/runtime.");
 
-        if (container != null) {
-            try {
-                container.kill();
-            } catch (StaleProxyException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-                        "container dispose failed: " + e.getMessage());
-                e.printStackTrace();
+        try {
+            if (jrs != null) {
+                jrs.kill();
+                logger.info("jrs.kill()");
+            } else {
+                logger.info("jrs should be killed, but not available");
             }
-            container = null;
+        } catch (Exception e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
+                    "container dispose failed: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
-    private void startJadeContainer(Properties props) throws Exception {
-        System.out.println("Hiermit starte ich einen neuen Container.");
+    private void startJadeContainer(Properties props) {
+        logger.info("Starting new JADE container.");
         if (jrs != null) {
             jrs.startPlatform(props);
-        }
-        System.out.println("Container sollte gestartet sein.");
-
-/*
-Profile profile = new ProfileImpl(props);
-Runtime.instance().setCloseVM(false);
-if (profile.getBooleanProperty(Profile.MAIN, true)) {
-
-
-//            container = Runtime.instance().createMainContainer(profile);
-} else {
-//            container = Runtime.instance().createAgentContainer(profile);
-}
-
-// Runtime.instance().invokeOnTermination(new Terminator());
- */
-    }
-
-    public AgentController startAgent(String agentName, String agentClassName,
-            SmartHomeAgentHandler smartHomeAgentHandler) throws StaleProxyException {
-
-        AgentController agent = myAgents.get(smartHomeAgentHandler.hashCode());
-        if (agent == null) {
-
             try {
-                System.out.println("Hiermit kreiere ich einen neuen Agenten.");
-                if (jrs != null) {
-                    agent = jrs.createNewAgent(agentName, agentClassName, new Object[] { getGeneralAgentConfig(agentName), smartHomeAgentHandler }, BUNDLE_SYMBOLIC_NAME);
-                    myAgents.put(smartHomeAgentHandler.hashCode(), agent);
-                    agent.start();
-                    System.out.println("Agent sollte gestartet worden sein.");
-                } else {
-                    logger.error("JADE runtime service == null, agent can't be created, please try again later");
-                }
+                AgentController keepOpenAgent = jrs.createNewAgent("KeepOpen", de.unidue.stud.sehawagn.openhab.binding.jade.internal.agent.KeepOpenAgent.class.getName(), null, BUNDLE_SYMBOLIC_NAME); // jade.tools.rma.rma
+
+                keepOpenAgent.start();
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+        logger.info("JADE container should be started.");
+    }
+
+    public AgentController startAgent(String agentName, String agentClassName,
+            SmartHomeAgentHandler smartHomeAgentHandler) throws Exception {
+        AgentController agent = smartHomeAgentHandler.getAgent();
+
+        if (agent == null) {
+            logger.info("Hiermit kreiere ich einen neuen Agenten.");
+            if (jrs != null) {
+                agent = jrs.createNewAgent(agentName, agentClassName, new Object[] { getGeneralAgentConfig(agentName), smartHomeAgentHandler }, BUNDLE_SYMBOLIC_NAME);
+                logger.info("Three");
+                logger.info("Agent state:" + agent.getState());
+
+                agent.start();
+                logger.info("Agent sollte gestartet worden sein.");
+            } else {
+                logger.error("JADE runtime service == null, agent can't be created, please try again later");
+            }
+        } else {
+            logger.info("Agent nicht neu gestartet, sondern war schon da: " + agent.getName() + " - " + agent.getState());
         }
         return agent;
     }
@@ -166,15 +150,19 @@ if (profile.getBooleanProperty(Profile.MAIN, true)) {
         return agentConfig;
     }
 
-    public void stopAgent(SmartHomeAgentHandler smartHomeAgentHandler) throws StaleProxyException {
-        if (container == null) {
+    public boolean stopAgent(SmartHomeAgentHandler smartHomeAgentHandler) throws StaleProxyException {
+        logger.info("stopping agent");
+
+        if (jrs == null) {
             logger.error("Container not yet ready, please try again later");
         }
-        AgentController agent = myAgents.get(smartHomeAgentHandler.hashCode());
-
+        AgentController agent = smartHomeAgentHandler.getAgent();
         if (agent != null) {
+            logger.info("killing agent");
             agent.kill();
-            myAgents.remove(smartHomeAgentHandler.hashCode());
+            logger.info("agent killed and removed");
+            return true;
         }
+        return false;
     }
 }
