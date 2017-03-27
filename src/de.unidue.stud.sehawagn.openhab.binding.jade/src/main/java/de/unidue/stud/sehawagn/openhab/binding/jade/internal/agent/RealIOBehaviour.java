@@ -70,10 +70,14 @@ public class RealIOBehaviour extends AbstractIOReal implements EnergyAgentIO {
     }
 
     private FixedVariableList initSetPoints() {
+        return produceNewSetPoint(InternalDataModel.VAR_OCCUPIED_DEFAULT);
+    }
+
+    public static FixedVariableList produceNewSetPoint(boolean operating) {
         FixedVariableList newSetPoints = new FixedVariableList();
         FixedBoolean sP1 = new FixedBoolean();
         sP1.setVariableID(InternalDataModel.VAR_OCCUPIED);
-        sP1.setValue(InternalDataModel.VAR_OCCUPIED_DEFAULT);
+        sP1.setValue(operating);
         newSetPoints.add(sP1);
 
         return newSetPoints;
@@ -82,6 +86,8 @@ public class RealIOBehaviour extends AbstractIOReal implements EnergyAgentIO {
     @Override
     public void action() {
         setMeasurementsFromSystem(getMeasurementsFromSystem()); // set measurements to agent
+        setSetPointsToSystem(getSetPointsToSystem()); // set measurements to agent
+
         block(MEASURING_INTERVAL);
     }
 

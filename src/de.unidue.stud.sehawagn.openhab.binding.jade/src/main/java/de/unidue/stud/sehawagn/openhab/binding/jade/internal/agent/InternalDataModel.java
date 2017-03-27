@@ -20,10 +20,21 @@ public class InternalDataModel extends AbstractInternalDataModel {
     public static final boolean VAR_OCCUPIED_DEFAULT = true;
     public static final double VAR_POWER_CONSUMPTION_DEFAULT = 0.0;
 
+    private boolean isOperating;
+
+    public boolean isOperating() {
+        return isOperating;
+    }
+
+    public void setOperating(boolean isOperating) {
+        this.isOperating = isOperating;
+    }
+
     /**
      * @param agent the agent
      */
     public InternalDataModel(Agent agent) {
         super(agent);
+        isOperating = VAR_OCCUPIED_DEFAULT;
     }
 }
