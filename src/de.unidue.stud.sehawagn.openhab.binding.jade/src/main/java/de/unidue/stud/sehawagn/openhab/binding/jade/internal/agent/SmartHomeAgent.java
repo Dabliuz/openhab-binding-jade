@@ -74,7 +74,7 @@ public class SmartHomeAgent extends AbstractEnergyAgent {
             this.addBehaviour(ioBehaviour);
         }
 
-        this.addBehaviour(new ToggleOperationCommandReceiveBehaviour(this));
+        this.addBehaviour(new OperationCommandReceiveBehaviour(this));
 
         System.out.println("SmartHomeAgent started");
         if (myAgentHandler != null) {
@@ -146,13 +146,22 @@ public class SmartHomeAgent extends AbstractEnergyAgent {
 
     @Override
     public AbstractIOReal getIOReal() {
-        return new RealIOBehaviour(this, myAgentHandler);
+        return new RealIOBehaviour(this);
     }
 
+    // called by IO
+    public double getPowerConsumption() {
+        return myAgentHandler.getMeasurementChannelValue();
+    }
+
+    // called by IO, OperationCommand
+    public boolean getOperating() {
+        return myAgentHandler.getActuateChannelValue();
+    }
+
+    // called by IO, OperationCommand
     public void setOperating(Boolean operating) {
-//        this.getInternalDataModel().setOperating(operating); // probably unnecessary
-
-        this.getEnergyAgentIO().setSetPointsToSystem(RealIOBehaviour.produceNewSetPoint(operating));
-
+        myAgentHandler.setActuateChannelValue(operating);
     }
+
 }

@@ -15,9 +15,14 @@ public class JADEBindingConstants {
     public final static ThingTypeUID THING_TYPE_JADE_SMARTHOMEAGENT = new ThingTypeUID(BINDING_ID, "smarthomeagent");
 
     // List all channels
-    public static final String CHANNEL_POWER_CONSUMMPTION = "powerConsumption";
     public static final String CHANNEL_ALIVE = "alive"; // whether the agent is alive
-    public static final String CHANNEL_ON = "on"; // whether the mirrored device is switched on
+    public static final String CHANNEL_CONNECTED = "connected"; // Whether the agent is connected to a network
+                                                                // simulation/the simulation connector is running
+    public static final String CHANNEL_MANAGED = "managed"; // Whether the local agent is free to interact with the
+                                                            // simulation (send data/receive commands)
+    public static final String CHANNEL_DEVICE_LOWLEVEL_ON = "on"; // whether the mirrored device is switched on
+    public static final String CHANNEL_DEVICE_STATE = "deviceState"; // whether the mirrored device is switched on
+    public static final String CHANNEL_DEVICE_POWER_CONSUMPTION = "powerConsumption";
 
     public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_JADE_CONTAINER, THING_TYPE_JADE_SMARTHOMEAGENT);
 

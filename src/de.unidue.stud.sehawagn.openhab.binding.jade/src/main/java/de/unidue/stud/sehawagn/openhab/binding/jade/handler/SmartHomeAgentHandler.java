@@ -34,12 +34,14 @@ public class SmartHomeAgentHandler extends BaseThingHandler implements ChannelMi
 //    private static final Class<? extends Agent> AGENT_CLASS = SmartHomeAgent.class;
     private static final String AGENT_CLASS_NAME = "de.unidue.stud.sehawagn.openhab.binding.jade.internal.agent.SmartHomeAgent";
 
-    private static final String MEASUREMENT_MIRROR_CHANNEL = CHANNEL_POWER_CONSUMMPTION; // the channel where the value
-                                                                                         // from the
+    private static final String MEASUREMENT_MIRROR_CHANNEL = CHANNEL_DEVICE_POWER_CONSUMPTION; // the channel where the
+                                                                                               // value
+    // from the
     // mirrored
     // channel is displayed in OpenHAB
-    private static final String ACTUATE_MIRROR_CHANNEL = CHANNEL_ON; // the channel where the value from the mirrored
-                                                                     // channel is displayed in OpenHAB
+    private static final String ACTUATE_MIRROR_CHANNEL = CHANNEL_DEVICE_LOWLEVEL_ON; // the channel where the value from
+                                                                                     // the mirrored
+    // channel is displayed in OpenHAB
 
     private final Logger logger = LoggerFactory.getLogger(SmartHomeAgentHandler.class);
 
@@ -274,12 +276,19 @@ public class SmartHomeAgentHandler extends BaseThingHandler implements ChannelMi
 
     }
 
-    public double getCurrentMeasurement() {
+    // only called by the agent (via one of it's behaviours)
+    public double getMeasurementChannelValue() {
         return measurementChannelValue;
     }
 
-    public void setOperationalState(boolean operationalState) {
-        actuateChannelValue = operationalState;
+    public boolean getActuateChannelValue() {
+        return actuateChannelValue;
+    }
+
+    // only called by the agent (via one of it's behaviours)
+    public void setActuateChannelValue(boolean operating) {
+        actuateChannelValue = operating;
         handleCommand(actuateMirrorChannelUID, RefreshType.REFRESH);
     }
+
 }

@@ -95,6 +95,7 @@ public class JadeRuntimeServiceImpl implements JadeRuntimeService {
         if (isRunning()) {
             container.kill();
             container = null;
+            Runtime.instance().shutDown();
         }
     }
 

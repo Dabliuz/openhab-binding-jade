@@ -14,6 +14,8 @@
 
 		<channels>
 			<channel id="alive" typeId="alive" />
+			<channel id="connected" typeId="connected" />
+			<channel id="managed" typeId="managed" />
 			<channel id="on" typeId="on" />
 	        <channel id="powerConsumption" typeId="powerConsumption" />
 		</channels>
@@ -45,6 +47,22 @@
 		<state readOnly="false">
 		</state>
 	</channel-type>
+	<channel-type id="connected">
+        <item-type>Switch</item-type>
+        <label>Connected</label>
+        <description>Whether the agent is connected to a network simulation/the simulation connector is running</description>
+        <category>Switch</category>
+        <state readOnly="true">
+        </state>
+    </channel-type>
+    <channel-type id="managed">
+        <item-type>Switch</item-type>
+        <label>Managed</label>
+        <description>Whether the local agent should interact with the simulation (send data/receive commands)</description>
+        <category>Switch</category>
+        <state readOnly="false">
+        </state>
+    </channel-type>
 	<channel-type id="on">
         <item-type>Switch</item-type>
         <label>On</label>
