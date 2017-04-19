@@ -34,8 +34,8 @@ class OperationCommandReceiveBehaviour extends CyclicBehaviour {
             if (msg.getConversationId().equals(SwitchableEomAdapter.CONVERSATION_ID_TOGGLE_OPERATION)) {
                 System.out.println("Received TOGGLE_OPERATION command.");
                 try {
-                    Boolean operating = (Boolean) msg.getContentObject();
-                    myAgent.setOperating(operating);
+                    Boolean poweredOn = (Boolean) msg.getContentObject();
+                    myAgent.setPoweredOn(poweredOn);
                 } catch (UnreadableException e) {
                     System.err.println("Error getting content object from TOGGLE_OPERATION command.");
                     e.printStackTrace();
@@ -44,9 +44,9 @@ class OperationCommandReceiveBehaviour extends CyclicBehaviour {
                 System.out.println("Received REQUEST_OPERATION_STATE command.");
                 ACLMessage reply = msg.createReply();
                 reply.setPerformative(ACLMessage.INFORM);
-                boolean operating = myAgent.getOperating();
+                boolean poweredOn = myAgent.getPoweredOn();
                 try {
-                    reply.setContentObject(operating);
+                    reply.setContentObject(poweredOn);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

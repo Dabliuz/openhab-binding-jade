@@ -155,13 +155,13 @@ public class SmartHomeAgent extends AbstractEnergyAgent {
     }
 
     // called by IO, OperationCommand
-    public boolean getOperating() {
+    public boolean getPoweredOn() {
         return myAgentHandler.getActuateChannelValue();
     }
 
     // called by IO, OperationCommand
-    public void setOperating(Boolean operating) {
-        myAgentHandler.setActuateChannelValue(operating);
+    public void setPoweredOn(Boolean poweredOn) {
+        myAgentHandler.setActuateChannelValue(poweredOn);
     }
 
 }

@@ -224,9 +224,13 @@ public class SmartHomeAgentHandler extends BaseThingHandler implements ChannelMi
             switch (channelUID.getId()) {
                 case ACTUATE_MIRROR_CHANNEL: {
                     if (command == OnOffType.ON) {
-                        updateState(actuateOriginalChannelUID, OnOffType.ON);
+                        logger.info("updateState " + OnOffType.ON);
+
+                        postCommand(actuateOriginalChannelUID, OnOffType.ON);
                     } else {
-                        updateState(actuateOriginalChannelUID, OnOffType.OFF);
+                        logger.info("updateState " + OnOffType.OFF);
+
+                        postCommand(actuateOriginalChannelUID, OnOffType.OFF);
                     }
                     break;
                 }
@@ -286,8 +290,8 @@ public class SmartHomeAgentHandler extends BaseThingHandler implements ChannelMi
     }
 
     // only called by the agent (via one of it's behaviours)
-    public void setActuateChannelValue(boolean operating) {
-        actuateChannelValue = operating;
+    public void setActuateChannelValue(boolean actuateValue) {
+        actuateChannelValue = actuateValue;
         handleCommand(actuateMirrorChannelUID, RefreshType.REFRESH);
     }
 

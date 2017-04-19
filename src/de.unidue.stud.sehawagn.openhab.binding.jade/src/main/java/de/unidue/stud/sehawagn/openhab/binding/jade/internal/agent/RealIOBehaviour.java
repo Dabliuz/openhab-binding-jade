@@ -19,7 +19,7 @@ public class RealIOBehaviour extends AbstractIOReal implements EnergyAgentIO {
 
     private SmartHomeAgent myAgent;
     private FixedVariableList measurements;
-    private FixedVariableList setPoints = produceVariableList(InternalDataModel.SP_OPERATING_DEFAULT, InternalDataModel.VAR_OPERATING);
+    private FixedVariableList setPoints = produceVariableList(InternalDataModel.SP_POWERED_ON_DEFAULT, InternalDataModel.VAR_POWERED_ON);
 
     /**
      * @param agent the agent
@@ -47,7 +47,7 @@ public class RealIOBehaviour extends AbstractIOReal implements EnergyAgentIO {
         }
 //        System.out.println("SmartHomeAgent-RealIOBehaviour-measurement:" + mPowerConsumption);
         measurements = produceVariableList(mPowerConsumption, InternalDataModel.VAR_POWER_CONSUMPTION);
-        setPoints = produceVariableList(myAgent.getOperating(), InternalDataModel.VAR_OPERATING);
+        setPoints = produceVariableList(myAgent.getPoweredOn(), InternalDataModel.VAR_POWERED_ON);
     }
 
     private void updateInternalDataModel() {
@@ -78,7 +78,7 @@ public class RealIOBehaviour extends AbstractIOReal implements EnergyAgentIO {
     @Override
     public void setSetPointsToSystem(FixedVariableList newSetPoints) {
         setPoints = newSetPoints;
-        myAgent.setOperating(deriveSetPointOperating(setPoints));
+        myAgent.setPoweredOn(deriveSetPointPoweredOn(setPoints));
         updateInternalDataModel();
     }
 
@@ -100,8 +100,8 @@ public class RealIOBehaviour extends AbstractIOReal implements EnergyAgentIO {
         return variableList;
     }
 
-    public static boolean deriveSetPointOperating(FixedVariableList setPoints) {
-        FixedVariable sP1 = setPoints.getVariable(InternalDataModel.VAR_OPERATING);
+    public static boolean deriveSetPointPoweredOn(FixedVariableList setPoints) {
+        FixedVariable sP1 = setPoints.getVariable(InternalDataModel.VAR_POWERED_ON);
         if (sP1 instanceof FixedBoolean) {
             return ((FixedBoolean) sP1).isValue();
         }
