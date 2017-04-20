@@ -35,12 +35,12 @@ Import-Package: com.google.common.collect;version="10.0.1",
  org.eclipse.smarthome.core.thing.events,
  org.eclipse.smarthome.core.thing.link,
  org.eclipse.smarthome.core.types,
+ org.osgi.framework;version="1.8.0",
  org.slf4j;version="1.7.2"
 Service-Component: OSGI-INF/*.xml
 Bundle-ActivationPolicy: lazy
 Export-Package: de.unidue.stud.sehawagn.openhab.binding.jade,
  de.unidue.stud.sehawagn.openhab.binding.jade.handler
-Require-Bundle: de.unidue.stud.sehawagn.openhab.binding.jadeservice,
- org.eclipse.osgi
+Require-Bundle: de.unidue.stud.sehawagn.openhab.binding.jadeservice
 Bundle-Activator: de.unidue.stud.sehawagn.openhab.binding.jade.AgentHolderActivator
 

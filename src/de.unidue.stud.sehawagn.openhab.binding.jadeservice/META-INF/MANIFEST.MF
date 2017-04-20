@@ -95,7 +95,7 @@ Import-Package: jade.content,
  jade.wrapper.gateway,
  org.apache.commons.codec.binary,
  org.apache.commons.io,
- org.apache.commons.lang
+ org.apache.commons.lang,
+ org.osgi.framework;version="1.8.0"
 Service-Component: OSGI-INF/*.xml
 Bundle-ActivationPolicy: lazy
-Require-Bundle: org.eclipse.osgi
