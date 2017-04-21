@@ -161,7 +161,6 @@ public class SmartHomeAgentHandler extends BaseThingHandler implements ChannelMi
             try {
                 return myAgent.getName();
             } catch (StaleProxyException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
@@ -193,10 +192,6 @@ public class SmartHomeAgentHandler extends BaseThingHandler implements ChannelMi
         if (command == RefreshType.REFRESH) {
             State newState = null;
             switch (channelUID.getId()) {
-                case CHANNEL_ALIVE: {
-                    newState = boolToState(agentAlive);
-                    break;
-                }
                 case MEASUREMENT_MIRROR_CHANNEL: {
                     if (measurementChannelValue != Double.NEGATIVE_INFINITY) {
                         newState = new DecimalType(measurementChannelValue);
@@ -204,7 +199,19 @@ public class SmartHomeAgentHandler extends BaseThingHandler implements ChannelMi
                     break;
                 }
                 case ACTUATE_MIRROR_CHANNEL: {
-                    newState = boolToState(actuateChannelValue);
+                    if (actuateChannelValue) {
+                        newState = OnOffType.ON;
+                    } else {
+                        newState = OnOffType.OFF;
+                    }
+                    break;
+                }
+                case CHANNEL_ALIVE: {
+                    if (agentAlive) {
+                        newState = OnOffType.ON;
+                    } else {
+                        newState = OnOffType.OFF;
+                    }
                     break;
                 }
                 default: {
@@ -213,32 +220,34 @@ public class SmartHomeAgentHandler extends BaseThingHandler implements ChannelMi
                 }
             }
             if (newState != null) {
-//                logger.info("REFRESH command for " + channelUID + ": " + newState + " (should have been handeled OK)");
+                logger.info("REFRESH command for " + channelUID + ": " + newState + " (should have been handeled OK)");
 
                 updateState(channelUID.getId(), newState);
             }
+        } else if (channelUID.getId().equals(CHANNEL_ALIVE)) {
+            if (command == OnOffType.ON) {
+                startAgent();
+//                logger.info("command: " + command + " for channel " + channelUID + " starting agent");
+            } else {
+                stopAgent();
+//                logger.info("command: " + command + " for channel " + channelUID + " stopping agent");
+            }
         } else {
             switch (channelUID.getId()) {
-                case CHANNEL_ALIVE: {
-                    if (command == OnOffType.ON) {
-                        startAgent();
-                        // logger.info("command: " + command + " for channel " + channelUID + " starting agent");
-                    } else if (command == OnOffType.OFF) {
-                        stopAgent();
-                        // logger.info("command: " + command + " for channel " + channelUID + " stopping agent");
-                    }
-                    break;
-                }
                 case ACTUATE_MIRROR_CHANNEL: {
                     if (command == OnOffType.ON) {
-                        postCommand(actuateMirrorChannelUID, command);
-//                        logger.info("handleCommand(" + channelUID + "==ACTUATE_MIRROR_CHANNEL, " + command + ") => " + "postCommand(" + actuateOriginalChannelUID + ", " + OnOffType.ON + ")");
+                        logger.info("handleCommand(" + channelUID + "==ACTUATE_MIRROR_CHANNEL, " + command + ") => " + "postCommand(" + actuateOriginalChannelUID + ", " + OnOffType.ON + ")");
+
+                        postCommand(actuateMirrorChannelUID, OnOffType.ON);
+                    } else {
+                        logger.info("handleCommand(" + channelUID + "==ACTUATE_MIRROR_CHANNEL, " + command + ") => " + "postCommand(" + actuateOriginalChannelUID + ", " + OnOffType.OFF + ")");
+
+                        postCommand(actuateMirrorChannelUID, OnOffType.OFF);
                     }
                     break;
                 }
                 default: {
                     logger.info("unrecognized command: " + command + " for channel " + channelUID);
-                    break;
                 }
             }
         }
@@ -270,8 +279,11 @@ public class SmartHomeAgentHandler extends BaseThingHandler implements ChannelMi
             }
         } else if (sourceChannel.equals(actuateOriginalChannelUID.getAsString())) {
             if (newState instanceof OnOffType) {
-                actuateChannelValue = stateToBool((OnOffType) newState);
-
+                if (newState == OnOffType.ON) {
+                    actuateChannelValue = true;
+                } else {
+                    actuateChannelValue = false;
+                }
                 handleCommand(actuateMirrorChannelUID, RefreshType.REFRESH);
             }
         } else {
@@ -292,22 +304,11 @@ public class SmartHomeAgentHandler extends BaseThingHandler implements ChannelMi
     // only called by the agent (via one of it's behaviours)
     public void setActuateChannelValue(boolean actuateValue) {
         actuateChannelValue = actuateValue;
-//        handleCommand(actuateMirrorChannelUID, RefreshType.REFRESH);
-        postCommand(actuateMirrorChannelUID, boolToState(actuateValue));
-    }
-
-    private boolean stateToBool(OnOffType state) {
-        if (state == OnOffType.ON) {
-            return true;
+        if (actuateChannelValue) {
+            postCommand(actuateMirrorChannelUID, OnOffType.ON);
+        } else {
+            postCommand(actuateMirrorChannelUID, OnOffType.OFF);
         }
-        return false;
-    }
-
-    private OnOffType boolToState(boolean bool) {
-        if (bool) {
-            return OnOffType.ON;
-        }
-        return OnOffType.OFF;
     }
 
 }

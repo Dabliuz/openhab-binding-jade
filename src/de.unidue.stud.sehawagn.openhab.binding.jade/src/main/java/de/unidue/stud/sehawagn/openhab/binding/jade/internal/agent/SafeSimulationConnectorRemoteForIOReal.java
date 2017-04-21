@@ -11,6 +11,11 @@ public class SafeSimulationConnectorRemoteForIOReal extends SimulationConnectorR
 
     @Override
     public void doDelete() {
-        // Override doDele to prevent agent restarting
+        // Override doDelete to prevent agent restarting
+    }
+
+    @Override
+    protected void restartAgent() {
+        // Override restartAgent to prevent agent restarting
     }
 }

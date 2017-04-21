@@ -100,7 +100,6 @@ public class JADEBridgeHandler extends ConfigStatusBridgeHandler {
             jrs.startPlatform(props);
             try {
                 AgentController keepOpenAgent = jrs.createNewAgent("KeepOpen", de.unidue.stud.sehawagn.openhab.binding.jade.internal.agent.KeepOpenAgent.class.getName(), null, BUNDLE_SYMBOLIC_NAME); // jade.tools.rma.rma
-
                 keepOpenAgent.start();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -117,9 +116,7 @@ public class JADEBridgeHandler extends ConfigStatusBridgeHandler {
             logger.info("Hiermit kreiere ich einen neuen Agenten.");
             if (jrs != null) {
                 agent = jrs.createNewAgent(agentName, agentClassName, new Object[] { getGeneralAgentConfig(agentName), smartHomeAgentHandler }, BUNDLE_SYMBOLIC_NAME);
-                logger.info("Three");
                 logger.info("Agent state:" + agent.getState());
-
                 agent.start();
                 logger.info("Agent sollte gestartet worden sein.");
             } else {
