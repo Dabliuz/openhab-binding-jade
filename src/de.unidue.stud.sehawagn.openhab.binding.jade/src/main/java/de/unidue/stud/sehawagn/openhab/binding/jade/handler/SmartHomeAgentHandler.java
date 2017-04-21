@@ -32,22 +32,19 @@ import jade.wrapper.StaleProxyException;
 public class SmartHomeAgentHandler extends BaseThingHandler implements ChannelMirrorReceiver {
     public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = Sets.newHashSet(THING_TYPE_JADE_SMARTHOMEAGENT);
 
-//    private static final Class<? extends Agent> AGENT_CLASS = SmartHomeAgent.class;
     private static final String AGENT_CLASS_NAME = "de.unidue.stud.sehawagn.openhab.binding.jade.internal.agent.SmartHomeAgent";
 
-    private static final String MEASUREMENT_MIRROR_CHANNEL = CHANNEL_DEVICE_POWER_CONSUMPTION; // the channel where the
-                                                                                               // value
-    // from the
-    // mirrored
-    // channel is displayed in OpenHAB
-    private static final String ACTUATE_MIRROR_CHANNEL = CHANNEL_DEVICE_LOWLEVEL_ON; // the channel where the value from
-                                                                                     // the mirrored
-    // channel is displayed in OpenHAB
+    // the channel where the value from the mirrored channel is displayed in OpenHAB
+    private static final String MEASUREMENT_MIRROR_CHANNEL = CHANNEL_DEVICE_POWER_CONSUMPTION;
+
+    // the channel where the value from the mirrored channel is displayed in OpenHAB
+    private static final String ACTUATE_MIRROR_CHANNEL = CHANNEL_DEVICE_LOWLEVEL_ON;
 
     private final Logger logger = LoggerFactory.getLogger(SmartHomeAgentHandler.class);
 
     private JADEBridgeHandler bridgeHandler;
     private ChannelMirror channelMirror;
+    private AgentController myAgent;
 
     private ChannelUID measurementOriginalChannelUID;
     private ChannelUID actuateOriginalChannelUID;
@@ -55,11 +52,9 @@ public class SmartHomeAgentHandler extends BaseThingHandler implements ChannelMi
     private ChannelUID actuateMirrorChannelUID;
     private ChannelUID agentAliveChannelUID;
 
+    private boolean agentAliveChannelValue = false; // initialize
     private boolean actuateChannelValue = false; // initialize
     private double measurementChannelValue = Double.NEGATIVE_INFINITY; // initialize
-
-    private AgentController myAgent;
-    private boolean agentAlive = false;
 
     public SmartHomeAgentHandler(Thing thing, ChannelMirror channelMirror) {
         super(thing);
@@ -75,7 +70,6 @@ public class SmartHomeAgentHandler extends BaseThingHandler implements ChannelMi
             actuateOriginalChannelUID = new ChannelUID((String) getConfig().getProperties().get(PROPERTY_ACTUATE_CHANNEL_UID));
         } catch (IllegalArgumentException e) {
             fail("start", e.getMessage());
-
             return;
         }
         measurementMirrorChannelUID = new ChannelUID(this.getThing().getUID(), MEASUREMENT_MIRROR_CHANNEL);
@@ -104,9 +98,10 @@ public class SmartHomeAgentHandler extends BaseThingHandler implements ChannelMi
             currentState = item.getState(); // only use the state of the last item, usually there is only one
             lastItem = item;
         }
-        if (lastItem != null && mirrorChannel != null) {
+        if (lastItem != null && mirrorChannel != null) { // two-way-case
             Set<Item> alreadyLinked = linkRegistry.getLinkedItems(mirrorChannel);
             if (!alreadyLinked.contains(lastItem)) { // only link if not already linked
+                // add new item link for command passing
                 linkRegistry.add(new ItemChannelLink(lastItem.getName(), mirrorChannel));
             }
         }
@@ -146,12 +141,12 @@ public class SmartHomeAgentHandler extends BaseThingHandler implements ChannelMi
     }
 
     public void onAgentStart() {
-        agentAlive = true;
+        agentAliveChannelValue = true;
         handleCommand(agentAliveChannelUID, RefreshType.REFRESH);
     }
 
     public void onAgentStop() {
-        agentAlive = false;
+        agentAliveChannelValue = false;
         handleCommand(agentAliveChannelUID, RefreshType.REFRESH);
         myAgent = null;
     }
@@ -175,7 +170,7 @@ public class SmartHomeAgentHandler extends BaseThingHandler implements ChannelMi
     }
 
     private void fail(String when, String cause) {
-        logger.info("bladiblah agent " + when + " failed because: " + cause);
+        logger.info("Agent " + when + " failed because: " + cause);
 
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
                 "agent " + when + " failed: " + cause);
@@ -192,6 +187,10 @@ public class SmartHomeAgentHandler extends BaseThingHandler implements ChannelMi
         if (command == RefreshType.REFRESH) {
             State newState = null;
             switch (channelUID.getId()) {
+                case CHANNEL_ALIVE: {
+                    newState = boolToState(agentAliveChannelValue);
+                    break;
+                }
                 case MEASUREMENT_MIRROR_CHANNEL: {
                     if (measurementChannelValue != Double.NEGATIVE_INFINITY) {
                         newState = new DecimalType(measurementChannelValue);
@@ -199,19 +198,7 @@ public class SmartHomeAgentHandler extends BaseThingHandler implements ChannelMi
                     break;
                 }
                 case ACTUATE_MIRROR_CHANNEL: {
-                    if (actuateChannelValue) {
-                        newState = OnOffType.ON;
-                    } else {
-                        newState = OnOffType.OFF;
-                    }
-                    break;
-                }
-                case CHANNEL_ALIVE: {
-                    if (agentAlive) {
-                        newState = OnOffType.ON;
-                    } else {
-                        newState = OnOffType.OFF;
-                    }
+                    newState = boolToState(actuateChannelValue);
                     break;
                 }
                 default: {
@@ -220,34 +207,26 @@ public class SmartHomeAgentHandler extends BaseThingHandler implements ChannelMi
                 }
             }
             if (newState != null) {
-                logger.info("REFRESH command for " + channelUID + ": " + newState + " (should have been handeled OK)");
-
+//                logger.info("REFRESH command for " + channelUID + ": " + newState + " (should have been handeled OK)");
                 updateState(channelUID.getId(), newState);
-            }
-        } else if (channelUID.getId().equals(CHANNEL_ALIVE)) {
-            if (command == OnOffType.ON) {
-                startAgent();
-//                logger.info("command: " + command + " for channel " + channelUID + " starting agent");
-            } else {
-                stopAgent();
-//                logger.info("command: " + command + " for channel " + channelUID + " stopping agent");
             }
         } else {
             switch (channelUID.getId()) {
-                case ACTUATE_MIRROR_CHANNEL: {
+                case CHANNEL_ALIVE: {
                     if (command == OnOffType.ON) {
-                        logger.info("handleCommand(" + channelUID + "==ACTUATE_MIRROR_CHANNEL, " + command + ") => " + "postCommand(" + actuateOriginalChannelUID + ", " + OnOffType.ON + ")");
-
-                        postCommand(actuateMirrorChannelUID, OnOffType.ON);
+                        startAgent();
                     } else {
-                        logger.info("handleCommand(" + channelUID + "==ACTUATE_MIRROR_CHANNEL, " + command + ") => " + "postCommand(" + actuateOriginalChannelUID + ", " + OnOffType.OFF + ")");
-
-                        postCommand(actuateMirrorChannelUID, OnOffType.OFF);
+                        stopAgent();
                     }
+                    break;
+                }
+                case ACTUATE_MIRROR_CHANNEL: {
+                    postCommand(actuateMirrorChannelUID, command);
                     break;
                 }
                 default: {
                     logger.info("unrecognized command: " + command + " for channel " + channelUID);
+                    break;
                 }
             }
         }
@@ -279,11 +258,8 @@ public class SmartHomeAgentHandler extends BaseThingHandler implements ChannelMi
             }
         } else if (sourceChannel.equals(actuateOriginalChannelUID.getAsString())) {
             if (newState instanceof OnOffType) {
-                if (newState == OnOffType.ON) {
-                    actuateChannelValue = true;
-                } else {
-                    actuateChannelValue = false;
-                }
+                actuateChannelValue = stateToBool((OnOffType) newState);
+
                 handleCommand(actuateMirrorChannelUID, RefreshType.REFRESH);
             }
         } else {
@@ -297,6 +273,7 @@ public class SmartHomeAgentHandler extends BaseThingHandler implements ChannelMi
         return measurementChannelValue;
     }
 
+    // only called by the agent (via one of it's behaviours)
     public boolean getActuateChannelValue() {
         return actuateChannelValue;
     }
@@ -311,4 +288,17 @@ public class SmartHomeAgentHandler extends BaseThingHandler implements ChannelMi
         }
     }
 
+    private static boolean stateToBool(OnOffType state) {
+        if (state == OnOffType.ON) {
+            return true;
+        }
+        return false;
+    }
+
+    private static OnOffType boolToState(boolean bool) {
+        if (bool) {
+            return OnOffType.ON;
+        }
+        return OnOffType.OFF;
+    }
 }
