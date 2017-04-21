@@ -6,7 +6,6 @@ import hygrid.agent.AbstractIOReal;
 import hygrid.agent.AbstractIOSimulated;
 import hygrid.agent.EnergyAgentIO;
 import hygrid.agent.SimulationConnectorRemote;
-import hygrid.agent.SimulationConnectorRemoteForIOReal;
 import hygrid.agent.monitoring.MonitoringBehaviourRT;
 import hygrid.agent.monitoring.MonitoringListenerForLogging;
 import hygrid.agent.monitoring.MonitoringListenerForProxy;
@@ -66,7 +65,7 @@ public class SmartHomeAgent extends AbstractEnergyAgent {
 
         // initialize SimulationConnector
         if (operatingMode == AgentOperatingMode.TestBedReal || operatingMode == AgentOperatingMode.RealSystem) {
-            this.simulationConnector = new SimulationConnectorRemoteForIOReal(this);
+            this.simulationConnector = new SafeSimulationConnectorRemoteForIOReal(this);
         }
 
         Behaviour ioBehaviour = (Behaviour) this.getEnergyAgentIO();
