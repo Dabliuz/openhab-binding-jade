@@ -18,17 +18,25 @@ public class JADEBindingConstants {
     public static final String CHANNEL_ALIVE = "alive"; // whether the agent is alive
     public static final String CHANNEL_CONNECTED = "connected"; // Whether the agent is connected to a network
                                                                 // simulation/the simulation connector is running
+    public static final String CHANNEL_DEVICE_STATE = "deviceState"; // the eom state
     public static final String CHANNEL_MANAGED = "managed"; // Whether the local agent is free to interact with the
-                                                            // simulation (send data/receive commands)
-    public static final String CHANNEL_DEVICE_LOWLEVEL_ON = "on"; // whether the mirrored device is switched on
-    public static final String CHANNEL_DEVICE_STATE = "deviceState"; // whether the mirrored device is switched on
+                                                            // simulation (send data/receive commands/act on behalf of
+                                                            // the commands)
+    public static final String CHANNEL_END_TIME = "endTime"; // The time, when the device should be finished with the
+                                                             // washing
+    public static final String CHANNEL_END_TIME_TOLERANCE = "endTimeTolerance"; // The amount of time, the device is
+                                                                                // allowed to finish early.
+    public static final String CHANNEL_LOCKED_N_LOADED = "lockedNLoaded"; // Whether the washing machine is loaded with
+                                                                          // laundry and detergent and the door is
+                                                                          // locked.
+
     public static final String CHANNEL_DEVICE_POWER_CONSUMPTION = "powerConsumption";
+    public static final String CHANNEL_DEVICE_LOWLEVEL_ON = "poweredOn"; // whether the mirrored device is switched on
 
     public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = ImmutableSet.of(THING_TYPE_JADE_CONTAINER, THING_TYPE_JADE_SMARTHOMEAGENT);
 
     // Bridge config properties
     public static final String CONFKEY_LOCAL_MTP_ADDRESS = "localMTPAddress";
-
     public static final String CONFKEY_REMOTE_MTP_ADDRESS = "remoteMTPAddress";
     public static final String CONFKEY_REMOTE_MTP_PORT = "remoteMTPPort";
     public static final String CONFKEY_REMOTE_MTP_PROTOCOL = "remoteMTPProtocol";

@@ -15,9 +15,13 @@
 		<channels>
 			<channel id="alive" typeId="alive" />
 			<channel id="connected" typeId="connected" />
+	        <channel id="deviceState" typeId="deviceState" />
 			<channel id="managed" typeId="managed" />
-			<channel id="on" typeId="on" />
+			<channel id="endTime" typeId="endTime" />
+			<channel id="endTimeTolerance" typeId="endTimeTolerance" />        
+			<channel id="lockedNLoaded" typeId="lockedNLoaded" />
 	        <channel id="powerConsumption" typeId="powerConsumption" />
+			<channel id="poweredOn" typeId="poweredOn" />
 		</channels>
 
 		<config-description>
@@ -55,18 +59,44 @@
         <state readOnly="true">
         </state>
     </channel-type>
+    <channel-type id="deviceState">
+        <item-type>String</item-type>
+        <label>State</label>
+        <description>The current EOM model state</description>
+        <category>Energy</category>
+        <state readOnly="true">
+        </state>
+    </channel-type>
     <channel-type id="managed">
         <item-type>Switch</item-type>
         <label>Managed</label>
         <description>Whether the local agent should interact with the simulation (send data/receive commands)</description>
         <category>Switch</category>
+        <default>60</default>
         <state readOnly="false">
         </state>
     </channel-type>
-	<channel-type id="on">
+    <channel-type id="endTime">
+        <item-type>DateTime</item-type>
+        <label>End time</label>
+        <description>The time, when the device should be finished with the washing.</description>
+        <category>Date</category>
+        <default>2017-04-24T15:30:00</default>
+        <state readOnly="false">
+        </state>
+    </channel-type>
+    <channel-type id="endTimeTolerance">
+        <item-type>Number</item-type>
+        <label>End time tolerance</label>
+        <description>The amount of time, the device is allowed to finish early.</description>
+        <category>Date</category>
+        <state readOnly="false">
+        </state>
+    </channel-type>
+    <channel-type id="lockedNLoaded">
         <item-type>Switch</item-type>
-        <label>On</label>
-        <description>Current operational state (mirrored)</description>
+        <label>Locked &amp; Loaded</label>
+        <description>Whether the washing machine is loaded with laundry and detergent and the door is locked.</description>
         <category>Switch</category>
         <state readOnly="false">
         </state>
@@ -79,4 +109,13 @@
         <state readOnly="true" pattern="%.2f W">
         </state>
     </channel-type>
+	<channel-type id="poweredOn">
+        <item-type>Switch</item-type>
+        <label>Powered On</label>
+        <description>Current operational state (mirrored)</description>
+        <category>Switch</category>
+        <state readOnly="false">
+        </state>
+    </channel-type>
+    
 </thing:thing-descriptions>
