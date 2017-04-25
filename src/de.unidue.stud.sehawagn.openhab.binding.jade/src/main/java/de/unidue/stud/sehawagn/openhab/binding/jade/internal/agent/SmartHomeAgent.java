@@ -163,4 +163,9 @@ public class SmartHomeAgent extends AbstractEnergyAgent {
         myAgentHandler.setActuateChannelValue(poweredOn);
     }
 
+    // called by IO, OperationCommand
+    public boolean getLockedNLoaded() {
+        return myAgentHandler.getLockedNLoadedValue();
+    }
+
 }

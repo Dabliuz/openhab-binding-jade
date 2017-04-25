@@ -72,7 +72,6 @@
         <label>Managed</label>
         <description>Whether the local agent should interact with the simulation (send data/receive commands)</description>
         <category>Switch</category>
-        <default>60</default>
         <state readOnly="false">
         </state>
     </channel-type>
@@ -81,7 +80,6 @@
         <label>End time</label>
         <description>The time, when the device should be finished with the washing.</description>
         <category>Date</category>
-        <default>2017-04-24T15:30:00</default>
         <state readOnly="false">
         </state>
     </channel-type>

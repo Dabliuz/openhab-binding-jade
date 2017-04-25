@@ -19,6 +19,7 @@ public class InternalDataModel extends AbstractInternalDataModel {
     public static final String VAR_POWERED_ON = "PoweredOn";               // Has to correlate with EOM I/O variable
     public static final String VAR_POWER_CONSUMPTION = "PowerConsumption"; // Has to correlate with EOM I/O variable
 
+    public static final boolean SP_LOCKED_N_LOADED_DEFAULT = false;
     public static final boolean SP_POWERED_ON_DEFAULT = true;
     public static final double VAR_POWER_CONSUMPTION_DEFAULT = 0.0;
 

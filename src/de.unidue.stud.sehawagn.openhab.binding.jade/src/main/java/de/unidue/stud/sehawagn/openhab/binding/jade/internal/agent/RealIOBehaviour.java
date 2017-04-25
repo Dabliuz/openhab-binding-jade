@@ -19,7 +19,7 @@ public class RealIOBehaviour extends AbstractIOReal implements EnergyAgentIO {
 
     private SmartHomeAgent myAgent;
     private FixedVariableList measurements;
-    private FixedVariableList setPoints = produceVariableList(InternalDataModel.SP_POWERED_ON_DEFAULT, InternalDataModel.VAR_POWERED_ON);
+    private FixedVariableList setPoints = produceDefaultSetPointList();
 
     /**
      * @param agent the agent
@@ -48,6 +48,7 @@ public class RealIOBehaviour extends AbstractIOReal implements EnergyAgentIO {
 //        System.out.println("SmartHomeAgent-RealIOBehaviour-measurement:" + mPowerConsumption);
         measurements = produceVariableList(mPowerConsumption, InternalDataModel.VAR_POWER_CONSUMPTION);
         setPoints = produceVariableList(myAgent.getPoweredOn(), InternalDataModel.VAR_POWERED_ON);
+        setPoints.add(produceVariable(myAgent.getLockedNLoaded(), InternalDataModel.VAR_LOCKED_N_LOADED));
     }
 
     private void updateInternalDataModel() {
@@ -78,32 +79,50 @@ public class RealIOBehaviour extends AbstractIOReal implements EnergyAgentIO {
     @Override
     public void setSetPointsToSystem(FixedVariableList newSetPoints) {
         setPoints = newSetPoints;
-        myAgent.setPoweredOn(deriveSetPointPoweredOn(setPoints));
+        // TODO what would this be needed for?
+//        myAgent.setLockedNLoaded(deriveVariable(setPoints, InternalDataModel.VAR_LOCKED_N_LOADED));
+        myAgent.setPoweredOn(deriveVariable(setPoints, InternalDataModel.VAR_POWERED_ON));
         updateInternalDataModel();
+    }
+
+    public static FixedVariable produceVariable(Object newValue, String variableID) {
+        FixedVariable var = null;
+        if (newValue instanceof Boolean) {
+            FixedBoolean var1 = new FixedBoolean();
+            var1.setValue((Boolean) newValue);
+            var = var1;
+        } else if (newValue instanceof Double) {
+            FixedDouble var2 = new FixedDouble();
+            var2.setValue((Double) newValue);
+            var = var2;
+        } else {
+            System.err.println("CONVERSION ERROR IN RealIOBehaviour");
+        }
+        if (var != null) {
+            var.setVariableID(variableID);
+        }
+        return var;
     }
 
     public static FixedVariableList produceVariableList(Object newValue, String variableID) {
         FixedVariableList variableList = new FixedVariableList();
-        if (newValue instanceof Boolean) {
-            FixedBoolean var1 = new FixedBoolean();
-            var1.setVariableID(variableID);
-            var1.setValue((Boolean) newValue);
-            variableList.add(var1);
-        } else if (newValue instanceof Double) {
-            FixedDouble var2 = new FixedDouble();
-            var2.setVariableID(variableID);
-            var2.setValue((Double) newValue);
-            variableList.add(var2);
-        } else {
-            System.err.println("CONVERSION ERROR IN RealIOBehaviour");
-        }
+        variableList.add(produceVariable(newValue, variableID));
         return variableList;
     }
 
-    public static boolean deriveSetPointPoweredOn(FixedVariableList setPoints) {
-        FixedVariable sP1 = setPoints.getVariable(InternalDataModel.VAR_POWERED_ON);
+    public static FixedVariableList produceDefaultSetPointList() {
+        FixedVariableList variableList = new FixedVariableList();
+        variableList.add(produceVariable(InternalDataModel.SP_LOCKED_N_LOADED_DEFAULT, InternalDataModel.VAR_LOCKED_N_LOADED));
+        variableList.add(produceVariable(InternalDataModel.SP_POWERED_ON_DEFAULT, InternalDataModel.VAR_POWERED_ON));
+        return variableList;
+    }
+
+    public static boolean deriveVariable(FixedVariableList variableList, String variableID) {
+        FixedVariable sP1 = variableList.getVariable(variableID);
         if (sP1 instanceof FixedBoolean) {
             return ((FixedBoolean) sP1).isValue();
+        } else if (sP1 == null) {
+            System.out.println("deriveVariable() " + variableID + " not found! :-(");
         }
         return false;
     }
