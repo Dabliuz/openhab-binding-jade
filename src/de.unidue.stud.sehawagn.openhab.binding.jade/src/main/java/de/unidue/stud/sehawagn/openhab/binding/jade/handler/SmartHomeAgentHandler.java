@@ -220,7 +220,7 @@ public class SmartHomeAgentHandler extends BaseThingHandler implements ChannelMi
                 }
             }
             if (newState != null) {
-//                logger.info("REFRESH command for " + channelUID + ": " + newState + " (should have been handeled OK)");
+//                logger.info("REFRESH command for " + channelUID + ": " + newState + " (should have been handled OK)");
                 updateState(channelUID.getId(), newState);
             }
         } else {

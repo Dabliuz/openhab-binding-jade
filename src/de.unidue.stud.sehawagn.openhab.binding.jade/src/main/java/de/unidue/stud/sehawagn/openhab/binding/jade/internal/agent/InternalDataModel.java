@@ -15,7 +15,7 @@ public class InternalDataModel extends AbstractInternalDataModel {
     /**
      * elements of the internal data model
      */
-    public static final String VAR_LOCKED_N_LOADED = "LockendNLoaded";     // Has to correlate with EOM I/O variable
+    public static final String VAR_LOCKED_N_LOADED = "LockedNLoaded";     // Has to correlate with EOM I/O variable
     public static final String VAR_POWERED_ON = "PoweredOn";               // Has to correlate with EOM I/O variable
     public static final String VAR_POWER_CONSUMPTION = "PowerConsumption"; // Has to correlate with EOM I/O variable
 
