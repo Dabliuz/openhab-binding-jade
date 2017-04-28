@@ -148,6 +148,12 @@ public class SmartHomeAgent extends AbstractEnergyAgent {
         return new RealIOBehaviour(this);
     }
 
+    public void updateEOMState() {
+        if (myAgentHandler != null && monitoringBehaviourRT != null && monitoringBehaviourRT.getMonitoringStrategyRT() != null && monitoringBehaviourRT.getMonitoringStrategyRT().getTechnicalSystemStateEvaluation() != null) {
+            myAgentHandler.setDeviceState(monitoringBehaviourRT.getMonitoringStrategyRT().getTechnicalSystemStateEvaluation().getStateID());
+        }
+    }
+
     // called by IO
     public double getPowerConsumption() {
         return myAgentHandler.getMeasurementChannelValue();
@@ -160,12 +166,16 @@ public class SmartHomeAgent extends AbstractEnergyAgent {
 
     // called by IO, OperationCommand
     public void setPoweredOn(Boolean poweredOn) {
-        myAgentHandler.setActuateChannelValue(poweredOn);
+        myAgentHandler.setActuateChannelValue(poweredOn, true);
     }
 
     // called by IO, OperationCommand
     public boolean getLockedNLoaded() {
         return myAgentHandler.getLockedNLoadedValue();
+    }
+
+    public Integer getWashingProgram() {
+        return myAgentHandler.getWashingProgramValue();
     }
 
 }

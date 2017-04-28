@@ -3,6 +3,7 @@ package de.unidue.stud.sehawagn.openhab.binding.jade.internal.agent;
 import energy.FixedVariableList;
 import energy.optionModel.FixedBoolean;
 import energy.optionModel.FixedDouble;
+import energy.optionModel.FixedInteger;
 import energy.optionModel.FixedVariable;
 import hygrid.agent.AbstractIOReal;
 import hygrid.agent.EnergyAgentIO;
@@ -47,8 +48,10 @@ public class RealIOBehaviour extends AbstractIOReal implements EnergyAgentIO {
         }
 //        System.out.println("SmartHomeAgent-RealIOBehaviour-measurement:" + mPowerConsumption);
         measurements = produceVariableList(mPowerConsumption, InternalDataModel.VAR_POWER_CONSUMPTION);
-        setPoints = produceVariableList(myAgent.getPoweredOn(), InternalDataModel.VAR_POWERED_ON);
+        setPoints = produceVariableList(myAgent.getWashingProgram(), InternalDataModel.VAR_WASHING_PROGRAM);
         setPoints.add(produceVariable(myAgent.getLockedNLoaded(), InternalDataModel.VAR_LOCKED_N_LOADED));
+        setPoints.add(produceVariable(myAgent.getPoweredOn(), InternalDataModel.VAR_POWERED_ON));
+        myAgent.updateEOMState();
     }
 
     private void updateInternalDataModel() {
@@ -95,6 +98,10 @@ public class RealIOBehaviour extends AbstractIOReal implements EnergyAgentIO {
             FixedDouble var2 = new FixedDouble();
             var2.setValue((Double) newValue);
             var = var2;
+        } else if (newValue instanceof Integer) {
+            FixedInteger var3 = new FixedInteger();
+            var3.setValue((Integer) newValue);
+            var = var3;
         } else {
             System.err.println("CONVERSION ERROR IN RealIOBehaviour");
         }
@@ -112,6 +119,7 @@ public class RealIOBehaviour extends AbstractIOReal implements EnergyAgentIO {
 
     public static FixedVariableList produceDefaultSetPointList() {
         FixedVariableList variableList = new FixedVariableList();
+        variableList.add(produceVariable(InternalDataModel.SP_WASHING_PROGRAM_DEFAULT, InternalDataModel.VAR_WASHING_PROGRAM));
         variableList.add(produceVariable(InternalDataModel.SP_LOCKED_N_LOADED_DEFAULT, InternalDataModel.VAR_LOCKED_N_LOADED));
         variableList.add(produceVariable(InternalDataModel.SP_POWERED_ON_DEFAULT, InternalDataModel.VAR_POWERED_ON));
         return variableList;

@@ -16,9 +16,10 @@
 			<channel id="alive" typeId="alive" />
 			<channel id="connected" typeId="connected" />
 	        <channel id="deviceState" typeId="deviceState" />
-			<channel id="managed" typeId="managed" />
+			<channel id="managedFromOutside" typeId="managedFromOutside" />
 			<channel id="endTime" typeId="endTime" />
-			<channel id="endTimeTolerance" typeId="endTimeTolerance" />        
+			<channel id="endTimeTolerance" typeId="endTimeTolerance" />     
+			<channel id="washingProgram" typeId="washingProgram" />     
 			<channel id="lockedNLoaded" typeId="lockedNLoaded" />
 	        <channel id="powerConsumption" typeId="powerConsumption" />
 			<channel id="poweredOn" typeId="poweredOn" />
@@ -67,10 +68,10 @@
         <state readOnly="true">
         </state>
     </channel-type>
-    <channel-type id="managed">
+    <channel-type id="managedFromOutside">
         <item-type>Switch</item-type>
         <label>Managed</label>
-        <description>Whether the local agent should interact with the simulation (send data/receive commands)</description>
+        <description>Whether the local agent should interact with the outside simulation (send data/receive commands)</description>
         <category>Switch</category>
         <state readOnly="false">
         </state>
@@ -88,6 +89,14 @@
         <label>End time tolerance</label>
         <description>The amount of time, the device is allowed to finish early.</description>
         <category>Date</category>
+        <state readOnly="false">
+        </state>
+    </channel-type>
+    <channel-type id="washingProgram">
+        <item-type>Number</item-type>
+        <label>Selected Program</label>
+        <description>The currently selected washing program.</description>
+        <category>Switch</category>
         <state readOnly="false">
         </state>
     </channel-type>

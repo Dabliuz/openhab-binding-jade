@@ -19,13 +19,16 @@ public class JADEBindingConstants {
     public static final String CHANNEL_CONNECTED = "connected"; // Whether the agent is connected to a network
                                                                 // simulation/the simulation connector is running
     public static final String CHANNEL_DEVICE_STATE = "deviceState"; // the eom state
-    public static final String CHANNEL_MANAGED = "managed"; // Whether the local agent is free to interact with the
-                                                            // simulation (send data/receive commands/act on behalf of
-                                                            // the commands)
+    public static final String CHANNEL_MANAGED_FROM_OUTSIDE = "managedFromOutside"; // Whether the local agent is free
+                                                                                    // to interact with the
+    // simulation (send data/receive commands/act on behalf of
+    // the commands)
     public static final String CHANNEL_END_TIME = "endTime"; // The time, when the device should be finished with the
                                                              // washing
     public static final String CHANNEL_END_TIME_TOLERANCE = "endTimeTolerance"; // The amount of time, the device is
                                                                                 // allowed to finish early.
+    public static final String CHANNEL_WASHING_PROGRAM = "washingProgram"; // The currently selected washing program
+
     public static final String CHANNEL_LOCKED_N_LOADED = "lockedNLoaded"; // Whether the washing machine is loaded with
                                                                           // laundry and detergent and the door is
                                                                           // locked.
