@@ -12,43 +12,56 @@
 		</properties>
 
 		<config-description>
-		    <parameter name="localMTPAddress" type="text">
-                <context>network_address</context>
-                <label>Local MTP Address</label>
-                <description>The local host interface (IP address/hostname) where the JADE MTP should bind/listen to. (e.g. 132.252.61.116)</description>
-                <required>true</required>
-            </parameter>
+			<parameter name="localMTPAddress" type="text">
+				<context>network_address</context>
+				<label>Local MTP Address</label>
+				<description>The local host interface (IP address/hostname) where the JADE MTP should bind/listen to. (e.g.
+					132.252.61.116)
+				</description>
+				<required>true</required>
+				<default>192.168.42.20</default>
+			</parameter>
 			<parameter name="remoteMTPAddress" type="text">
 				<context>network_address</context>
 				<label>MTP Address</label>
-				<description>The address of the JADE MTP (message transport protocol), where the GroupCoordinator agent is available. (e.g. 132.252.61.126)</description>
+				<description>The address of the JADE MTP (message transport protocol), where the GroupCoordinator agent is
+					available. (e.g. 132.252.61.126)
+				</description>
 				<required>true</required>
+				<default>192.168.42.20</default>
 			</parameter>
 			<parameter name="remoteMTPPort" type="text">
-                <context>network_address</context>
-                <label>MTP Port</label>
-                <description>The port of the JADE MTP (message transport protocol), where the GroupCoordinator agent is available. (e.g. 7778)</description>
-                <required>true</required>
-            </parameter>
-            <parameter name="remoteMTPProtocol" type="text">
-                <context>network_address</context>
-                <label>MTP Protocol</label>
-                <description>The used protocol of the JADE MTP (message transport protocol). (e.g. HTTP/HTTPS)</description>
-                <required>true</required>
-            </parameter>
-            <parameter name="remotePlatformName" type="text">
-                <context>network_address</context>
-                <label>Platform Name</label>
-                <description>The name of the JADE platform, where the GroupCoordinator agent is available. (e.g. 132.252.61.126:1099/JADE)</description>
-                <required>true</required>
-            </parameter>
-            <parameter name="remoteGroupCoordinatorName" type="text">
-                <context>network_address</context>
-                <label>GroupCoordinator Agent Name</label>
-                <description>The name of the GroupCoordinator. (e.g. CeExAg)</description>
-                <required>true</required>
-            </parameter>
+				<context>network_address</context>
+				<label>MTP Port</label>
+				<description>The port of the JADE MTP (message transport protocol), where the GroupCoordinator agent is available.
+					(e.g. 6778)
+				</description>
+				<required>true</required>
+				<default>6778</default>
+			</parameter>
+			<parameter name="remoteMTPProtocol" type="text">
+				<context>network_address</context>
+				<label>MTP Protocol</label>
+				<description>The used protocol of the JADE MTP (message transport protocol). (e.g. HTTP/HTTPS)</description>
+				<required>true</required>
+				<default>HTTP</default>
+			</parameter>
+			<parameter name="remotePlatformName" type="text">
+				<context>network_address</context>
+				<label>Platform Name</label>
+				<description>The name of the JADE platform, where the GroupCoordinator agent is available. (e.g.
+					132.252.61.126:6099/JADE)
+				</description>
+				<required>true</required>
+				<default>192.168.42.20:6099/JADE</default>
+			</parameter>
+			<parameter name="remoteGroupCoordinatorName" type="text">
+				<context>network_address</context>
+				<label>GroupCoordinator Agent Name</label>
+				<description>The name of the GroupCoordinator. (e.g. CeExAg)</description>
+				<required>true</required>
+				<default>CeExAg</default>
+			</parameter>
 		</config-description>
 	</bridge-type>
-
 </thing:thing-descriptions>
