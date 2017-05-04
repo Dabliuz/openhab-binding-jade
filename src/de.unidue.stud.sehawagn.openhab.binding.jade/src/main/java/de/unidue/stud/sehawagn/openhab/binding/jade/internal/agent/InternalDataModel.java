@@ -1,5 +1,6 @@
 package de.unidue.stud.sehawagn.openhab.binding.jade.internal.agent;
 
+import energy.OptionModelController;
 import hygrid.agent.AbstractInternalDataModel;
 import jade.core.Agent;
 
@@ -25,10 +26,29 @@ public class InternalDataModel extends AbstractInternalDataModel {
     public static final double VAR_POWER_CONSUMPTION_DEFAULT = 0.0;
     public static final boolean SP_POWERED_ON_DEFAULT = true;
 
+    private OptionModelController optionModelController;
+
+    private Agent myAgent;
+
     /**
      * @param agent the agent
      */
     public InternalDataModel(Agent agent) {
         super(agent);
+        myAgent = agent;
+    }
+
+    @Override
+    public OptionModelController getOptionModelController() {
+        if (optionModelController == null) {
+            optionModelController = new CustomOptionModelController();
+            optionModelController.setControllingAgent(this.myAgent);
+        }
+        return optionModelController;
+    }
+
+    @Override
+    public ControlledSystemType getTypeOfControlledSystem() {
+        return ControlledSystemType.TechnicalSystem;
     }
 }

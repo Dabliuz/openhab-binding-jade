@@ -56,6 +56,7 @@ public class RealIOBehaviour extends AbstractIOReal implements EnergyAgentIO {
 
     private void updateInternalDataModel() {
         // probably important because of observable pattern?
+        // yes, because every time the measurements are set, the ControlBehaviour is triggered
         myAgent.getInternalDataModel().setMeasurementsFromSystem(measurements);
         // myAgent.getInternalDataModel().setSetPointsToSystem(setPoints); //TODO why is this not designed?
     }
@@ -81,6 +82,7 @@ public class RealIOBehaviour extends AbstractIOReal implements EnergyAgentIO {
     // called by ControlBehaviourRT
     @Override
     public void setSetPointsToSystem(FixedVariableList newSetPoints) {
+        System.out.println("setSetPointsToSystem");
         setPoints = newSetPoints;
         // TODO what would this be needed for?
 //        myAgent.setLockedNLoaded(deriveVariable(setPoints, InternalDataModel.VAR_LOCKED_N_LOADED));

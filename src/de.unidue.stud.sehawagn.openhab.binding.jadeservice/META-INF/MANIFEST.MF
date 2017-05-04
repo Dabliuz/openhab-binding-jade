@@ -10,6 +10,7 @@ Export-Package: agentgui.envModel.graph.controller,
  energy,
  energy.calculations,
  energy.domain,
+ energy.evaluation,
  energy.optionModel,
  energy.schedule,
  hygrid.agent,
@@ -96,6 +97,6 @@ Import-Package: jade.content,
  org.apache.commons.codec.binary,
  org.apache.commons.io,
  org.apache.commons.lang,
- org.osgi.framework;version="1.8.0"
+ org.osgi.framework
 Service-Component: OSGI-INF/*.xml
 Bundle-ActivationPolicy: lazy
