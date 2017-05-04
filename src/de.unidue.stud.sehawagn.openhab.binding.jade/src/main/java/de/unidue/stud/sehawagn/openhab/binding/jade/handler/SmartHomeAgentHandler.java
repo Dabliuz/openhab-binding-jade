@@ -68,6 +68,8 @@ public class SmartHomeAgentHandler extends BaseThingHandler implements ChannelMi
     private boolean actuateChannelValue = false; // initialize
     private double measurementChannelValue = Double.NEGATIVE_INFINITY; // initialize
 
+    private boolean disposing = false;
+
     public SmartHomeAgentHandler(Thing thing, ChannelMirror channelMirror) {
         super(thing);
         this.channelMirror = channelMirror;
@@ -166,8 +168,10 @@ public class SmartHomeAgentHandler extends BaseThingHandler implements ChannelMi
 
     public void onAgentStop() {
         aliveChannelValue = false;
-        // FIXME only call this, if the handler is not already removed
-        handleCommand(aliveChannelUID, RefreshType.REFRESH);
+        if (disposing == false) {
+            // only call this, if the handler is not already removed
+            handleCommand(aliveChannelUID, RefreshType.REFRESH);
+        }
         myAgent = null;
     }
 
@@ -199,6 +203,7 @@ public class SmartHomeAgentHandler extends BaseThingHandler implements ChannelMi
     @Override
     public void dispose() {
         logger.info("Disposing SmartHomeAgentHandler.");
+        disposing = true;
         stopAgent();
     }
 

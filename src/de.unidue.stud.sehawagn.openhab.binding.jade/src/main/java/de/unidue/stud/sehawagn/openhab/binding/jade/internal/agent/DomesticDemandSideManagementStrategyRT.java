@@ -37,7 +37,8 @@ public class DomesticDemandSideManagementStrategyRT extends AbstractEvaluationSt
             long duration = this.timeUntilEvaluationInterrupt - tsse.getGlobalTime();
             Vector<TechnicalSystemStateDeltaEvaluation> deltaSteps = this.getAllDeltaEvaluationsStartingFromTechnicalSystemState(tsse, duration);
             if (deltaSteps.isEmpty()) {
-                System.err.println("DomesticDSMStategy: No further delta steps possible => interrupt search!");
+                System.err.println("DomesticDSMStategy ERROR: No further delta steps possible => interrupt search!");
+                this.setTechnicalSystemStateEvaluation(null);
                 break;
             }
 
@@ -45,28 +46,35 @@ public class DomesticDemandSideManagementStrategyRT extends AbstractEvaluationSt
             FixedBoolean intendedPoweredOn = (FixedBoolean) extractVariableByID(tsse.getIOlist(), InternalDataModel.VAR_POWERED_ON);
             intendedPoweredOn.setValue(!intendedPoweredOn.isValue()); // invert poweredOn setting
             deltaSteps = TechnicalSystemStateDeltaHelper.filterTechnicalSystemStateDeltaEvaluation(deltaSteps, DeltaSelectionBy.IO_List, InternalDataModel.VAR_POWERED_ON, intendedPoweredOn);
+            deltaSteps = TechnicalSystemStateDeltaHelper.filterTechnicalSystemStateDeltaEvaluation(deltaSteps, DeltaSelectionBy.IO_List, InternalDataModel.VAR_LOCKED_N_LOADED, extractVariableByID(tsse.getIOlist(), InternalDataModel.VAR_LOCKED_N_LOADED));
+            deltaSteps = TechnicalSystemStateDeltaHelper.filterTechnicalSystemStateDeltaEvaluation(deltaSteps, DeltaSelectionBy.IO_List, InternalDataModel.VAR_WASHING_PROGRAM, extractVariableByID(tsse.getIOlist(), InternalDataModel.VAR_WASHING_PROGRAM));
 
             TechnicalSystemStateDeltaEvaluation tssDeltaDecision = null;
 
             if (deltaSteps == null || deltaSteps.isEmpty()) {
-                System.err.println("DomesticDSMStategy: No delta steps left after filtering for setpoints => interrupt search!");
+                System.err.println("DomesticDSMStategy ERROR: No delta steps left after filtering for setpoints => interrupt search!");
+                this.setTechnicalSystemStateEvaluation(null);
                 break;
             } else if (deltaSteps.size() == 1) {// it should be only one left
+                System.out.println("DomesticDSMStategy: Found a single new delta step.");
                 tssDeltaDecision = deltaSteps.get(0);
             } else {
-                System.err.println("DomesticDSMStategy: Too many (" + deltaSteps.size() + ") delta steps left after filtering for setpoints => interrupt search!");
+                System.err.println("DomesticDSMStategy ERROR: Too many (" + deltaSteps.size() + ") delta steps left after filtering for setpoints => interrupt search!");
+                this.setTechnicalSystemStateEvaluation(null);
                 break;
             }
 
             if (tssDeltaDecision == null) {
-                System.err.println("DomesticDSMStategy: No valid subsequent state found!");
+                System.err.println("DomesticDSMStategy ERROR: No valid subsequent state found!");
+                this.setTechnicalSystemStateEvaluation(null);
                 break;
             }
 
             // Set new current TechnicalSystemStateEvaluation
             TechnicalSystemStateEvaluation tsseNext = this.getNextTechnicalSystemStateEvaluation(tsse, tssDeltaDecision);
             if (tsseNext == null) {
-                System.err.println("DomesticDSMStategy: Error while using selected delta => interrupt search!");
+                System.err.println("DomesticDSMStategy ERROR: Error while using selected delta => interrupt search!");
+                this.setTechnicalSystemStateEvaluation(null);
                 break;
             } else {
                 // Set next state as new current state
@@ -76,8 +84,11 @@ public class DomesticDemandSideManagementStrategyRT extends AbstractEvaluationSt
                 break; // if interrupted from outside
             }
 
-            this.setTechnicalSystemStateEvaluation(tsse);
-            this.setIntermediateStateToResult(tsse);
+            System.out.println("DomesticDSMStategy: setTechnicalSystemStateEvaluation(tsse)");
+            this.setTechnicalSystemStateEvaluation(tsse); // TODO work on this, because
+                                                          // getTechnicalSystemStateEvaluation() determines a TSSE
+                                                          // itself if it is null
+//            this.setIntermediateStateToResult(tsse);
         } // end while
 
     }
