@@ -76,12 +76,12 @@ public class DomesticDemandSideManagementStrategyRT extends AbstractEvaluationSt
             TechnicalSystemStateDeltaEvaluation tssDeltaDecision = null;
 
             if (deltaSteps == null || deltaSteps.isEmpty()) {
-                System.err.println("DomesticDSMStrategy ERROR: No delta steps left after filtering for setpoints");
+                System.err.println("DomesticDSMStrategy: No delta steps left after filtering for setpoints, wait for external state change");
                 dontSwitch();
                 break;
             } else if (deltaSteps.size() == 1) {// it should be only one left
                 tssDeltaDecision = deltaSteps.get(0);
-                System.out.println("DomesticDSMStrategy: Found a single new delta step: " + tssDeltaDecision.getTechnicalSystemStateEvaluation().getStateID());
+//                System.out.println("DomesticDSMStrategy: Found a single new delta step: " + tssDeltaDecision.getTechnicalSystemStateEvaluation().getStateID());
                 noSwitchingNecessary = false;
             } else {
                 System.err.println("DomesticDSMStrategy ERROR: Too many (" + deltaSteps.size() + ") delta steps left after filtering for setpoints");
@@ -99,7 +99,7 @@ public class DomesticDemandSideManagementStrategyRT extends AbstractEvaluationSt
                 myTSSE = nextTSSE;
             }
 
-            System.out.println("DomesticDSMStrategy: setTechnicalSystemStateEvaluation(" + myTSSE.getStateID() + ")");
+//            System.out.println("DomesticDSMStrategy: setTechnicalSystemStateEvaluation(" + myTSSE.getStateID() + ")");
             setTechnicalSystemStateEvaluation(myTSSE); // TODO work on this, because
                                                        // getTechnicalSystemStateEvaluation() determines a TSSE
                                                        // itself if it is null
@@ -122,7 +122,7 @@ public class DomesticDemandSideManagementStrategyRT extends AbstractEvaluationSt
 
     void dontSwitch() {
         if (noSwitchingNecessary == false) {
-            System.err.println("DomesticDSMStrategy: dontSwitch() (wasn't before)");
+//            System.err.println("DomesticDSMStrategy: dontSwitch() (wasn't before)");
         }
         noSwitchingNecessary = true;
 //        this.setTechnicalSystemStateEvaluation(null);
@@ -157,7 +157,7 @@ public class DomesticDemandSideManagementStrategyRT extends AbstractEvaluationSt
         System.out.println("DomesticDSMStrategy state=" + stateName);
 
         if (noSwitchingNecessary) {
-            System.err.println("DomesticDSMStrategy: noSwitchingNecessary, returning null as TSSE (so the behaviour doesn't set the setpoints)");
+//            System.err.println("DomesticDSMStrategy: noSwitchingNecessary, returning null as TSSE (so the behaviour doesn't set the setpoints)");
 //            System.err.println("DomesticDSMStrategy: noSwitchingNecessary");
             myTSSE = null;
         }

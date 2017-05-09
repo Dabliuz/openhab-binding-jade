@@ -82,9 +82,9 @@ public class RealIOBehaviour extends AbstractIOReal implements EnergyAgentIO {
     // called by ControlBehaviourRT
     @Override
     public void setSetPointsToSystem(FixedVariableList newSetPoints) {
-        System.out.print("RealIOBehaviour - setSetPointsToSystem: ");
+//        System.out.print("RealIOBehaviour - setSetPointsToSystem: ");
         setPoints = newSetPoints;
-        dumpVariableList(setPoints);
+//        dumpVariableLisst(setPoints);
 //        myAgent.setLockedNLoaded(deriveVariable(setPoints, InternalDataModel.VAR_LOCKED_N_LOADED));
         myAgent.setPoweredOn(deriveVariable(setPoints, InternalDataModel.VAR_POWERED_ON));
 //        updateInternalDataModel();
