@@ -131,7 +131,7 @@ public class DomesticDemandSideManagementStrategyRT extends AbstractEvaluationSt
     private TechnicalSystemStateEvaluation determineTSSE() {
         TechnicalSystemStateEvaluation myTSSE = null;
         if (agentDataModel != null) {
-            myTSSE = agentDataModel.getCurrentTSSE();
+            myTSSE = agentDataModel.getTechnicalSystemStateEvaluation();
         }
         if (myTSSE == null) {
             System.err.println("DomesticDSMStrategy: agentDataModel not valid, super-getting TSSE");
