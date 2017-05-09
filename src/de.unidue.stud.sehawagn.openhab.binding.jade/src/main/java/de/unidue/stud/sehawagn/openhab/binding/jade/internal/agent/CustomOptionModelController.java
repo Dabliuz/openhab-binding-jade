@@ -28,5 +28,4 @@ public class CustomOptionModelController extends OptionModelController {
     public AbstractOptionModelCalculation createOptionModelCalculation() {
         return new SmartHomeCalculation(this);
     }
-
 }

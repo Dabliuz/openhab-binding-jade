@@ -9,13 +9,24 @@ import energy.evaluation.TechnicalSystemStateDeltaEvaluation;
 import energy.evaluation.TechnicalSystemStateDeltaHelper;
 import energy.evaluation.TechnicalSystemStateDeltaHelper.DeltaSelectionBy;
 import energy.optionModel.FixedBoolean;
+import energy.optionModel.FixedInteger;
 import energy.optionModel.FixedVariable;
 import energy.optionModel.TechnicalSystemStateEvaluation;
+import hygrid.agent.AbstractEnergyAgent;
+import hygrid.agent.AbstractInternalDataModel;
 
 public class DomesticDemandSideManagementStrategyRT extends AbstractEvaluationStrategyRT {
 
+    protected boolean noSwitchingNecessary = false;
+    protected AbstractInternalDataModel agentDataModel;
+    private TechnicalSystemStateEvaluation nextTSSE = null;
+
     public DomesticDemandSideManagementStrategyRT(OptionModelController optionModelController) {
         super(optionModelController);
+        if (optionModelController.getControllingAgent() instanceof AbstractEnergyAgent) {
+            AbstractEnergyAgent energyAgent = (AbstractEnergyAgent) optionModelController.getControllingAgent();
+            agentDataModel = energyAgent.getInternalDataModel();
+        }
     }
 
     @Override
@@ -28,69 +39,135 @@ public class DomesticDemandSideManagementStrategyRT extends AbstractEvaluationSt
 //        System.out.println("DomesticDemandSideManagementStrategyRT - runEvaluation");
 
         // Initialize search
-        TechnicalSystemStateEvaluation tsse = this.getInitialTechnicalSystemStateEvaluation();
+        TechnicalSystemStateEvaluation myTSSE = determineTSSE();
 
         // Search by walking through time
-        while (tsse.getGlobalTime() < this.timeUntilEvaluationInterrupt) {
+        while (myTSSE != null && myTSSE.getGlobalTime() < timeUntilEvaluationInterrupt) {
+            nextTSSE = null;
 
-            // Get the possible subsequent steps and states
-            long duration = this.timeUntilEvaluationInterrupt - tsse.getGlobalTime();
-            Vector<TechnicalSystemStateDeltaEvaluation> deltaSteps = this.getAllDeltaEvaluationsStartingFromTechnicalSystemState(tsse, duration);
-            if (deltaSteps.isEmpty()) {
-                System.err.println("DomesticDSMStategy ERROR: No further delta steps possible => interrupt search!");
-                this.setTechnicalSystemStateEvaluation(null);
-                break;
+            if (isStopEvaluation() == true) {
+                dontSwitch();
+                break; // if interrupted from outside
             }
 
+            // Get the possible subsequent steps and states
+            long duration = timeUntilEvaluationInterrupt - myTSSE.getGlobalTime();
+            Vector<TechnicalSystemStateDeltaEvaluation> deltaSteps = getAllDeltaEvaluationsStartingFromTechnicalSystemState(myTSSE, duration);
+            if (deltaSteps.isEmpty()) {
+                System.err.println("DomesticDSMStrategy ERROR: No further delta steps possible => interrupt search!");
+                dontSwitch();
+                break;
+            }
+//            dumpDeltaStepsInfo(deltaSteps, "ALL");
+            deltaSteps = TechnicalSystemStateDeltaHelper.filterTechnicalSystemStateDeltaEvaluation(deltaSteps, DeltaSelectionBy.IO_List, InternalDataModel.VAR_LOCKED_N_LOADED, ((FixedBoolean) extractVariableByID(myTSSE.getIOlist(), InternalDataModel.VAR_LOCKED_N_LOADED)).isValue());
+//            dumpDeltaStepsInfo(deltaSteps, InternalDataModel.VAR_LOCKED_N_LOADED);
+            deltaSteps = TechnicalSystemStateDeltaHelper.filterTechnicalSystemStateDeltaEvaluation(deltaSteps, DeltaSelectionBy.IO_List, InternalDataModel.VAR_WASHING_PROGRAM, ((FixedInteger) extractVariableByID(myTSSE.getIOlist(), InternalDataModel.VAR_WASHING_PROGRAM)).getValue());
+//            dumpDeltaStepsInfo(deltaSteps, InternalDataModel.VAR_WASHING_PROGRAM);
+
             // search for a state which could be transitioned into by switch the poweredOn
-            FixedBoolean intendedPoweredOn = (FixedBoolean) extractVariableByID(tsse.getIOlist(), InternalDataModel.VAR_POWERED_ON);
-            intendedPoweredOn.setValue(!intendedPoweredOn.isValue()); // invert poweredOn setting
+            Boolean intendedPoweredOn = ((FixedBoolean) extractVariableByID(myTSSE.getIOlist(), InternalDataModel.VAR_POWERED_ON)).isValue();
+//            System.out.println("current poweredOn=" + intendedPoweredOn);
+            intendedPoweredOn = !intendedPoweredOn; // invert poweredOn setting
+//            System.out.println("intendedPoweredOn=" + intendedPoweredOn);
+
             deltaSteps = TechnicalSystemStateDeltaHelper.filterTechnicalSystemStateDeltaEvaluation(deltaSteps, DeltaSelectionBy.IO_List, InternalDataModel.VAR_POWERED_ON, intendedPoweredOn);
-            deltaSteps = TechnicalSystemStateDeltaHelper.filterTechnicalSystemStateDeltaEvaluation(deltaSteps, DeltaSelectionBy.IO_List, InternalDataModel.VAR_LOCKED_N_LOADED, extractVariableByID(tsse.getIOlist(), InternalDataModel.VAR_LOCKED_N_LOADED));
-            deltaSteps = TechnicalSystemStateDeltaHelper.filterTechnicalSystemStateDeltaEvaluation(deltaSteps, DeltaSelectionBy.IO_List, InternalDataModel.VAR_WASHING_PROGRAM, extractVariableByID(tsse.getIOlist(), InternalDataModel.VAR_WASHING_PROGRAM));
+//            dumpDeltaStepsInfo(deltaSteps, InternalDataModel.VAR_POWERED_ON);
 
             TechnicalSystemStateDeltaEvaluation tssDeltaDecision = null;
 
             if (deltaSteps == null || deltaSteps.isEmpty()) {
-                System.err.println("DomesticDSMStategy ERROR: No delta steps left after filtering for setpoints => interrupt search!");
-                this.setTechnicalSystemStateEvaluation(null);
+                System.err.println("DomesticDSMStrategy ERROR: No delta steps left after filtering for setpoints");
+                dontSwitch();
                 break;
             } else if (deltaSteps.size() == 1) {// it should be only one left
-                System.out.println("DomesticDSMStategy: Found a single new delta step.");
                 tssDeltaDecision = deltaSteps.get(0);
+                System.out.println("DomesticDSMStrategy: Found a single new delta step: " + tssDeltaDecision.getTechnicalSystemStateEvaluation().getStateID());
+                noSwitchingNecessary = false;
             } else {
-                System.err.println("DomesticDSMStategy ERROR: Too many (" + deltaSteps.size() + ") delta steps left after filtering for setpoints => interrupt search!");
-                this.setTechnicalSystemStateEvaluation(null);
+                System.err.println("DomesticDSMStrategy ERROR: Too many (" + deltaSteps.size() + ") delta steps left after filtering for setpoints");
+                dontSwitch();
                 break;
             }
 
-            if (tssDeltaDecision == null) {
-                System.err.println("DomesticDSMStategy ERROR: No valid subsequent state found!");
-                this.setTechnicalSystemStateEvaluation(null);
-                break;
-            }
-
-            // Set new current TechnicalSystemStateEvaluation
-            TechnicalSystemStateEvaluation tsseNext = this.getNextTechnicalSystemStateEvaluation(tsse, tssDeltaDecision);
-            if (tsseNext == null) {
-                System.err.println("DomesticDSMStategy ERROR: Error while using selected delta => interrupt search!");
-                this.setTechnicalSystemStateEvaluation(null);
+            nextTSSE = this.getNextTechnicalSystemStateEvaluation(myTSSE, tssDeltaDecision);
+            if (nextTSSE == null) {
+                System.err.println("DomesticDSMStrategy ERROR: Error while using selected delta");
+                dontSwitch();
                 break;
             } else {
                 // Set next state as new current state
-                tsse = tsseNext;
-            }
-            if (isStopEvaluation() == true) {
-                break; // if interrupted from outside
+                myTSSE = nextTSSE;
             }
 
-            System.out.println("DomesticDSMStategy: setTechnicalSystemStateEvaluation(tsse)");
-            this.setTechnicalSystemStateEvaluation(tsse); // TODO work on this, because
-                                                          // getTechnicalSystemStateEvaluation() determines a TSSE
-                                                          // itself if it is null
+            System.out.println("DomesticDSMStrategy: setTechnicalSystemStateEvaluation(" + myTSSE.getStateID() + ")");
+            setTechnicalSystemStateEvaluation(myTSSE); // TODO work on this, because
+                                                       // getTechnicalSystemStateEvaluation() determines a TSSE
+                                                       // itself if it is null
+            noSwitchingNecessary = false;
+            break;
 //            this.setIntermediateStateToResult(tsse);
         } // end while
 
+    }
+
+//    private static void dumpDeltaStepsInfo(Vector<TechnicalSystemStateDeltaEvaluation> deltaSteps, String occasion) {
+//        System.out.print("Delta steps available (" + occasion + "): ");
+//        if (deltaSteps != null && !deltaSteps.isEmpty()) {
+//            for (TechnicalSystemStateDeltaEvaluation tssde : deltaSteps) {
+//                System.out.print(tssde.getTechnicalSystemStateEvaluation().getStateID() + ", ");
+//            }
+//        }
+//        System.out.println();
+//    }
+
+    void dontSwitch() {
+        if (noSwitchingNecessary == false) {
+            System.err.println("DomesticDSMStrategy: dontSwitch() (wasn't before)");
+        }
+        noSwitchingNecessary = true;
+//        this.setTechnicalSystemStateEvaluation(null);
+    }
+
+    private TechnicalSystemStateEvaluation determineTSSE() {
+        TechnicalSystemStateEvaluation myTSSE = null;
+        if (agentDataModel != null) {
+            myTSSE = agentDataModel.getCurrentTSSE();
+        }
+        if (myTSSE == null) {
+            System.err.println("DomesticDSMStrategy: agentDataModel not valid, super-getting TSSE");
+            myTSSE = super.getTechnicalSystemStateEvaluation();
+        }
+        if (myTSSE == null) {
+            System.err.println("DomesticDSMStrategy: returning initial TSSE");
+            myTSSE = getInitialTechnicalSystemStateEvaluation();
+        }
+        return myTSSE;
+    }
+
+    @Override
+    public TechnicalSystemStateEvaluation getTechnicalSystemStateEvaluation() {
+        TechnicalSystemStateEvaluation myTSSE = nextTSSE;
+        if (myTSSE == null) {
+            myTSSE = determineTSSE();
+        }
+        String stateName = "null";
+        if (myTSSE != null) {
+            stateName = myTSSE.getStateID();
+        }
+        System.out.println("DomesticDSMStrategy state=" + stateName);
+
+        if (noSwitchingNecessary) {
+            System.err.println("DomesticDSMStrategy: noSwitchingNecessary, returning null as TSSE (so the behaviour doesn't set the setpoints)");
+//            System.err.println("DomesticDSMStrategy: noSwitchingNecessary");
+            myTSSE = null;
+        }
+
+        return myTSSE;
+    }
+
+    @Override
+    protected boolean isAvailableOptionModelCalculation() {
+        return true; // always available, since not instantiated via classloader
     }
 
     /**

@@ -82,12 +82,36 @@ public class RealIOBehaviour extends AbstractIOReal implements EnergyAgentIO {
     // called by ControlBehaviourRT
     @Override
     public void setSetPointsToSystem(FixedVariableList newSetPoints) {
-        System.out.println("setSetPointsToSystem");
+        System.out.print("RealIOBehaviour - setSetPointsToSystem: ");
         setPoints = newSetPoints;
-        // TODO what would this be needed for?
+        dumpVariableList(setPoints);
 //        myAgent.setLockedNLoaded(deriveVariable(setPoints, InternalDataModel.VAR_LOCKED_N_LOADED));
         myAgent.setPoweredOn(deriveVariable(setPoints, InternalDataModel.VAR_POWERED_ON));
 //        updateInternalDataModel();
+    }
+
+    public static void dumpVariableList(FixedVariableList variableList) {
+        String variableString = "";
+        String variableID = "";
+        if (variableList != null) {
+            for (FixedVariable variable : variableList) {
+                variableID = variable.getVariableID();
+                variableString += variableID;
+                variableString += "=";
+                if (variable instanceof FixedBoolean) {
+                    variableString += ((FixedBoolean) variable).isValue();
+                } else if (variable instanceof FixedDouble) {
+                    variableString += ((FixedDouble) variable).getValue();
+                } else if (variable instanceof FixedInteger) {
+                    variableString += ((FixedInteger) variable).getValue();
+                } else {
+                    variableString += "UNKNOWNTYPE(" + variable.getClass().getSimpleName() + ")";
+                }
+
+                variableString += "; ";
+            }
+        }
+        System.out.println(variableString);
     }
 
     public static FixedVariable produceVariable(Object newValue, String variableID) {
