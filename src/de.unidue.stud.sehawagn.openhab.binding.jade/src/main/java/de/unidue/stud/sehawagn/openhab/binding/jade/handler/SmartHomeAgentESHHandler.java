@@ -75,18 +75,34 @@ public class SmartHomeAgentESHHandler extends BaseThingHandler implements Channe
         this.channelMirror = channelMirror;
     }
 
+    private synchronized JADEBridgeHandler getBridgeHandler() {
+        if (bridgeHandler == null) {
+            Bridge bridge = getBridge();
+            if (bridge == null) {
+                return null;
+            }
+            ThingHandler handler = bridge.getHandler();
+            if (handler instanceof JADEBridgeHandler) {
+                bridgeHandler = (JADEBridgeHandler) handler;
+            } else {
+                return null;
+            }
+        }
+        return bridgeHandler;
+    }
+
     @Override
     public void initialize() {
         logger.debug("Initializing SmartHomeAgentESHHandler.");
 
-        aliveChannelUID = new ChannelUID(this.getThing().getUID(), CHANNEL_ALIVE);
-        connectedChannelUID = new ChannelUID(this.getThing().getUID(), CHANNEL_CONNECTED);
-        deviceStateChannelUID = new ChannelUID(this.getThing().getUID(), CHANNEL_DEVICE_STATE);
-        managedFromOutsideChannelUID = new ChannelUID(this.getThing().getUID(), CHANNEL_MANAGED_FROM_OUTSIDE);
-        endTimeChannelUID = new ChannelUID(this.getThing().getUID(), CHANNEL_END_TIME);
-        endTimeToleranceChannelUID = new ChannelUID(this.getThing().getUID(), CHANNEL_END_TIME_TOLERANCE);
-        washingProgramChannelUID = new ChannelUID(this.getThing().getUID(), CHANNEL_WASHING_PROGRAM);
-        lockedNLoadedChannelUID = new ChannelUID(this.getThing().getUID(), CHANNEL_LOCKED_N_LOADED);
+        aliveChannelUID = new ChannelUID(getThing().getUID(), CHANNEL_ALIVE);
+        connectedChannelUID = new ChannelUID(getThing().getUID(), CHANNEL_CONNECTED);
+        deviceStateChannelUID = new ChannelUID(getThing().getUID(), CHANNEL_DEVICE_STATE);
+        managedFromOutsideChannelUID = new ChannelUID(getThing().getUID(), CHANNEL_MANAGED_FROM_OUTSIDE);
+        endTimeChannelUID = new ChannelUID(getThing().getUID(), CHANNEL_END_TIME);
+        endTimeToleranceChannelUID = new ChannelUID(getThing().getUID(), CHANNEL_END_TIME_TOLERANCE);
+        washingProgramChannelUID = new ChannelUID(getThing().getUID(), CHANNEL_WASHING_PROGRAM);
+        lockedNLoadedChannelUID = new ChannelUID(getThing().getUID(), CHANNEL_LOCKED_N_LOADED);
 
         try {
             measurementOriginalChannelUID = new ChannelUID((String) getConfig().getProperties().get(PROPERTY_MEASUREMENT_CHANNEL_UID));
@@ -95,8 +111,8 @@ public class SmartHomeAgentESHHandler extends BaseThingHandler implements Channe
             fail("start", e.getMessage());
             return;
         }
-        measurementMirrorChannelUID = new ChannelUID(this.getThing().getUID(), MEASUREMENT_MIRROR_CHANNEL);
-        actuateMirrorChannelUID = new ChannelUID(this.getThing().getUID(), ACTUATE_MIRROR_CHANNEL);
+        measurementMirrorChannelUID = new ChannelUID(getThing().getUID(), MEASUREMENT_MIRROR_CHANNEL);
+        actuateMirrorChannelUID = new ChannelUID(getThing().getUID(), ACTUATE_MIRROR_CHANNEL);
 
         startMirroring(measurementOriginalChannelUID, null);
         startMirroring(actuateOriginalChannelUID, actuateMirrorChannelUID);
@@ -134,6 +150,30 @@ public class SmartHomeAgentESHHandler extends BaseThingHandler implements Channe
 
     private void stopMirroring(ChannelUID originalChannel) {
         channelMirror.unMirrorChannel(originalChannel, this);
+    }
+
+    @Override
+    public void receiveFromMirroredChannel(String sourceChannel, State newState) {
+        if (sourceChannel.equals(measurementOriginalChannelUID.getAsString())) {
+            if (newState instanceof DecimalType) {
+                DecimalType decimalItem = (DecimalType) newState;
+                measurementChannelValue = decimalItem.doubleValue();
+                handleCommand(measurementMirrorChannelUID, RefreshType.REFRESH);
+            }
+        } else if (sourceChannel.equals(actuateOriginalChannelUID.getAsString())) {
+            // this is actually only used anymore for the initial setting of the switch value, subsequent changes will
+            // be received directly via the additional item link
+            if (newState instanceof OnOffType) {
+                actuateChannelValue = stateToBool(newState);
+                // System.out.println("receiveFromMirroredChannel sourceChannel==actuateOriginalChannelUID newState=" +
+                // newState + " actuateChannelValue==" + actuateChannelValue);
+
+                handleCommand(actuateMirrorChannelUID, RefreshType.REFRESH);
+            }
+        } else {
+            System.err.println("Unknown source channel " + sourceChannel + " has mirrored state " + newState + " while measurementMirrorChannelUID=" + measurementMirrorChannelUID + " and actuateMirrorChannelUID=" + actuateMirrorChannelUID);
+        }
+
     }
 
     public void startAgent() {
@@ -195,13 +235,6 @@ public class SmartHomeAgentESHHandler extends BaseThingHandler implements Channe
             return myAgent;
         }
         return null;
-    }
-
-    private void fail(String when, String cause) {
-        logger.info("Agent " + when + " failed because: " + cause);
-
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-                "agent " + when + " failed: " + cause);
     }
 
     @Override
@@ -280,45 +313,6 @@ public class SmartHomeAgentESHHandler extends BaseThingHandler implements Channe
         }
     }
 
-    private synchronized JADEBridgeHandler getBridgeHandler() {
-        if (this.bridgeHandler == null) {
-            Bridge bridge = getBridge();
-            if (bridge == null) {
-                return null;
-            }
-            ThingHandler handler = bridge.getHandler();
-            if (handler instanceof JADEBridgeHandler) {
-                this.bridgeHandler = (JADEBridgeHandler) handler;
-            } else {
-                return null;
-            }
-        }
-        return this.bridgeHandler;
-    }
-
-    @Override
-    public void receiveFromMirroredChannel(String sourceChannel, State newState) {
-        if (sourceChannel.equals(measurementOriginalChannelUID.getAsString())) {
-            if (newState instanceof DecimalType) {
-                DecimalType decimalItem = (DecimalType) newState;
-                measurementChannelValue = decimalItem.doubleValue();
-                handleCommand(measurementMirrorChannelUID, RefreshType.REFRESH);
-            }
-        } else if (sourceChannel.equals(actuateOriginalChannelUID.getAsString())) {
-            // this is actually only used anymore for the initial setting of the switch value, subsequent changes will
-            // be received directly via the additional item link
-            if (newState instanceof OnOffType) {
-                actuateChannelValue = stateToBool(newState);
-//                System.out.println("receiveFromMirroredChannel sourceChannel==actuateOriginalChannelUID newState=" + newState + " actuateChannelValue==" + actuateChannelValue);
-
-                handleCommand(actuateMirrorChannelUID, RefreshType.REFRESH);
-            }
-        } else {
-            System.err.println("Unknown source channel " + sourceChannel + " has mirrored state " + newState + " while measurementMirrorChannelUID=" + measurementMirrorChannelUID + " and actuateMirrorChannelUID=" + actuateMirrorChannelUID);
-        }
-
-    }
-
     // only called by the agent (via one of it's behaviours)
     public double getMeasurementChannelValue() {
         return measurementChannelValue;
@@ -339,20 +333,6 @@ public class SmartHomeAgentESHHandler extends BaseThingHandler implements Channe
         }
     }
 
-    public void setDeviceState(String newDeviceState) {
-        currentDeviceState = newDeviceState;
-        handleCommand(deviceStateChannelUID, RefreshType.REFRESH);
-    }
-
-    protected Item getLastChannelItem(ChannelUID channel) {
-        Set<Item> allLinks = this.linkRegistry.getLinkedItems(channel);
-        Item lastItem = null;
-        for (Item item : allLinks) {
-            lastItem = item;  // only use the state of the last item, usually there is only one
-        }
-        return lastItem;
-    }
-
     public boolean getLockedNLoadedValue() {
         Item lastChannelItem = getLastChannelItem(lockedNLoadedChannelUID);
         if (lastChannelItem != null && lastChannelItem.getState() instanceof OnOffType) {
@@ -363,6 +343,27 @@ public class SmartHomeAgentESHHandler extends BaseThingHandler implements Channe
 
     public Integer getWashingProgramValue() {
         return currentWashingProgram;
+    }
+
+    public void setDeviceState(String newDeviceState) {
+        currentDeviceState = newDeviceState;
+        handleCommand(deviceStateChannelUID, RefreshType.REFRESH);
+    }
+
+    protected Item getLastChannelItem(ChannelUID channel) {
+        Set<Item> allLinks = linkRegistry.getLinkedItems(channel);
+        Item lastItem = null;
+        for (Item item : allLinks) {
+            lastItem = item;  // only use the state of the last item, usually there is only one
+        }
+        return lastItem;
+    }
+
+    private void fail(String when, String cause) {
+        logger.info("Agent " + when + " failed because: " + cause);
+
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
+                "agent " + when + " failed: " + cause);
     }
 
     private static boolean stateToBool(Object state) {
