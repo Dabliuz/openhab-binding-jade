@@ -1,5 +1,7 @@
 package de.unidue.stud.sehawagn.openhab.binding.jade.internal.agent;
 
+import java.util.List;
+
 import energy.FixedVariableList;
 import energy.OptionModelController;
 import energy.optionModel.FixedBoolean;
@@ -52,6 +54,22 @@ public class InternalDataModel extends AbstractInternalDataModel {
     @Override
     public ControlledSystemType getTypeOfControlledSystem() {
         return ControlledSystemType.TechnicalSystem;
+    }
+
+    /**
+     * Gets a {@link FixedVariable} with a specified ID from a list of {@link FixedVariable}s.
+     *
+     * @param variablesList The variables list
+     * @param variableID The variable ID
+     * @return the variable, null if not found
+     */
+    static FixedVariable extractVariableByID(List<FixedVariable> variablesList, String variableID) {
+        for (FixedVariable fv : variablesList) {
+            if (fv.getVariableID().equals(variableID)) {
+                return fv;
+            }
+        }
+        return null;
     }
 
     public static FixedVariableList produceVariableList(Object newValue, String variableID) {
