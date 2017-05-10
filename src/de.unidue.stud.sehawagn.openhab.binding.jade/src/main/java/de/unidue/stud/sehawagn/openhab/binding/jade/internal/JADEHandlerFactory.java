@@ -14,7 +14,7 @@ import com.google.common.collect.Sets;
 
 import de.unidue.stud.sehawagn.openhab.binding.jade.JADEBindingConstants;
 import de.unidue.stud.sehawagn.openhab.binding.jade.handler.JADEBridgeHandler;
-import de.unidue.stud.sehawagn.openhab.binding.jade.handler.SmartHomeAgentHandler;
+import de.unidue.stud.sehawagn.openhab.binding.jade.handler.SmartHomeAgentESHHandler;
 import de.unidue.stud.sehawagn.openhab.channelmirror.ChannelMirror;
 import jade.osgi.service.runtime.JadeRuntimeService;
 
@@ -22,7 +22,7 @@ public class JADEHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(JADEHandlerFactory.class);
 
     private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Sets
-            .union(JADEBridgeHandler.SUPPORTED_THING_TYPES, SmartHomeAgentHandler.SUPPORTED_THING_TYPES);
+            .union(JADEBridgeHandler.SUPPORTED_THING_TYPES, SmartHomeAgentESHHandler.SUPPORTED_THING_TYPES);
     private ChannelMirror channelMirror = null;
 
     private JadeRuntimeService jrs;
@@ -51,7 +51,7 @@ public class JADEHandlerFactory extends BaseThingHandlerFactory {
                 return null;
             }
         } else if (thingTypeUID.equals(JADEBindingConstants.THING_TYPE_JADE_SMARTHOMEAGENT)) {
-            return new SmartHomeAgentHandler(thing, channelMirror);
+            return new SmartHomeAgentESHHandler(thing, channelMirror);
         } else {
             return null;
         }

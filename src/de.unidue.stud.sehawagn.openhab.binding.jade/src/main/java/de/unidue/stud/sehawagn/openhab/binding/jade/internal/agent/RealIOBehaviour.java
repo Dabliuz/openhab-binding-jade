@@ -1,163 +1,126 @@
 package de.unidue.stud.sehawagn.openhab.binding.jade.internal.agent;
 
+import de.unidue.stud.sehawagn.openhab.binding.jade.handler.SmartHomeAgentESHHandler;
 import energy.FixedVariableList;
-import energy.optionModel.FixedBoolean;
-import energy.optionModel.FixedDouble;
-import energy.optionModel.FixedInteger;
-import energy.optionModel.FixedVariable;
 import hygrid.agent.AbstractIOReal;
-import hygrid.agent.EnergyAgentIO;
 
 /**
  * This class is used if the agent is run inside an openHAB instance
  * It reads data from it's agent handler
  */
-public class RealIOBehaviour extends AbstractIOReal implements EnergyAgentIO {
+public class RealIOBehaviour extends AbstractIOReal implements WashingMashineIO {
 
     private static final long serialVersionUID = 5143063807591183507L;
 
     private static final long MEASURING_INTERVAL = 1000;
 
-    private SmartHomeAgent myAgent;
-    private FixedVariableList measurements;
-    private FixedVariableList setPoints = produceDefaultSetPointList();
+    protected SmartHomeAgent myAgent;
+    protected InternalDataModel internalDataModel = null;
+
+    protected SmartHomeAgentESHHandler myESHHandler;
 
     /**
      * @param agent the agent
-     * @param myAgentHandler
+     * @param myESHHandler
      */
     public RealIOBehaviour(SmartHomeAgent agent) {
         super(agent);
-        this.myAgent = agent;
+        myAgent = agent;
+        internalDataModel = myAgent.getInternalDataModel();
+    }
+
+    @Override
+    public void setESHHandler(SmartHomeAgentESHHandler myESHHandler) {
+        this.myESHHandler = myESHHandler;
     }
 
     @Override
     public void action() {
-        syncWithSystem();
-
-        updateInternalDataModel();
-        block(MEASURING_INTERVAL);
-    }
-
-    private void syncWithSystem() {
         // access the data in openHAB's AgentHandler
-        double mPowerConsumption = myAgent.getPowerConsumption();
+        FixedVariableList measurements;
+        measurements = InternalDataModel.produceVariableList(getPowerConsumption(), InternalDataModel.VAR_POWER_CONSUMPTION);
+        setMeasurementsFromSystem(measurements);
 
-        if (mPowerConsumption == Double.NEGATIVE_INFINITY) {
-            mPowerConsumption = InternalDataModel.VAR_POWER_CONSUMPTION_DEFAULT;
-        }
-//        System.out.println("SmartHomeAgent-RealIOBehaviour-measurement:" + mPowerConsumption);
-        measurements = produceVariableList(mPowerConsumption, InternalDataModel.VAR_POWER_CONSUMPTION);
-        setPoints = produceVariableList(myAgent.getWashingProgram(), InternalDataModel.VAR_WASHING_PROGRAM);
-        setPoints.add(produceVariable(myAgent.getLockedNLoaded(), InternalDataModel.VAR_LOCKED_N_LOADED));
-        setPoints.add(produceVariable(myAgent.getPoweredOn(), InternalDataModel.VAR_POWERED_ON));
-        myAgent.updateEOMState();
-    }
+        updateEOMState();
 
-    private void updateInternalDataModel() {
-        // probably important because of observable pattern?
-        // yes, because every time the measurements are set, the ControlBehaviour is triggered
-        myAgent.getInternalDataModel().setMeasurementsFromSystem(measurements);
-        // myAgent.getInternalDataModel().setSetPointsToSystem(setPoints); //TODO why is this not designed?
+        block(MEASURING_INTERVAL);
     }
 
     // unused
     @Override
     public FixedVariableList getMeasurementsFromSystem() {
-        return measurements;
+        return internalDataModel.getMeasurementsFromSystem();
+    }
+
+    // only used internally
+    @Override
+    public void setMeasurementsFromSystem(FixedVariableList newMeasurements) {
+        // important because of observable pattern: every time the measurements are set, the ControlBehaviour is
+        // triggered
+        internalDataModel.setMeasurementsFromSystem(newMeasurements);
     }
 
     // called by MonitoringBehaviour
     @Override
     public FixedVariableList getSetPointsToSystem() {
+        FixedVariableList setPoints = null;
+        setPoints = InternalDataModel.produceVariableList(getWashingProgram(), InternalDataModel.VAR_WASHING_PROGRAM);
+        setPoints.add(InternalDataModel.produceVariable(getLockedNLoaded(), InternalDataModel.VAR_LOCKED_N_LOADED));
+        setPoints.add(InternalDataModel.produceVariable(getPoweredOn(), InternalDataModel.VAR_POWERED_ON));
         return setPoints;
-    }
-
-    // unused
-    @Override
-    public void setMeasurementsFromSystem(FixedVariableList newMeasurements) {
-        measurements = newMeasurements;
     }
 
     // called by ControlBehaviourRT
     @Override
     public void setSetPointsToSystem(FixedVariableList newSetPoints) {
-//        System.out.print("RealIOBehaviour - setSetPointsToSystem: ");
-        setPoints = newSetPoints;
-//        dumpVariableLisst(setPoints);
-//        myAgent.setLockedNLoaded(deriveVariable(setPoints, InternalDataModel.VAR_LOCKED_N_LOADED));
-        myAgent.setPoweredOn(deriveVariable(setPoints, InternalDataModel.VAR_POWERED_ON));
-//        updateInternalDataModel();
+        setPoweredOn(InternalDataModel.deriveVariable(newSetPoints, InternalDataModel.VAR_POWERED_ON));
     }
 
-    public static void dumpVariableList(FixedVariableList variableList) {
-        String variableString = "";
-        String variableID = "";
-        if (variableList != null) {
-            for (FixedVariable variable : variableList) {
-                variableID = variable.getVariableID();
-                variableString += variableID;
-                variableString += "=";
-                if (variable instanceof FixedBoolean) {
-                    variableString += ((FixedBoolean) variable).isValue();
-                } else if (variable instanceof FixedDouble) {
-                    variableString += ((FixedDouble) variable).getValue();
-                } else if (variable instanceof FixedInteger) {
-                    variableString += ((FixedInteger) variable).getValue();
-                } else {
-                    variableString += "UNKNOWNTYPE(" + variable.getClass().getSimpleName() + ")";
-                }
-
-                variableString += "; ";
-            }
+    @Override
+    public void onAgentStart() {
+        if (myESHHandler != null) {
+            myESHHandler.onAgentStart();
         }
-        System.out.println(variableString);
     }
 
-    public static FixedVariable produceVariable(Object newValue, String variableID) {
-        FixedVariable var = null;
-        if (newValue instanceof Boolean) {
-            FixedBoolean var1 = new FixedBoolean();
-            var1.setValue((Boolean) newValue);
-            var = var1;
-        } else if (newValue instanceof Double) {
-            FixedDouble var2 = new FixedDouble();
-            var2.setValue((Double) newValue);
-            var = var2;
-        } else if (newValue instanceof Integer) {
-            FixedInteger var3 = new FixedInteger();
-            var3.setValue((Integer) newValue);
-            var = var3;
-        } else {
-            System.err.println("CONVERSION ERROR IN RealIOBehaviour");
+    @Override
+    public void onAgentStop() {
+        if (myESHHandler != null) {
+            myESHHandler.onAgentStop();
         }
-        if (var != null) {
-            var.setVariableID(variableID);
+    }
+
+    @Override
+    public Integer getWashingProgram() {
+        return myESHHandler.getWashingProgramValue();
+    }
+
+    @Override
+    public boolean getLockedNLoaded() {
+        return myESHHandler.getLockedNLoadedValue();
+    }
+
+    @Override
+    public double getPowerConsumption() {
+        double mPowerConsumption = myESHHandler.getMeasurementChannelValue();
+        if (mPowerConsumption == Double.NEGATIVE_INFINITY) {
+            mPowerConsumption = InternalDataModel.VAR_POWER_CONSUMPTION_DEFAULT;
         }
-        return var;
+        // System.out.println("SmartHomeAgent-RealIOBehaviour-measurement:" + mPowerConsumption);
+        return mPowerConsumption;
     }
 
-    public static FixedVariableList produceVariableList(Object newValue, String variableID) {
-        FixedVariableList variableList = new FixedVariableList();
-        variableList.add(produceVariable(newValue, variableID));
-        return variableList;
+    @Override
+    public boolean getPoweredOn() {
+        return myESHHandler.getActuateChannelValue();
     }
 
-    public static FixedVariableList produceDefaultSetPointList() {
-        FixedVariableList variableList = new FixedVariableList();
-        variableList.add(produceVariable(InternalDataModel.SP_WASHING_PROGRAM_DEFAULT, InternalDataModel.VAR_WASHING_PROGRAM));
-        variableList.add(produceVariable(InternalDataModel.SP_LOCKED_N_LOADED_DEFAULT, InternalDataModel.VAR_LOCKED_N_LOADED));
-        variableList.add(produceVariable(InternalDataModel.SP_POWERED_ON_DEFAULT, InternalDataModel.VAR_POWERED_ON));
-        return variableList;
+    @Override
+    public void setPoweredOn(Boolean poweredOn) {
+        myESHHandler.setActuateChannelValue(poweredOn, true);
     }
 
-    public static boolean deriveVariable(FixedVariableList variableList, String variableID) {
-        FixedVariable sP1 = variableList.getVariable(variableID);
-        if (sP1 instanceof FixedBoolean) {
-            return ((FixedBoolean) sP1).isValue();
-        } else if (sP1 == null) {
-            System.out.println("deriveVariable() " + variableID + " not found! :-(");
-        }
-        return false;
+    public void updateEOMState() {
+        myESHHandler.setDeviceState(internalDataModel.getTechnicalSystemStateEvaluation().getStateID());
     }
 }

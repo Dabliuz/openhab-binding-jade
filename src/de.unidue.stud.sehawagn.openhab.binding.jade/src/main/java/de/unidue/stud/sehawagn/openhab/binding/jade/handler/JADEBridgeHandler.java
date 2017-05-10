@@ -109,7 +109,7 @@ public class JADEBridgeHandler extends ConfigStatusBridgeHandler {
     }
 
     public AgentController startAgent(String agentName, String agentClassName,
-            SmartHomeAgentHandler smartHomeAgentHandler) throws Exception {
+            SmartHomeAgentESHHandler smartHomeAgentHandler) throws Exception {
         AgentController agent = smartHomeAgentHandler.getAgent();
 
         if (agent == null) {
@@ -148,7 +148,7 @@ public class JADEBridgeHandler extends ConfigStatusBridgeHandler {
         return agentConfig;
     }
 
-    public boolean stopAgent(SmartHomeAgentHandler smartHomeAgentHandler) throws StaleProxyException {
+    public boolean stopAgent(SmartHomeAgentESHHandler smartHomeAgentHandler) throws StaleProxyException {
         logger.info("stopping agent");
 
         if (jrs == null) {

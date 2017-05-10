@@ -1,10 +1,9 @@
 package de.unidue.stud.sehawagn.openhab.binding.jade.internal.agent;
 
-import de.unidue.stud.sehawagn.openhab.binding.jade.handler.SmartHomeAgentHandler;
+import de.unidue.stud.sehawagn.openhab.binding.jade.handler.SmartHomeAgentESHHandler;
 import hygrid.agent.AbstractEnergyAgent;
 import hygrid.agent.AbstractIOReal;
 import hygrid.agent.AbstractIOSimulated;
-import hygrid.agent.EnergyAgentIO;
 import hygrid.agent.SimulationConnectorRemote;
 import hygrid.agent.monitoring.MonitoringBehaviourRT;
 import hygrid.agent.monitoring.MonitoringListenerForLogging;
@@ -25,60 +24,58 @@ public class SmartHomeAgent extends AbstractEnergyAgent {
 
     private static final long serialVersionUID = 1730951019391324601L;
 
-    private InternalDataModel internalDataModel;
+    protected InternalDataModel internalDataModel;
 
-    private MonitoringBehaviourRT monitoringBehaviourRT;
-    private SimulationConnectorRemote simulationConnector;
-
-    private EnergyAgentIO agentIOBehaviour;
-
-    private SmartHomeAgentHandler myAgentHandler;
+    protected MonitoringBehaviourRT monitoringBehaviourRT;
+    protected SimulationConnectorRemote simulationConnector;
 
     /*
      * @see jade.core.Agent#setup()
      */
     @Override
     protected void setup() {
-        Object[] args = this.getArguments();
+        Object[] args = getArguments();
+        SmartHomeAgentESHHandler myESHHandler = null;
         if (args != null) { // if started by the simulation environment
             if (args.length >= 1 && args[0] instanceof AgentConfig) {
                 getAgentConfigController().setAgentConfig((AgentConfig) args[0]);
             }
-            if (args.length >= 2 && args[1] instanceof SmartHomeAgentHandler) {
-                myAgentHandler = (SmartHomeAgentHandler) args[1];
+            if (args.length >= 2 && args[1] instanceof SmartHomeAgentESHHandler) {
+                myESHHandler = (SmartHomeAgentESHHandler) args[1];
             }
         }
 
-        ContentManager contentManager = this.getContentManager();
+        ContentManager contentManager = getContentManager();
 
         // prepare communication with other platforms
         contentManager.registerLanguage(new SLCodec());
         contentManager.registerOntology(HyGridOntology.getInstance());
 
         // If in testbed messages from the central agent are handled by a different behaviour
-        AgentOperatingMode operatingMode = this.getAgentOperatingMode();
+        AgentOperatingMode operatingMode = getAgentOperatingMode();
         if (operatingMode == AgentOperatingMode.TestBedSimulation || operatingMode == AgentOperatingMode.TestBedReal
                 || operatingMode == AgentOperatingMode.RealSystem) {
-            AID centralAgent = this.getAgentConfigController().getCentralAgentAID();
-            this.messageTemplate = MessageTemplate.not(MessageTemplate.MatchSender(centralAgent));
+            AID centralAgent = getAgentConfigController().getCentralAgentAID();
+            messageTemplate = MessageTemplate.not(MessageTemplate.MatchSender(centralAgent));
         }
 
         // initialize SimulationConnector
         if (operatingMode == AgentOperatingMode.TestBedReal || operatingMode == AgentOperatingMode.RealSystem) {
-            this.simulationConnector = new SafeSimulationConnectorRemoteForIOReal(this);
+            simulationConnector = new SafeSimulationConnectorRemoteForIOReal(this);
         }
 
-        Behaviour ioBehaviour = (Behaviour) this.getEnergyAgentIO();
+        getEnergyAgentIO().setESHHandler(myESHHandler);
+
+        Behaviour ioBehaviour = (Behaviour) getEnergyAgentIO();
         if (ioBehaviour != null) {
-            this.addBehaviour(ioBehaviour);
+            addBehaviour(ioBehaviour);
         }
 
-        this.addBehaviour(new OperationCommandReceiveBehaviour(this));
+        addBehaviour(new OperationCommandReceiveBehaviour(this));
 
 //        System.out.println("SmartHomeAgent started");
-        if (myAgentHandler != null) {
-            myAgentHandler.onAgentStart();
-        }
+
+        getEnergyAgentIO().onAgentStart();
     }
 
     /*
@@ -87,10 +84,10 @@ public class SmartHomeAgent extends AbstractEnergyAgent {
     @Override
     protected void takeDown() {
         if (getAgentOperatingMode() != null) {
-            switch (this.getAgentOperatingMode()) {
+            switch (getAgentOperatingMode()) {
                 case Simulation:
-                    if (this.agentIOBehaviour != null) {
-                        ((SimulatedIOBehaviour) this.agentIOBehaviour).stopTimeTriggerForSystemInput();
+                    if (agentIOBehaviour != null) {
+                        ((SimulatedIOBehaviour) agentIOBehaviour).stopTimeTriggerForSystemInput();
                     }
                     break;
                 case TestBedSimulation:
@@ -104,9 +101,7 @@ public class SmartHomeAgent extends AbstractEnergyAgent {
             }
         }
 //        System.out.println("SmartHomeAgent stopped");
-        if (myAgentHandler != null) {
-            myAgentHandler.onAgentStop();
-        }
+        getEnergyAgentIO().onAgentStop();
     }
 
     /**
@@ -114,13 +109,13 @@ public class SmartHomeAgent extends AbstractEnergyAgent {
      */
     @Override
     public InternalDataModel getInternalDataModel() {
-        if (this.internalDataModel == null) {
-            this.internalDataModel = new InternalDataModel(this);
+        if (internalDataModel == null) {
+            internalDataModel = new InternalDataModel(this);
             // necessary to initialize the datamodel's controlledSystemType
-            this.internalDataModel.getOptionModelController();
-            this.internalDataModel.addObserver(this);
+            internalDataModel.getOptionModelController();
+            internalDataModel.addObserver(this);
         }
-        return this.internalDataModel;
+        return internalDataModel;
     }
 
     /**
@@ -129,18 +124,18 @@ public class SmartHomeAgent extends AbstractEnergyAgent {
     @Override
     protected void startMonitoringBehaviourRT() {
         if (monitoringBehaviourRT == null) {
-            monitoringBehaviourRT = new MonitoringBehaviourRT(this.getInternalDataModel(), this.getEnergyAgentIO());
+            monitoringBehaviourRT = new MonitoringBehaviourRT(getInternalDataModel(), getEnergyAgentIO());
             monitoringBehaviourRT.addMonitoringListener(new MonitoringListenerForLogging());
-            monitoringBehaviourRT.addMonitoringListener(new MonitoringListenerForProxy(this.simulationConnector));
-            this.getInternalDataModel().addObserver(monitoringBehaviourRT);
-            this.addBehaviour(monitoringBehaviourRT);
+            monitoringBehaviourRT.addMonitoringListener(new MonitoringListenerForProxy(simulationConnector));
+            getInternalDataModel().addObserver(monitoringBehaviourRT);
+            addBehaviour(monitoringBehaviourRT);
             monitoringBehaviourRT.getMonitoringStrategyRT().setOptionModelCalculationClass(SmartHomeCalculation.class);
         }
     }
 
     @Override
     public AbstractIOSimulated getIOSimulated() {
-        return new SimulatedIOBehaviour(this, this.getInternalDataModel());
+        return new SimulatedIOBehaviour(this, getInternalDataModel());
     }
 
     @Override
@@ -148,34 +143,8 @@ public class SmartHomeAgent extends AbstractEnergyAgent {
         return new RealIOBehaviour(this);
     }
 
-    public void updateEOMState() {
-        if (myAgentHandler != null && monitoringBehaviourRT != null && monitoringBehaviourRT.getMonitoringStrategyRT() != null && monitoringBehaviourRT.getMonitoringStrategyRT().getTechnicalSystemStateEvaluation() != null) {
-            myAgentHandler.setDeviceState(monitoringBehaviourRT.getMonitoringStrategyRT().getTechnicalSystemStateEvaluation().getStateID());
-        }
+    @Override
+    public WashingMashineIO getEnergyAgentIO() {
+        return (WashingMashineIO) super.getEnergyAgentIO();
     }
-
-    // called by IO
-    public double getPowerConsumption() {
-        return myAgentHandler.getMeasurementChannelValue();
-    }
-
-    // called by IO, OperationCommand
-    public boolean getPoweredOn() {
-        return myAgentHandler.getActuateChannelValue();
-    }
-
-    // called by IO, OperationCommand
-    public void setPoweredOn(Boolean poweredOn) {
-        myAgentHandler.setActuateChannelValue(poweredOn, true);
-    }
-
-    // called by IO, OperationCommand
-    public boolean getLockedNLoaded() {
-        return myAgentHandler.getLockedNLoadedValue();
-    }
-
-    public Integer getWashingProgram() {
-        return myAgentHandler.getWashingProgramValue();
-    }
-
 }

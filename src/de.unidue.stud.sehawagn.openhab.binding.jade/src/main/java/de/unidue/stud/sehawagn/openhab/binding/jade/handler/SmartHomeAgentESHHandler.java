@@ -30,7 +30,7 @@ import de.unidue.stud.sehawagn.openhab.channelmirror.ChannelMirrorReceiver;
 import jade.wrapper.AgentController;
 import jade.wrapper.StaleProxyException;
 
-public class SmartHomeAgentHandler extends BaseThingHandler implements ChannelMirrorReceiver {
+public class SmartHomeAgentESHHandler extends BaseThingHandler implements ChannelMirrorReceiver {
     public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = Sets.newHashSet(THING_TYPE_JADE_SMARTHOMEAGENT);
 
     private static final String AGENT_CLASS_NAME = "de.unidue.stud.sehawagn.openhab.binding.jade.internal.agent.SmartHomeAgent";
@@ -41,7 +41,7 @@ public class SmartHomeAgentHandler extends BaseThingHandler implements ChannelMi
     // the channel where the value from the mirrored channel is displayed in OpenHAB
     private static final String ACTUATE_MIRROR_CHANNEL = CHANNEL_DEVICE_LOWLEVEL_ON;
 
-    private final Logger logger = LoggerFactory.getLogger(SmartHomeAgentHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(SmartHomeAgentESHHandler.class);
 
     private JADEBridgeHandler bridgeHandler;
     private ChannelMirror channelMirror;
@@ -70,7 +70,7 @@ public class SmartHomeAgentHandler extends BaseThingHandler implements ChannelMi
 
     private boolean disposing = false;
 
-    public SmartHomeAgentHandler(Thing thing, ChannelMirror channelMirror) {
+    public SmartHomeAgentESHHandler(Thing thing, ChannelMirror channelMirror) {
         super(thing);
         this.channelMirror = channelMirror;
     }

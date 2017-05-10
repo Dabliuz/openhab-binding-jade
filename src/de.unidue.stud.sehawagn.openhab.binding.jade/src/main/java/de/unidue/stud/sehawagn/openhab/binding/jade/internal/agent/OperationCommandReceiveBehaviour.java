@@ -35,7 +35,7 @@ class OperationCommandReceiveBehaviour extends CyclicBehaviour {
                 System.out.println("Received TOGGLE_OPERATION command.");
                 try {
                     Boolean poweredOn = (Boolean) msg.getContentObject();
-                    myAgent.setPoweredOn(poweredOn);
+                    myAgent.getEnergyAgentIO().setPoweredOn(poweredOn);
                 } catch (UnreadableException e) {
                     System.err.println("Error getting content object from TOGGLE_OPERATION command.");
                     e.printStackTrace();
@@ -44,7 +44,7 @@ class OperationCommandReceiveBehaviour extends CyclicBehaviour {
                 System.out.println("Received REQUEST_OPERATION_STATE command.");
                 ACLMessage reply = msg.createReply();
                 reply.setPerformative(ACLMessage.INFORM);
-                boolean poweredOn = myAgent.getPoweredOn();
+                boolean poweredOn = myAgent.getEnergyAgentIO().getPoweredOn();
                 try {
                     reply.setContentObject(poweredOn);
                 } catch (IOException e) {

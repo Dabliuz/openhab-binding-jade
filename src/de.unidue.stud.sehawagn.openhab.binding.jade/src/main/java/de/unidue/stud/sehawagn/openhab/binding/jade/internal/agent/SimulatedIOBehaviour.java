@@ -2,6 +2,7 @@ package de.unidue.stud.sehawagn.openhab.binding.jade.internal.agent;
 
 import agentgui.envModel.graph.networkModel.NetworkModel;
 import agentgui.simulationService.transaction.EnvironmentNotification;
+import de.unidue.stud.sehawagn.openhab.binding.jade.handler.SmartHomeAgentESHHandler;
 import hygrid.agent.AbstractIOSimulated;
 import hygrid.agent.AbstractInternalDataModel;
 
@@ -10,7 +11,7 @@ import hygrid.agent.AbstractInternalDataModel;
  * It simulates measurements of an energy conversion process.
  *
  */
-public class SimulatedIOBehaviour extends AbstractIOSimulated {
+public class SimulatedIOBehaviour extends AbstractIOSimulated implements WashingMashineIO {
 
     private static final long serialVersionUID = -6149499361123282249L;
 
@@ -40,6 +41,48 @@ public class SimulatedIOBehaviour extends AbstractIOSimulated {
      */
     @Override
     protected void prepareForSimulation(NetworkModel networkModel) {
+
+    }
+
+    @Override
+    public double getPowerConsumption() {
+        return 0;
+    }
+
+    @Override
+    public boolean getPoweredOn() {
+        return false;
+    }
+
+    @Override
+    public void setPoweredOn(Boolean poweredOn) {
+    }
+
+    @Override
+    public boolean getLockedNLoaded() {
+        return false;
+    }
+
+    @Override
+    public Integer getWashingProgram() {
+        return null;
+    }
+
+    @Override
+    public void onAgentStart() {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void setESHHandler(SmartHomeAgentESHHandler myAgentHandler) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void onAgentStop() {
+        // TODO Auto-generated method stub
 
     }
 
