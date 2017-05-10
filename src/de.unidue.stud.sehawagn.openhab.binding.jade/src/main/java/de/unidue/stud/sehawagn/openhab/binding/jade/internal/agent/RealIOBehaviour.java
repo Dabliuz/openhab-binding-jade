@@ -121,6 +121,8 @@ public class RealIOBehaviour extends AbstractIOReal implements WashingMachineIO 
     }
 
     public void updateEOMState() {
-        myESHHandler.setDeviceState(internalDataModel.getTechnicalSystemStateEvaluation().getStateID());
+        if (internalDataModel.getTechnicalSystemStateEvaluation() != null) {
+            myESHHandler.setDeviceState(internalDataModel.getTechnicalSystemStateEvaluation().getStateID());
+        }
     }
 }
