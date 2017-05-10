@@ -8,7 +8,7 @@ import hygrid.agent.AbstractIOReal;
  * This class is used if the agent is run inside an openHAB instance
  * It reads data from it's agent handler
  */
-public class RealIOBehaviour extends AbstractIOReal implements WashingMachineIO {
+public class ESHIOBehaviour extends AbstractIOReal implements WashingMachineIO {
 
     private static final long serialVersionUID = 5143063807591183507L;
 
@@ -23,7 +23,7 @@ public class RealIOBehaviour extends AbstractIOReal implements WashingMachineIO 
      * @param agent the agent
      * @param myESHHandler
      */
-    public RealIOBehaviour(SmartifiedHomeAgent agent) {
+    public ESHIOBehaviour(SmartifiedHomeAgent agent) {
         super(agent);
         myAgent = agent;
         internalDataModel = myAgent.getInternalDataModel();

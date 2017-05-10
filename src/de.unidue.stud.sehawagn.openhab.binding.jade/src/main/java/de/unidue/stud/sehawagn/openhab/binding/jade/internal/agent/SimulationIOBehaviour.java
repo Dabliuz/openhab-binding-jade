@@ -11,11 +11,11 @@ import hygrid.agent.AbstractInternalDataModel;
  * It simulates measurements of an energy conversion process.
  *
  */
-public class SimulatedIOBehaviour extends AbstractIOSimulated implements WashingMachineIO {
+public class SimulationIOBehaviour extends AbstractIOSimulated implements WashingMachineIO {
 
     private static final long serialVersionUID = -6149499361123282249L;
 
-    public SimulatedIOBehaviour(SmartifiedHomeAgent agent, AbstractInternalDataModel internalDataModel) {
+    public SimulationIOBehaviour(SmartifiedHomeAgent agent, AbstractInternalDataModel internalDataModel) {
         super(agent, internalDataModel);
     }
 

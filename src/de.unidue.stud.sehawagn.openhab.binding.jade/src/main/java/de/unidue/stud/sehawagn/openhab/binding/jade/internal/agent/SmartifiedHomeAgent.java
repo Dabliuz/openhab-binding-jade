@@ -87,7 +87,7 @@ public class SmartifiedHomeAgent extends AbstractEnergyAgent {
             switch (getAgentOperatingMode()) {
                 case Simulation:
                     if (agentIOBehaviour != null) {
-                        ((SimulatedIOBehaviour) agentIOBehaviour).stopTimeTriggerForSystemInput();
+                        ((SimulationIOBehaviour) agentIOBehaviour).stopTimeTriggerForSystemInput();
                     }
                     break;
                 case TestBedSimulation:
@@ -135,12 +135,12 @@ public class SmartifiedHomeAgent extends AbstractEnergyAgent {
 
     @Override
     public AbstractIOSimulated getIOSimulated() {
-        return new SimulatedIOBehaviour(this, getInternalDataModel());
+        return new SimulationIOBehaviour(this, getInternalDataModel());
     }
 
     @Override
     public AbstractIOReal getIOReal() {
-        return new RealIOBehaviour(this);
+        return new ESHIOBehaviour(this);
     }
 
     @Override
