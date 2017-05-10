@@ -4,17 +4,12 @@ import energy.OptionModelController;
 import energy.calculations.AbstractOptionModelCalculation;
 import energy.evaluation.AbstractEvaluationStrategy;
 
-public class CustomOptionModelController extends OptionModelController {
+public class SmartifiedHomeOptionModelController extends OptionModelController {
 
     private DomesticDemandSideManagementStrategyRT evaluationStrategy;
 
-    public CustomOptionModelController() {
+    public SmartifiedHomeOptionModelController() {
     }
-
-//    @Override
-//    public AbstractEvaluationStrategy getEvaluationStrategyRT() {
-//        return
-//    }
 
     @Override
     public AbstractEvaluationStrategy getEvaluationStrategy() {
@@ -26,6 +21,6 @@ public class CustomOptionModelController extends OptionModelController {
 
     @Override
     public AbstractOptionModelCalculation createOptionModelCalculation() {
-        return new SmartHomeCalculation(this);
+        return new SmartifiedHomeCalculation(this);
     }
 }

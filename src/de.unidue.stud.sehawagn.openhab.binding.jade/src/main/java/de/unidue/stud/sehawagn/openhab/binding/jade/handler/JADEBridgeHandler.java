@@ -99,7 +99,7 @@ public class JADEBridgeHandler extends ConfigStatusBridgeHandler {
         if (jrs != null) {
             jrs.startPlatform(props);
             try {
-                AgentController keepOpenAgent = jrs.createNewAgent("KeepOpen", de.unidue.stud.sehawagn.openhab.binding.jade.internal.agent.KeepOpenAgent.class.getName(), null, BUNDLE_SYMBOLIC_NAME); // jade.tools.rma.rma
+                AgentController keepOpenAgent = jrs.createNewAgent("KeepOpen", de.unidue.stud.sehawagn.openhab.binding.jade.internal.agent.PerpetualAgent.class.getName(), null, BUNDLE_SYMBOLIC_NAME); // jade.tools.rma.rma
                 keepOpenAgent.start();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -109,7 +109,7 @@ public class JADEBridgeHandler extends ConfigStatusBridgeHandler {
     }
 
     public AgentController startAgent(String agentName, String agentClassName,
-            SmartHomeAgentESHHandler smartHomeAgentHandler) throws Exception {
+            SmartifiedHomeESHHandler smartHomeAgentHandler) throws Exception {
         AgentController agent = smartHomeAgentHandler.getAgent();
 
         if (agent == null) {
@@ -148,7 +148,7 @@ public class JADEBridgeHandler extends ConfigStatusBridgeHandler {
         return agentConfig;
     }
 
-    public boolean stopAgent(SmartHomeAgentESHHandler smartHomeAgentHandler) throws StaleProxyException {
+    public boolean stopAgent(SmartifiedHomeESHHandler smartHomeAgentHandler) throws StaleProxyException {
         logger.info("stopping agent");
 
         if (jrs == null) {

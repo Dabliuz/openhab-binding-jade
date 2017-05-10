@@ -1,6 +1,6 @@
 package de.unidue.stud.sehawagn.openhab.binding.jade.internal.agent;
 
-import de.unidue.stud.sehawagn.openhab.binding.jade.handler.SmartHomeAgentESHHandler;
+import de.unidue.stud.sehawagn.openhab.binding.jade.handler.SmartifiedHomeESHHandler;
 import hygrid.agent.AbstractEnergyAgent;
 import hygrid.agent.AbstractIOReal;
 import hygrid.agent.AbstractIOSimulated;
@@ -20,7 +20,7 @@ import jade.lang.acl.MessageTemplate;
 /**
  * An energy agent, representing a "smart home", using the configured EOM.
  */
-public class SmartHomeAgent extends AbstractEnergyAgent {
+public class SmartifiedHomeAgent extends AbstractEnergyAgent {
 
     private static final long serialVersionUID = 1730951019391324601L;
 
@@ -35,13 +35,13 @@ public class SmartHomeAgent extends AbstractEnergyAgent {
     @Override
     protected void setup() {
         Object[] args = getArguments();
-        SmartHomeAgentESHHandler myESHHandler = null;
+        SmartifiedHomeESHHandler myESHHandler = null;
         if (args != null) { // if started by the simulation environment
             if (args.length >= 1 && args[0] instanceof AgentConfig) {
                 getAgentConfigController().setAgentConfig((AgentConfig) args[0]);
             }
-            if (args.length >= 2 && args[1] instanceof SmartHomeAgentESHHandler) {
-                myESHHandler = (SmartHomeAgentESHHandler) args[1];
+            if (args.length >= 2 && args[1] instanceof SmartifiedHomeESHHandler) {
+                myESHHandler = (SmartifiedHomeESHHandler) args[1];
             }
         }
 
@@ -61,7 +61,7 @@ public class SmartHomeAgent extends AbstractEnergyAgent {
 
         // initialize SimulationConnector
         if (operatingMode == AgentOperatingMode.TestBedReal || operatingMode == AgentOperatingMode.RealSystem) {
-            simulationConnector = new SafeSimulationConnectorRemoteForIOReal(this);
+            simulationConnector = new PerpetualSmartGridConnector(this);
         }
 
         getEnergyAgentIO().setESHHandler(myESHHandler);
@@ -129,7 +129,7 @@ public class SmartHomeAgent extends AbstractEnergyAgent {
             monitoringBehaviourRT.addMonitoringListener(new MonitoringListenerForProxy(simulationConnector));
             getInternalDataModel().addObserver(monitoringBehaviourRT);
             addBehaviour(monitoringBehaviourRT);
-            monitoringBehaviourRT.getMonitoringStrategyRT().setOptionModelCalculationClass(SmartHomeCalculation.class);
+            monitoringBehaviourRT.getMonitoringStrategyRT().setOptionModelCalculationClass(SmartifiedHomeCalculation.class);
         }
     }
 
@@ -144,7 +144,7 @@ public class SmartHomeAgent extends AbstractEnergyAgent {
     }
 
     @Override
-    public WashingMashineIO getEnergyAgentIO() {
-        return (WashingMashineIO) super.getEnergyAgentIO();
+    public WashingMachineIO getEnergyAgentIO() {
+        return (WashingMachineIO) super.getEnergyAgentIO();
     }
 }

@@ -27,14 +27,14 @@ public class InternalDataModel extends AbstractInternalDataModel {
 
     public static final double VAR_POWER_CONSUMPTION_DEFAULT = 0.0;
 
-    protected CustomOptionModelController optionModelController;
+    protected SmartifiedHomeOptionModelController optionModelController;
 
-    protected SmartHomeAgent myAgent;
+    protected SmartifiedHomeAgent myAgent;
 
     /**
      * @param agent the agent
      */
-    public InternalDataModel(SmartHomeAgent agent) {
+    public InternalDataModel(SmartifiedHomeAgent agent) {
         super(agent);
         myAgent = agent;
     }
@@ -42,7 +42,7 @@ public class InternalDataModel extends AbstractInternalDataModel {
     @Override
     public OptionModelController getOptionModelController() {
         if (optionModelController == null) {
-            optionModelController = new CustomOptionModelController();
+            optionModelController = new SmartifiedHomeOptionModelController();
             optionModelController.setControllingAgent(this.myAgent);
             optionModelController.getEvaluationStrategy();
         }

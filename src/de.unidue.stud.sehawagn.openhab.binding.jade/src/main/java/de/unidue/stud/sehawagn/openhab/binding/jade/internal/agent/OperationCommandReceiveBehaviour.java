@@ -13,7 +13,7 @@ class OperationCommandReceiveBehaviour extends CyclicBehaviour {
     /**
      *
      */
-    private final SmartHomeAgent myAgent;
+    private final SmartifiedHomeAgent myAgent;
     public static final MessageTemplate messageTemplate = MessageTemplate.or(
             MessageTemplate.MatchConversationId(SwitchableEomAdapter.CONVERSATION_ID_TOGGLE_OPERATION),
             MessageTemplate.MatchConversationId(SwitchableEomAdapter.CONVERSATION_ID_REQUEST_OPERATION_STATE));
@@ -21,7 +21,7 @@ class OperationCommandReceiveBehaviour extends CyclicBehaviour {
     /**
      * @param smartHomeAgent
      */
-    OperationCommandReceiveBehaviour(SmartHomeAgent smartHomeAgent) {
+    OperationCommandReceiveBehaviour(SmartifiedHomeAgent smartHomeAgent) {
         this.myAgent = smartHomeAgent;
     }
 

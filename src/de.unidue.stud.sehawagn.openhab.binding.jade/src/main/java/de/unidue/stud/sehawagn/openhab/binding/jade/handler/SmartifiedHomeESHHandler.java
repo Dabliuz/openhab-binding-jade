@@ -25,15 +25,14 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Sets;
 
+import de.unidue.stud.sehawagn.openhab.binding.jade.internal.agent.SmartifiedHomeAgent;
 import de.unidue.stud.sehawagn.openhab.channelmirror.ChannelMirror;
 import de.unidue.stud.sehawagn.openhab.channelmirror.ChannelMirrorReceiver;
 import jade.wrapper.AgentController;
 import jade.wrapper.StaleProxyException;
 
-public class SmartHomeAgentESHHandler extends BaseThingHandler implements ChannelMirrorReceiver {
+public class SmartifiedHomeESHHandler extends BaseThingHandler implements ChannelMirrorReceiver {
     public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = Sets.newHashSet(THING_TYPE_JADE_SMARTHOMEAGENT);
-
-    private static final String AGENT_CLASS_NAME = "de.unidue.stud.sehawagn.openhab.binding.jade.internal.agent.SmartHomeAgent";
 
     // the channel where the value from the mirrored channel is displayed in OpenHAB
     private static final String MEASUREMENT_MIRROR_CHANNEL = CHANNEL_DEVICE_POWER_CONSUMPTION;
@@ -41,11 +40,11 @@ public class SmartHomeAgentESHHandler extends BaseThingHandler implements Channe
     // the channel where the value from the mirrored channel is displayed in OpenHAB
     private static final String ACTUATE_MIRROR_CHANNEL = CHANNEL_DEVICE_LOWLEVEL_ON;
 
-    private final Logger logger = LoggerFactory.getLogger(SmartHomeAgentESHHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(SmartifiedHomeESHHandler.class);
 
     private JADEBridgeHandler bridgeHandler;
     private ChannelMirror channelMirror;
-    private AgentController myAgent;
+    private AgentController agentController;
 
     private ChannelUID aliveChannelUID;
     private ChannelUID connectedChannelUID;
@@ -70,7 +69,7 @@ public class SmartHomeAgentESHHandler extends BaseThingHandler implements Channe
 
     private boolean disposing = false;
 
-    public SmartHomeAgentESHHandler(Thing thing, ChannelMirror channelMirror) {
+    public SmartifiedHomeESHHandler(Thing thing, ChannelMirror channelMirror) {
         super(thing);
         this.channelMirror = channelMirror;
     }
@@ -118,7 +117,7 @@ public class SmartHomeAgentESHHandler extends BaseThingHandler implements Channe
         startMirroring(actuateOriginalChannelUID, actuateMirrorChannelUID);
 
         startAgent();
-        if (myAgent != null) {
+        if (agentController != null) {
             updateStatus(ThingStatus.ONLINE);
         }
     }
@@ -181,7 +180,7 @@ public class SmartHomeAgentESHHandler extends BaseThingHandler implements Channe
             if (getBridgeHandler() == null) {
                 fail("agentStart", "no bridge given");
             } else {
-                myAgent = getBridgeHandler().startAgent((String) getConfig().getProperties().get(PROPERTY_AGENT_ID), AGENT_CLASS_NAME,
+                agentController = getBridgeHandler().startAgent((String) getConfig().getProperties().get(PROPERTY_AGENT_ID), SmartifiedHomeAgent.class.getName(),
                         this);
             }
         } catch (Exception e) {
@@ -196,7 +195,7 @@ public class SmartHomeAgentESHHandler extends BaseThingHandler implements Channe
                 fail("agentStop", "no bridge given");
             } else {
                 if (getBridgeHandler().stopAgent(this)) {
-                    myAgent = null;
+                    agentController = null;
                 }
             }
         } catch (Exception e) {
@@ -216,13 +215,13 @@ public class SmartHomeAgentESHHandler extends BaseThingHandler implements Channe
             // only call this, if the handler is not already removed
             handleCommand(aliveChannelUID, RefreshType.REFRESH);
         }
-        myAgent = null;
+        agentController = null;
     }
 
     public String getAgentName() {
-        if (myAgent != null) {
+        if (agentController != null) {
             try {
-                return myAgent.getName();
+                return agentController.getName();
             } catch (StaleProxyException e) {
                 e.printStackTrace();
             }
@@ -231,8 +230,8 @@ public class SmartHomeAgentESHHandler extends BaseThingHandler implements Channe
     }
 
     public AgentController getAgent() {
-        if (myAgent != null) {
-            return myAgent;
+        if (agentController != null) {
+            return agentController;
         }
         return null;
     }

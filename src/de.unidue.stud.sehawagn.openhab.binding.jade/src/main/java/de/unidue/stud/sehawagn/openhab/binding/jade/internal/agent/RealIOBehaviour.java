@@ -1,6 +1,6 @@
 package de.unidue.stud.sehawagn.openhab.binding.jade.internal.agent;
 
-import de.unidue.stud.sehawagn.openhab.binding.jade.handler.SmartHomeAgentESHHandler;
+import de.unidue.stud.sehawagn.openhab.binding.jade.handler.SmartifiedHomeESHHandler;
 import energy.FixedVariableList;
 import hygrid.agent.AbstractIOReal;
 
@@ -8,29 +8,29 @@ import hygrid.agent.AbstractIOReal;
  * This class is used if the agent is run inside an openHAB instance
  * It reads data from it's agent handler
  */
-public class RealIOBehaviour extends AbstractIOReal implements WashingMashineIO {
+public class RealIOBehaviour extends AbstractIOReal implements WashingMachineIO {
 
     private static final long serialVersionUID = 5143063807591183507L;
 
     private static final long MEASURING_INTERVAL = 1000;
 
-    protected SmartHomeAgent myAgent;
+    protected SmartifiedHomeAgent myAgent;
     protected InternalDataModel internalDataModel = null;
 
-    protected SmartHomeAgentESHHandler myESHHandler;
+    protected SmartifiedHomeESHHandler myESHHandler;
 
     /**
      * @param agent the agent
      * @param myESHHandler
      */
-    public RealIOBehaviour(SmartHomeAgent agent) {
+    public RealIOBehaviour(SmartifiedHomeAgent agent) {
         super(agent);
         myAgent = agent;
         internalDataModel = myAgent.getInternalDataModel();
     }
 
     @Override
-    public void setESHHandler(SmartHomeAgentESHHandler myESHHandler) {
+    public void setESHHandler(SmartifiedHomeESHHandler myESHHandler) {
         this.myESHHandler = myESHHandler;
     }
 
