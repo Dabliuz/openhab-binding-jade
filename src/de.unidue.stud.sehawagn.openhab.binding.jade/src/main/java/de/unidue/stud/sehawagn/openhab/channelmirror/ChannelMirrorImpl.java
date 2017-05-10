@@ -8,8 +8,6 @@ import org.eclipse.smarthome.core.items.events.AbstractItemEventSubscriber;
 import org.eclipse.smarthome.core.items.events.ItemStateEvent;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.types.State;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The ChannelMirrorImpl listens on the event bus and passes received status updates
@@ -18,7 +16,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class ChannelMirrorImpl extends AbstractItemEventSubscriber implements ChannelMirror {
-    private final Logger logger = LoggerFactory.getLogger(ChannelMirrorImpl.class);
+//    private final Logger logger = LoggerFactory.getLogger(ChannelMirrorImpl.class);
 
     private ItemRegistry itemRegistry;
 
@@ -54,6 +52,15 @@ public class ChannelMirrorImpl extends AbstractItemEventSubscriber implements Ch
             receivers = new ArrayList<ChannelMirrorReceiver>();
         }
         receivers.add(updateMonitorRecevier);
+        mirrorRoutes.put(sourceChannel.getAsString(), receivers);
+    }
+
+    @Override
+    public void unMirrorChannel(ChannelUID sourceChannel, ChannelMirrorReceiver updateMonitorRecevier) {
+        ArrayList<ChannelMirrorReceiver> receivers = getMirrorReceivers(sourceChannel);
+        if (receivers != null) {
+            receivers.remove(updateMonitorRecevier);
+        }
         mirrorRoutes.put(sourceChannel.getAsString(), receivers);
     }
 

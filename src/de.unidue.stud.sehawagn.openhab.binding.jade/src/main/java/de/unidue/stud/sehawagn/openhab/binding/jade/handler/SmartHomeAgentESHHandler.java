@@ -77,7 +77,7 @@ public class SmartHomeAgentESHHandler extends BaseThingHandler implements Channe
 
     @Override
     public void initialize() {
-        logger.debug("Initializing SmartHomeAgentHandler.");
+        logger.debug("Initializing SmartHomeAgentESHHandler.");
 
         aliveChannelUID = new ChannelUID(this.getThing().getUID(), CHANNEL_ALIVE);
         connectedChannelUID = new ChannelUID(this.getThing().getUID(), CHANNEL_CONNECTED);
@@ -130,6 +130,10 @@ public class SmartHomeAgentESHHandler extends BaseThingHandler implements Channe
 
         // subscribe for subsequent changes
         channelMirror.mirrorChannel(originalChannel, this);
+    }
+
+    private void stopMirroring(ChannelUID originalChannel) {
+        channelMirror.unMirrorChannel(originalChannel, this);
     }
 
     public void startAgent() {
@@ -202,8 +206,10 @@ public class SmartHomeAgentESHHandler extends BaseThingHandler implements Channe
 
     @Override
     public void dispose() {
-        logger.info("Disposing SmartHomeAgentHandler.");
+        logger.info("Disposing SmartHomeAgentESHHandler.");
         disposing = true;
+        stopMirroring(measurementOriginalChannelUID);
+        stopMirroring(actuateOriginalChannelUID);
         stopAgent();
     }
 
