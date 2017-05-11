@@ -2,9 +2,12 @@ package de.unidue.stud.sehawagn.openhab.binding.jade.handler;
 
 import static de.unidue.stud.sehawagn.openhab.binding.jade.JADEBindingConstants.*;
 
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Set;
 
 import org.eclipse.smarthome.core.items.Item;
+import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -120,6 +123,23 @@ public class SmartifiedHomeESHHandler extends BaseThingHandler implements Channe
         if (agentController != null) {
             updateStatus(ThingStatus.ONLINE);
         }
+        stopAgent();
+    }
+
+    private void initChannels() {
+        updateState(connectedChannelUID, OnOffType.OFF);
+        setDeviceState("Pending");
+        outsideManagementAllowed = true;
+        updateState(managedFromOutsideChannelUID, boolToState(outsideManagementAllowed));
+        GregorianCalendar cal = new GregorianCalendar();
+        cal.setTime(new Date());
+        updateState(endTimeChannelUID, new DateTimeType(cal));
+        updateState(endTimeToleranceChannelUID, new DecimalType(0));
+        currentWashingProgram = 0;
+        updateState(washingProgramChannelUID, new DecimalType(currentWashingProgram));
+        updateState(lockedNLoadedChannelUID, OnOffType.OFF);
+        receiveFromMirroredChannel(measurementOriginalChannelUID.getAsString(), new DecimalType(0));
+        setActuateChannelValue(true, true);
     }
 
     /*
@@ -207,6 +227,7 @@ public class SmartifiedHomeESHHandler extends BaseThingHandler implements Channe
     public void onAgentStart() {
         aliveChannelValue = true;
         handleCommand(aliveChannelUID, RefreshType.REFRESH);
+        initChannels();
     }
 
     public void onAgentStop() {

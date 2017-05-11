@@ -39,18 +39,29 @@ public class DomesticDemandSideManagementStrategyRT extends AbstractEvaluationSt
 
     @Override
     public void runEvaluation() {
+//        String echoString = "DomesticDSMStrategy: runEvaluation(), ";
         if (isStopEvaluation() == true) {
             return; // if interrupted from outside (by simulation UI)
         }
 
         // Initialize search
         TechnicalSystemStateEvaluation tsse = getSystemState();
+
         switchingNecessary = false;
 
-        if (tsse != null && tsse.getGlobalTime() < timeUntilEvaluationInterrupt) {
+        long remainingTimeInState = calculateRemainingTimeInState(tsse);
+        if (remainingTimeInState > 0) {
+            // too early, state still valid, no need for new evaluation step
+//            DateFormat f = new SimpleDateFormat("HH:mm:ss.SSS");
+//            System.out.println("Remaining time in state: " + f.format(new Date(remainingTimeInState)));
+            return;
+        }
+
+        if (tsse != null && tsse.getGlobalTime() < evaluationInterruptTime) {
+//            echoString += "state=" + tsse.getStateID() + ", evaluating";
 
             // Get the possible subsequent steps and states
-            long duration = timeUntilEvaluationInterrupt - tsse.getGlobalTime();
+            long duration = evaluationInterruptTime - tsse.getGlobalTime();
             Vector<TechnicalSystemStateDeltaEvaluation> deltaSteps = getAllDeltaEvaluationsStartingFromTechnicalSystemState(tsse, duration);
             deltaSteps = TechnicalSystemStateDeltaHelper.filterTechnicalSystemStateDeltaEvaluation(deltaSteps, DeltaSelectionBy.IO_List, InternalDataModel.VAR_LOCKED_N_LOADED, ((FixedBoolean) InternalDataModel.extractVariableByID(tsse.getIOlist(), InternalDataModel.VAR_LOCKED_N_LOADED)).isValue());
             deltaSteps = TechnicalSystemStateDeltaHelper.filterTechnicalSystemStateDeltaEvaluation(deltaSteps, DeltaSelectionBy.IO_List, InternalDataModel.VAR_WASHING_PROGRAM, ((FixedInteger) InternalDataModel.extractVariableByID(tsse.getIOlist(), InternalDataModel.VAR_WASHING_PROGRAM)).getValue());
@@ -82,6 +93,7 @@ public class DomesticDemandSideManagementStrategyRT extends AbstractEvaluationSt
             // Set next state as new current state
             switchingNecessary = true;
         }
+//        System.out.println(echoString);
     }
 
     @Override
