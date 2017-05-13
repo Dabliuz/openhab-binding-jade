@@ -126,7 +126,7 @@ public class SmartifiedHomeAgent extends AbstractEnergyAgent {
         if (monitoringBehaviourRT == null) {
             monitoringBehaviourRT = new MonitoringBehaviourRT(getInternalDataModel(), getEnergyAgentIO());
             monitoringBehaviourRT.addMonitoringListener(new MonitoringListenerForLogging());
-            monitoringBehaviourRT.addMonitoringListener(new MonitoringListenerForProxy(simulationConnector));
+            monitoringBehaviourRT.addMonitoringListener(new MonitoringListenerForProxy(simulationConnector).overrideMeasurementVariable(InternalDataModel.VAR_POWER_CONSUMPTION));
             getInternalDataModel().addObserver(monitoringBehaviourRT);
             addBehaviour(monitoringBehaviourRT);
             monitoringBehaviourRT.getMonitoringStrategyRT().setOptionModelCalculationClass(SmartifiedHomeCalculation.class);

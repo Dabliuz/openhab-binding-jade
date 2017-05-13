@@ -3,9 +3,13 @@ Bundle-ManifestVersion: 2
 Bundle-Name: OHJADEService
 Bundle-SymbolicName: de.unidue.stud.sehawagn.openhab.binding.jadeservice
 Bundle-Version: 2.0.0.qualifier
-Export-Package: agentgui.envModel.graph.controller,
+Export-Package: agentgui.core.application,
+ agentgui.core.gui.components,
+ agentgui.core.project,
+ agentgui.envModel.graph.controller,
  agentgui.envModel.graph.networkModel,
  agentgui.simulationService.environment,
+ agentgui.simulationService.time,
  agentgui.simulationService.transaction,
  energy,
  energy.calculations,
