@@ -13,9 +13,11 @@
    <implementation class="de.unidue.stud.sehawagn.openhab.binding.jade.internal.JADEHandlerFactory"/>
    <reference bind="setChannelMirror"  unbind="unsetChannelMirror" cardinality="1..1" interface="de.unidue.stud.sehawagn.openhab.channelmirror.ChannelMirror" name="ChannelMirror" />
    <reference bind="setJadeRuntimeService"  unbind="unsetJadeRuntimeService" cardinality="1..1" interface="jade.osgi.service.runtime.JadeRuntimeService" name="JadeRuntimeService" />
+   <reference bind="setChannelTypeRegistry" unbind="unsetChannelTypeRegistry" cardinality="0..1" interface="org.eclipse.smarthome.core.thing.type.ChannelTypeRegistry" name="ChannelTypeRegistry" policy="dynamic"/>
 
    <service>
       <provide interface="org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory"/>
+      <provide interface="org.eclipse.smarthome.core.thing.type.ChannelTypeProvider"/>
    </service>
 
 </scr:component>

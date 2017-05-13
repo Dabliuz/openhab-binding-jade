@@ -2,8 +2,10 @@ package de.unidue.stud.sehawagn.openhab.binding.jade.handler;
 
 import static de.unidue.stud.sehawagn.openhab.binding.jade.JADEBindingConstants.*;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Set;
 
 import org.eclipse.smarthome.core.items.Item;
@@ -12,6 +14,7 @@ import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
+import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -19,15 +22,22 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
+import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.thing.link.ItemChannelLink;
+import org.eclipse.smarthome.core.thing.type.ChannelType;
+import org.eclipse.smarthome.core.thing.type.ChannelTypeRegistry;
+import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.StateDescription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Sets;
 
+import de.unidue.stud.sehawagn.openhab.binding.jade.internal.JADEHandlerFactory;
 import de.unidue.stud.sehawagn.openhab.binding.jade.internal.agent.SmartifiedHomeAgent;
 import de.unidue.stud.sehawagn.openhab.channelmirror.ChannelMirror;
 import de.unidue.stud.sehawagn.openhab.channelmirror.ChannelMirrorReceiver;
@@ -47,6 +57,9 @@ public class SmartifiedHomeESHHandler extends BaseThingHandler implements Channe
 
     private JADEBridgeHandler bridgeHandler;
     private ChannelMirror channelMirror;
+    private ChannelTypeRegistry channelTypeRegistry;
+    private JADEHandlerFactory channelTypeProvider;
+
     private AgentController agentController;
 
     private ChannelUID aliveChannelUID;
@@ -72,9 +85,14 @@ public class SmartifiedHomeESHHandler extends BaseThingHandler implements Channe
 
     private boolean disposing = false;
 
-    public SmartifiedHomeESHHandler(Thing thing, ChannelMirror channelMirror) {
+    private static final String CHANNEL_READONLY = "RO";
+    private static final String CHANNEL_READWRITE = "RW";
+
+    public SmartifiedHomeESHHandler(Thing thing, ChannelMirror channelMirror, ChannelTypeRegistry channelTypeRegistry, JADEHandlerFactory channelTypeProvider) {
         super(thing);
         this.channelMirror = channelMirror;
+        this.channelTypeRegistry = channelTypeRegistry;
+        this.channelTypeProvider = channelTypeProvider;
     }
 
     private synchronized JADEBridgeHandler getBridgeHandler() {
@@ -323,6 +341,7 @@ public class SmartifiedHomeESHHandler extends BaseThingHandler implements Channe
                 }
                 case CHANNEL_MANAGED_FROM_OUTSIDE: {
                     outsideManagementAllowed = stateToBool(command);
+                    setChannelReadOnly(actuateMirrorChannelUID, stateToBool(command));
                     break;
                 }
                 default: {
@@ -377,6 +396,84 @@ public class SmartifiedHomeESHHandler extends BaseThingHandler implements Channe
             lastItem = item;  // only use the state of the last item, usually there is only one
         }
         return lastItem;
+    }
+
+    private void setChannelReadOnly(ChannelUID channelUID, Boolean newReadOnly) {
+//        logger.error("update Channel " + channelUID + " to ro=" + newReadOnly);
+
+//        String channelID = channelUID.getIdWithoutGroup();
+        List<Channel> newChannels = new ArrayList<Channel>();
+        List<Channel> oldChannels = getThing().getChannels();
+        Channel oldChannel = null;
+
+        for (int i = 0; i < oldChannels.size(); i++) {
+            Channel curChannel = oldChannels.get(i);
+            if (curChannel.getUID().equals(channelUID)) {
+                oldChannel = curChannel;
+            } else {
+                // keep the other channels
+                newChannels.add(curChannel);
+            }
+        }
+
+        if (oldChannel == null) {
+            // channel wasn't found
+            logger.error("Channel " + channelUID + " wasn't found");
+
+            return;
+        }
+        ChannelTypeUID oldChannelTypeUID = oldChannel.getChannelTypeUID();
+        String oldChannelTypeUIDString = oldChannelTypeUID.getAsString();
+
+        ChannelType oldChannelType = channelTypeRegistry.getChannelType(oldChannelTypeUID);
+
+        if (oldChannelType == null) {
+            // Probably after restart etc., the customized channel type is gone and replaced by the base one?
+
+            if (oldChannelTypeUIDString.endsWith(CHANNEL_READONLY) || oldChannelTypeUIDString.endsWith(CHANNEL_READWRITE)) {
+                // try the base ChannelTypeUID (without RO or RW)
+                oldChannelTypeUID = new ChannelTypeUID(oldChannelTypeUIDString.substring(0, oldChannelTypeUIDString.length() - 2));
+            }
+
+            // try again
+            oldChannelType = channelTypeRegistry.getChannelType(oldChannelTypeUID);
+            if (oldChannelType == null) {
+                // still not found
+                logger.error("Old ChannelType " + oldChannelTypeUID + " wasn't found.");
+                return;
+            }
+        }
+
+        StateDescription oldStateDescription = oldChannelType.getState();
+        StateDescription newStateDescription = new StateDescription(oldStateDescription.getMinimum(), oldStateDescription.getMinimum(), oldStateDescription.getStep(), oldStateDescription.getPattern(), newReadOnly, oldStateDescription.getOptions());
+
+        String newChannelTypeUIDString = getThing().getUID().getAsString() + ":" + oldChannelType.getUID().getId();
+        if (newReadOnly) {
+            newChannelTypeUIDString += CHANNEL_READONLY;
+        } else {
+            newChannelTypeUIDString += CHANNEL_READWRITE;
+        }
+        ChannelTypeUID newChannelTypeUID = new ChannelTypeUID(newChannelTypeUIDString);
+
+        ChannelType newChannelType = new ChannelType(new ChannelTypeUID(newChannelTypeUIDString), oldChannelType.isAdvanced(), oldChannelType.getItemType(), oldChannelType.getLabel(), oldChannelType.getDescription(),
+                oldChannelType.getCategory(), oldChannelType.getTags(), newStateDescription, oldChannelType.getConfigDescriptionURI());
+
+        channelTypeProvider.removeChannelType(oldChannelType);
+        channelTypeProvider.addChannelType(newChannelType);
+
+        Channel newChannel = ChannelBuilder
+                .create(channelUID,
+                        oldChannel.getAcceptedItemType())
+                .withType(newChannelTypeUID).build();
+
+        newChannels.add(newChannel);
+        ThingBuilder thingBuilder = editThing();
+        thingBuilder.withChannels(newChannels);
+
+        logger.error("Channel " + channelUID + " updated to ro=" + newReadOnly);
+
+        updateThing(thingBuilder.build());
+
     }
 
     private void fail(String when, String cause) {
