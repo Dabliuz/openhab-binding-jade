@@ -18,11 +18,11 @@ import javax.swing.event.ChangeListener;
 
 import agentgui.core.application.Language;
 import agentgui.core.project.Project;
-import agentgui.simulationService.time.JPanel4TimeModelConfiguration;
 import agentgui.simulationService.time.TimeFormatSelection;
 import agentgui.simulationService.time.TimeModel;
+import agentgui.simulationService.time.TimeModelContinuousConfiguration;
 
-public class TimeModelPresentConfiguration extends JPanel4TimeModelConfiguration implements ChangeListener {
+public class TimeModelPresentConfiguration extends TimeModelContinuousConfiguration implements ChangeListener {
 
     private JLabel jLabelHeader1 = null;
     private JLabel jLabelHeader2 = null;
@@ -46,13 +46,12 @@ public class TimeModelPresentConfiguration extends JPanel4TimeModelConfiguration
 
     public TimeModelPresentConfiguration(Project project) {
         super(project);
-        this.initialize();
     }
 
     /**
      * This method initializes this
      */
-    private void initialize() {
+    protected void initialize() {
 
         GridBagConstraints gridBagConstraints21 = new GridBagConstraints();
         gridBagConstraints21.gridx = 1;
@@ -70,17 +69,6 @@ public class TimeModelPresentConfiguration extends JPanel4TimeModelConfiguration
         gridBagConstraints4.insets = new Insets(5, 7, 5, 20);
         gridBagConstraints4.gridwidth = 2;
         gridBagConstraints4.gridy = 7;
-        GridBagConstraints gridBagConstraints11 = new GridBagConstraints();
-        gridBagConstraints11.gridx = 1;
-        gridBagConstraints11.anchor = GridBagConstraints.WEST;
-        gridBagConstraints11.insets = new Insets(10, 5, 10, 0);
-        gridBagConstraints11.gridwidth = 1;
-        gridBagConstraints11.gridy = 5;
-        GridBagConstraints gridBagConstraints10 = new GridBagConstraints();
-        gridBagConstraints10.gridx = 0;
-        gridBagConstraints10.insets = new Insets(0, 10, 0, 0);
-        gridBagConstraints10.anchor = GridBagConstraints.WEST;
-        gridBagConstraints10.gridy = 5;
         GridBagConstraints gridBagConstraints9 = new GridBagConstraints();
         gridBagConstraints9.gridx = 0;
         gridBagConstraints9.anchor = GridBagConstraints.WEST;
@@ -88,20 +76,6 @@ public class TimeModelPresentConfiguration extends JPanel4TimeModelConfiguration
         gridBagConstraints9.gridwidth = 2;
         gridBagConstraints9.fill = GridBagConstraints.HORIZONTAL;
         gridBagConstraints9.gridy = 9;
-        GridBagConstraints gridBagConstraints15 = new GridBagConstraints();
-        gridBagConstraints15.gridx = 0;
-        gridBagConstraints15.insets = new Insets(0, 10, 0, 0);
-        gridBagConstraints15.anchor = GridBagConstraints.WEST;
-        gridBagConstraints15.gridy = 4;
-        GridBagConstraints gridBagConstraints141 = new GridBagConstraints();
-        gridBagConstraints141.gridx = 1;
-        gridBagConstraints141.gridwidth = 1;
-        gridBagConstraints141.anchor = GridBagConstraints.WEST;
-        gridBagConstraints141.insets = new Insets(10, 5, 10, 0);
-        gridBagConstraints141.gridy = 4;
-        GridBagConstraints gridBagConstraints8 = new GridBagConstraints();
-        gridBagConstraints8.gridx = 2;
-        gridBagConstraints8.gridy = 0;
         GridBagConstraints gridBagConstraints7 = new GridBagConstraints();
         gridBagConstraints7.gridx = 0;
         gridBagConstraints7.fill = GridBagConstraints.BOTH;
@@ -194,6 +168,7 @@ public class TimeModelPresentConfiguration extends JPanel4TimeModelConfiguration
      *
      * @return agentgui.simulationService.time.TimeFormatSelection
      */
+    @Override
     protected TimeFormatSelection getJPanelTimeFormater() {
         if (jPanelTimeFormater == null) {
             jPanelTimeFormater = new TimeFormatSelection();
@@ -216,6 +191,7 @@ public class TimeModelPresentConfiguration extends JPanel4TimeModelConfiguration
      *
      * @return javax.swing.JPanel
      */
+    @Override
     protected JPanel getJPanelWidthSettings() {
         if (jPanelWidthSettings == null) {
             GridBagConstraints gridBagConstraints12 = new GridBagConstraints();
@@ -224,36 +200,6 @@ public class TimeModelPresentConfiguration extends JPanel4TimeModelConfiguration
             gridBagConstraints12.weightx = 1.0;
             gridBagConstraints12.insets = new Insets(0, 5, 0, 0);
             gridBagConstraints12.gridy = 0;
-            GridBagConstraints gridBagConstraints16 = new GridBagConstraints();
-            gridBagConstraints16.insets = new Insets(0, 0, 5, 0);
-            gridBagConstraints16.gridy = 3;
-            gridBagConstraints16.anchor = GridBagConstraints.WEST;
-            gridBagConstraints16.fill = GridBagConstraints.HORIZONTAL;
-            gridBagConstraints16.gridwidth = 3;
-            gridBagConstraints16.gridx = 0;
-            GridBagConstraints gridBagConstraints13 = new GridBagConstraints();
-            gridBagConstraints13.insets = new Insets(0, 0, 5, 0);
-            gridBagConstraints13.gridy = 2;
-            gridBagConstraints13.anchor = GridBagConstraints.WEST;
-            gridBagConstraints13.fill = GridBagConstraints.HORIZONTAL;
-            gridBagConstraints13.gridwidth = 3;
-            gridBagConstraints13.gridx = 0;
-            GridBagConstraints gridBagConstraints17 = new GridBagConstraints();
-            gridBagConstraints17.insets = new Insets(10, 0, 5, 0);
-            gridBagConstraints17.gridy = 1;
-            gridBagConstraints17.anchor = GridBagConstraints.WEST;
-            gridBagConstraints17.fill = GridBagConstraints.HORIZONTAL;
-            gridBagConstraints17.gridwidth = 3;
-            gridBagConstraints17.weightx = 0.0;
-            gridBagConstraints17.gridx = 0;
-            GridBagConstraints gridBagConstraints19 = new GridBagConstraints();
-            gridBagConstraints19.insets = new Insets(0, 5, 0, 5);
-            gridBagConstraints19.gridy = 0;
-            gridBagConstraints19.gridx = 1;
-            GridBagConstraints gridBagConstraints18 = new GridBagConstraints();
-            gridBagConstraints18.insets = new Insets(0, 0, 0, 2);
-            gridBagConstraints18.gridy = 0;
-            gridBagConstraints18.gridx = 0;
 
             jLabelDummy = new JLabel();
             jLabelDummy.setText(" ");
@@ -270,6 +216,7 @@ public class TimeModelPresentConfiguration extends JPanel4TimeModelConfiguration
      *
      * @return javax.swing.JPanel
      */
+    @Override
     protected JPanel getJPanelDivider() {
         if (jPanelDivider == null) {
             jPanelDivider = new JPanel();
@@ -285,6 +232,7 @@ public class TimeModelPresentConfiguration extends JPanel4TimeModelConfiguration
      *
      * @return javax.swing.JPanel
      */
+    @Override
     protected JPanel getJPanelDummy() {
         if (jPanelDummy == null) {
             jPanelDummy = new JPanel();
