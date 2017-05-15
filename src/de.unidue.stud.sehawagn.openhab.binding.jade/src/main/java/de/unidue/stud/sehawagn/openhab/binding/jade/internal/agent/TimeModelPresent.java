@@ -21,18 +21,9 @@ public class TimeModelPresent extends TimeModelContinuous {
      *
      */
     public TimeModelPresent() {
-        super(Long.MIN_VALUE, Long.MAX_VALUE);
         setAccelerationFactor(1.0);
         setTimeStart(getTime());
         setTimeStop(Long.MAX_VALUE);
-    }
-
-    /**
-     * @param startTime
-     * @param stopTime
-     */
-    public TimeModelPresent(Long startTime, Long stopTime) {
-        this();
     }
 
     @Override
@@ -48,6 +39,11 @@ public class TimeModelPresent extends TimeModelContinuous {
     @Override
     public long getTimeStart() {
         return getTime();
+    }
+
+    @Override
+    protected void logTookLocalTime() {
+        // don't output message
     }
 
 }
