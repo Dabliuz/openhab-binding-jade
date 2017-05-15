@@ -21,4 +21,6 @@ public interface WashingMachineIO extends EnergyAgentIO {
 
     void setPoweredOn(Boolean poweredOn);
 
+    void setUnlocked();
+
 }

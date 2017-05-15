@@ -80,4 +80,7 @@ public class SimulationIOBehaviour extends AbstractIOSimulated implements Washin
     public void setPoweredOn(Boolean poweredOn) {
     }
 
+    public void setUnlocked() {
+    }
+
 }

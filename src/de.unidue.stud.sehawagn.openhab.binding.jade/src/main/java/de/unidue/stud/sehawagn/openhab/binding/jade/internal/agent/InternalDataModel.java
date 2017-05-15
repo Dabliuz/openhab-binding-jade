@@ -33,6 +33,9 @@ public class InternalDataModel extends AbstractInternalDataModel {
 
     protected SmartifiedHomeAgent myAgent;
 
+    static final String EOM_STATE_UNSET = "UNSET";
+    static final String EOM_STATE_AUTOMATIC_END = "10_Lockern_Ruhen";
+
     /**
      * @param agent the agent
      */
@@ -101,14 +104,27 @@ public class InternalDataModel extends AbstractInternalDataModel {
         return var;
     }
 
-    public static boolean deriveVariable(FixedVariableList variableList, String variableID) {
+//    public static boolean deriveVariable(FixedVariableList variableList, String variableID) {
+//        return deriveVariable(variableList, variableID, Boolean.class);
+//    }
+
+    public static <T> T deriveVariable(FixedVariableList variableList, String variableID) {
+        Object returnObject = null;
+        Class<T> clazz = null;
         FixedVariable sP1 = variableList.getVariable(variableID);
         if (sP1 instanceof FixedBoolean) {
-            return ((FixedBoolean) sP1).isValue();
+            returnObject = ((FixedBoolean) sP1).isValue();
+            clazz = (Class<T>) Boolean.class;
+        } else if (sP1 instanceof FixedInteger) {
+            returnObject = ((FixedInteger) sP1).getValue();
+            clazz = (Class<T>) Integer.class;
         } else if (sP1 == null) {
             System.out.println("deriveVariable() " + variableID + " not found! :-(");
+            return null;
+        } else {
+            return null;
         }
-        return false;
+        return clazz.cast(returnObject);
     }
 
     public static void dumpVariableList(FixedVariableList variableList) {

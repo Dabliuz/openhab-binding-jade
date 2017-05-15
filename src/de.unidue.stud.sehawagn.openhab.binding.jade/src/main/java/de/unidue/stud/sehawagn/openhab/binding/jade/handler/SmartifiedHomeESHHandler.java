@@ -147,8 +147,10 @@ public class SmartifiedHomeESHHandler extends BaseThingHandler implements Channe
     private void initChannels() {
         updateState(connectedChannelUID, OnOffType.OFF);
         setDeviceState("Pending");
-        outsideManagementAllowed = true;
-        updateState(managedFromOutsideChannelUID, boolToState(outsideManagementAllowed));
+        handleCommand(managedFromOutsideChannelUID, boolToState(true));
+        handleCommand(managedFromOutsideChannelUID, RefreshType.REFRESH);
+//        outsideManagementAllowed = true;
+//        updateState(managedFromOutsideChannelUID, boolToState(outsideManagementAllowed));
         GregorianCalendar cal = new GregorianCalendar();
         cal.setTime(new Date());
         updateState(endTimeChannelUID, new DateTimeType(cal));
@@ -307,6 +309,10 @@ public class SmartifiedHomeESHHandler extends BaseThingHandler implements Channe
                     newState = new StringType(currentDeviceState);
                     break;
                 }
+                case CHANNEL_MANAGED_FROM_OUTSIDE: {
+                    newState = boolToState(outsideManagementAllowed);
+                    break;
+                }
                 default: {
                     logger.info("REFRESH command for unknown channel " + channelUID);
                     break;
@@ -380,6 +386,10 @@ public class SmartifiedHomeESHHandler extends BaseThingHandler implements Channe
         return false;
     }
 
+    public void setLockedNLoadedValue(boolean lockedNLoadedValue, boolean calledFromOutside) {
+        handleCommand(lockedNLoadedChannelUID, boolToState(lockedNLoadedValue));
+    }
+
     public Integer getWashingProgramValue() {
         return currentWashingProgram;
     }
@@ -399,7 +409,7 @@ public class SmartifiedHomeESHHandler extends BaseThingHandler implements Channe
     }
 
     private void setChannelReadOnly(ChannelUID channelUID, Boolean newReadOnly) {
-//        logger.error("update Channel " + channelUID + " to ro=" + newReadOnly);
+        logger.error("update Channel " + channelUID + " to ro=" + newReadOnly);
 
 //        String channelID = channelUID.getIdWithoutGroup();
         List<Channel> newChannels = new ArrayList<Channel>();
@@ -428,6 +438,8 @@ public class SmartifiedHomeESHHandler extends BaseThingHandler implements Channe
         ChannelType oldChannelType = channelTypeRegistry.getChannelType(oldChannelTypeUID);
 
         if (oldChannelType == null) {
+            logger.error("Old ChannelType " + oldChannelTypeUID + " wasn't found.");
+
             // Probably after restart etc., the customized channel type is gone and replaced by the base one?
 
             if (oldChannelTypeUIDString.endsWith(CHANNEL_READONLY) || oldChannelTypeUIDString.endsWith(CHANNEL_READWRITE)) {
@@ -439,7 +451,7 @@ public class SmartifiedHomeESHHandler extends BaseThingHandler implements Channe
             oldChannelType = channelTypeRegistry.getChannelType(oldChannelTypeUID);
             if (oldChannelType == null) {
                 // still not found
-                logger.error("Old ChannelType " + oldChannelTypeUID + " wasn't found.");
+                logger.error("Old ChannelType " + oldChannelTypeUID + " wasn't found, even on the second attempt.");
                 return;
             }
         }

@@ -73,7 +73,13 @@ public class ESHIOBehaviour extends AbstractIOReal implements WashingMachineIO {
     // called by ControlBehaviourRT
     @Override
     public void setSetPointsToSystem(FixedVariableList newSetPoints) {
-        setPoweredOn(InternalDataModel.deriveVariable(newSetPoints, InternalDataModel.VAR_POWERED_ON));
+        boolean poweredOn = InternalDataModel.deriveVariable(newSetPoints, InternalDataModel.VAR_POWERED_ON);
+        boolean lockedNLoaded = InternalDataModel.deriveVariable(newSetPoints, InternalDataModel.VAR_LOCKED_N_LOADED);
+        Integer washingProgram = InternalDataModel.deriveVariable(newSetPoints, InternalDataModel.VAR_WASHING_PROGRAM);
+        setPoweredOn(poweredOn);
+        if (poweredOn && !lockedNLoaded && washingProgram == 4 && getEOMState() == InternalDataModel.EOM_STATE_AUTOMATIC_END) {
+            setUnlocked();
+        }
     }
 
     @Override
@@ -120,9 +126,19 @@ public class ESHIOBehaviour extends AbstractIOReal implements WashingMachineIO {
         myESHHandler.setActuateChannelValue(poweredOn, true);
     }
 
+    @Override
+    public void setUnlocked() {
+        myESHHandler.setLockedNLoadedValue(false, true); // 2nd parameter=calledFromOutside
+    }
+
     public void updateEOMState() {
+        myESHHandler.setDeviceState(getEOMState());
+    }
+
+    private String getEOMState() {
         if (internalDataModel.getTechnicalSystemStateEvaluation() != null) {
-            myESHHandler.setDeviceState(internalDataModel.getTechnicalSystemStateEvaluation().getStateID());
+            return internalDataModel.getTechnicalSystemStateEvaluation().getStateID();
         }
+        return InternalDataModel.EOM_STATE_UNSET;
     }
 }

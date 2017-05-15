@@ -63,14 +63,13 @@ public class DomesticDemandSideManagementStrategyRT extends AbstractEvaluationSt
             // Get the possible subsequent steps and states
             long duration = evaluationInterruptTime - tsse.getGlobalTime();
             Vector<TechnicalSystemStateDeltaEvaluation> deltaSteps = getAllDeltaEvaluationsStartingFromTechnicalSystemState(tsse, duration);
-            deltaSteps = TechnicalSystemStateDeltaHelper.filterTechnicalSystemStateDeltaEvaluation(deltaSteps, DeltaSelectionBy.IO_List, InternalDataModel.VAR_LOCKED_N_LOADED, ((FixedBoolean) InternalDataModel.extractVariableByID(tsse.getIOlist(), InternalDataModel.VAR_LOCKED_N_LOADED)).isValue());
-            deltaSteps = TechnicalSystemStateDeltaHelper.filterTechnicalSystemStateDeltaEvaluation(deltaSteps, DeltaSelectionBy.IO_List, InternalDataModel.VAR_WASHING_PROGRAM, ((FixedInteger) InternalDataModel.extractVariableByID(tsse.getIOlist(), InternalDataModel.VAR_WASHING_PROGRAM)).getValue());
 
-            // search for a state which could be transitioned into by switch the poweredOn
-            Boolean intendedPoweredOn = ((FixedBoolean) InternalDataModel.extractVariableByID(tsse.getIOlist(), InternalDataModel.VAR_POWERED_ON)).isValue();
-            intendedPoweredOn = !intendedPoweredOn; // invert poweredOn setting
+            Vector<TechnicalSystemStateDeltaEvaluation> deltaStepsFiltered = filterForPowerSwitching(deltaSteps, tsse);
 
-            deltaSteps = TechnicalSystemStateDeltaHelper.filterTechnicalSystemStateDeltaEvaluation(deltaSteps, DeltaSelectionBy.IO_List, InternalDataModel.VAR_POWERED_ON, intendedPoweredOn);
+            if (deltaStepsFiltered == null || deltaStepsFiltered.isEmpty()) {
+                deltaStepsFiltered = filterForUnlocking(deltaSteps, tsse);
+            }
+            deltaSteps = deltaStepsFiltered;
 
             TechnicalSystemStateDeltaEvaluation tssDeltaDecision = null;
 
@@ -94,6 +93,25 @@ public class DomesticDemandSideManagementStrategyRT extends AbstractEvaluationSt
             switchingNecessary = true;
         }
 //        System.out.println(echoString);
+    }
+
+    private Vector<TechnicalSystemStateDeltaEvaluation> filterForPowerSwitching(Vector<TechnicalSystemStateDeltaEvaluation> deltaSteps, TechnicalSystemStateEvaluation tsse) {
+        deltaSteps = TechnicalSystemStateDeltaHelper.filterTechnicalSystemStateDeltaEvaluation(deltaSteps, DeltaSelectionBy.IO_List, InternalDataModel.VAR_LOCKED_N_LOADED, ((FixedBoolean) InternalDataModel.extractVariableByID(tsse.getIOlist(), InternalDataModel.VAR_LOCKED_N_LOADED)).isValue());
+        deltaSteps = TechnicalSystemStateDeltaHelper.filterTechnicalSystemStateDeltaEvaluation(deltaSteps, DeltaSelectionBy.IO_List, InternalDataModel.VAR_WASHING_PROGRAM, ((FixedInteger) InternalDataModel.extractVariableByID(tsse.getIOlist(), InternalDataModel.VAR_WASHING_PROGRAM)).getValue());
+
+        // search for a state which could be transitioned into by switch the poweredOn
+        Boolean intendedPoweredOn = ((FixedBoolean) InternalDataModel.extractVariableByID(tsse.getIOlist(), InternalDataModel.VAR_POWERED_ON)).isValue();
+        intendedPoweredOn = !intendedPoweredOn; // invert poweredOn setting
+
+        deltaSteps = TechnicalSystemStateDeltaHelper.filterTechnicalSystemStateDeltaEvaluation(deltaSteps, DeltaSelectionBy.IO_List, InternalDataModel.VAR_POWERED_ON, intendedPoweredOn);
+        return deltaSteps;
+    }
+
+    private Vector<TechnicalSystemStateDeltaEvaluation> filterForUnlocking(Vector<TechnicalSystemStateDeltaEvaluation> deltaSteps, TechnicalSystemStateEvaluation tsse) {
+        deltaSteps = TechnicalSystemStateDeltaHelper.filterTechnicalSystemStateDeltaEvaluation(deltaSteps, DeltaSelectionBy.IO_List, InternalDataModel.VAR_POWERED_ON, ((FixedBoolean) InternalDataModel.extractVariableByID(tsse.getIOlist(), InternalDataModel.VAR_LOCKED_N_LOADED)).isValue());
+        deltaSteps = TechnicalSystemStateDeltaHelper.filterTechnicalSystemStateDeltaEvaluation(deltaSteps, DeltaSelectionBy.IO_List, InternalDataModel.VAR_WASHING_PROGRAM, ((FixedInteger) InternalDataModel.extractVariableByID(tsse.getIOlist(), InternalDataModel.VAR_WASHING_PROGRAM)).getValue());
+        deltaSteps = TechnicalSystemStateDeltaHelper.filterTechnicalSystemStateDeltaEvaluation(deltaSteps, DeltaSelectionBy.IO_List, InternalDataModel.VAR_LOCKED_N_LOADED, false);
+        return deltaSteps;
     }
 
     @Override
