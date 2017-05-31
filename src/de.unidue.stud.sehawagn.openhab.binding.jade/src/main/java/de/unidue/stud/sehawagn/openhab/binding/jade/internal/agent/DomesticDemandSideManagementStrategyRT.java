@@ -49,7 +49,7 @@ public class DomesticDemandSideManagementStrategyRT extends AbstractEvaluationSt
 
         switchingNecessary = false;
 
-        long remainingTimeInState = calculateRemainingTimeInState(tsse);
+        long remainingTimeInState = this.calculateEvaluationPause(tsse, evaluationStepEndTime);
         if (remainingTimeInState > 0) {
             // too early, state still valid, no need for new evaluation step
 //            DateFormat f = new SimpleDateFormat("HH:mm:ss.SSS");
@@ -57,11 +57,11 @@ public class DomesticDemandSideManagementStrategyRT extends AbstractEvaluationSt
             return;
         }
 
-        if (tsse != null && tsse.getGlobalTime() < evaluationInterruptTime) {
+        if (tsse != null && tsse.getGlobalTime() < evaluationStepEndTime) {
 //            echoString += "state=" + tsse.getStateID() + ", evaluating";
 
             // Get the possible subsequent steps and states
-            long duration = evaluationInterruptTime - tsse.getGlobalTime();
+            long duration = evaluationStepEndTime - tsse.getGlobalTime();
             Vector<TechnicalSystemStateDeltaEvaluation> deltaSteps = getAllDeltaEvaluationsStartingFromTechnicalSystemState(tsse, duration);
 
             Vector<TechnicalSystemStateDeltaEvaluation> deltaStepsFiltered = filterForPowerSwitching(deltaSteps, tsse);
