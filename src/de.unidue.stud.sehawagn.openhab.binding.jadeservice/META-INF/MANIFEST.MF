@@ -11,6 +11,7 @@ Export-Package: agentgui.core.application,
  agentgui.simulationService.environment,
  agentgui.simulationService.time,
  agentgui.simulationService.transaction,
+ de.unidue.stud.sehawagn.energy,
  energy,
  energy.calculations,
  energy.domain,
@@ -64,7 +65,8 @@ Bundle-ClassPath: .,
   lib/AgentHyGrid.jar,
   lib/jung-api-2.0.1.jar,
   lib/collections-generic-4.01.jar,
-  lib/jung-graph-impl-2.0.1.jar
+  lib/jung-graph-impl-2.0.1.jar,
+  lib/groupcoordinator-0.0.1-SNAPSHOT.jar
 Bundle-Activator: jade.osgi.internal.JadeActivator
 Import-Package: jade.content,
  jade.content.abs,

@@ -1,6 +1,9 @@
 package de.unidue.stud.sehawagn.openhab.binding.jade.internal.agent;
 
+import de.unidue.stud.sehawagn.energy.Helper;
+import de.unidue.stud.sehawagn.energy.RequestRunSchedule;
 import de.unidue.stud.sehawagn.openhab.binding.jade.handler.SmartifiedHomeESHHandler;
+import energy.optionModel.TechnicalSystem;
 import hygrid.agent.AbstractEnergyAgent;
 import hygrid.agent.AbstractIOReal;
 import hygrid.agent.AbstractIOSimulated;
@@ -10,11 +13,9 @@ import hygrid.agent.monitoring.MonitoringListenerForLogging;
 import hygrid.agent.monitoring.MonitoringListenerForProxy;
 import hygrid.env.agentConfig.dataModel.AgentConfig;
 import hygrid.env.agentConfig.dataModel.AgentOperatingMode;
-import hygrid.ontology.HyGridOntology;
-import jade.content.ContentManager;
-import jade.content.lang.sl.SLCodec;
 import jade.core.AID;
 import jade.core.behaviours.Behaviour;
+import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
 /**
@@ -28,6 +29,8 @@ public class SmartifiedHomeAgent extends AbstractEnergyAgent {
 
     protected MonitoringBehaviourRT monitoringBehaviourRT;
     protected SimulationConnectorRemote simulationConnector;
+
+    protected AID coordinatorAgentAID;
 
     /*
      * @see jade.core.Agent#setup()
@@ -45,11 +48,13 @@ public class SmartifiedHomeAgent extends AbstractEnergyAgent {
             }
         }
 
-        ContentManager contentManager = getContentManager();
+        Helper.enableForCommunication(this);
+
+//        ContentManager contentManager = getContentManager();
 
         // prepare communication with other platforms
-        contentManager.registerLanguage(new SLCodec());
-        contentManager.registerOntology(HyGridOntology.getInstance());
+//        contentManager.registerLanguage(new SLCodec());
+//        contentManager.registerOntology(HyGridOntology.getInstance());
 
         // If in testbed messages from the central agent are handled by a different behaviour
         AgentOperatingMode operatingMode = getAgentOperatingMode();
@@ -65,7 +70,9 @@ public class SmartifiedHomeAgent extends AbstractEnergyAgent {
         }
 
         getEnergyAgentIO().setESHHandler(myESHHandler);
-
+        if (myESHHandler != null) { // don't do it in case of the simulation, where the OH/ESH classes are not available
+            coordinatorAgentAID = myESHHandler.getBridgeHandler().getCoordinatorAgentAID();
+        }
         Behaviour ioBehaviour = (Behaviour) getEnergyAgentIO();
         if (ioBehaviour != null) {
             addBehaviour(ioBehaviour);
@@ -73,7 +80,19 @@ public class SmartifiedHomeAgent extends AbstractEnergyAgent {
 
         addBehaviour(new OperationCommandReceiveBehaviour(this));
 
-//        System.out.println("SmartHomeAgent started");
+        TechnicalSystem technicalSystem = getInternalDataModel().getOptionModelController().getTechnicalSystem();
+        requestRunScheduleFromGrid(technicalSystem);
+//        TechnicalSystem technicalSystem=(TechnicalSystem) getInternalDataModel().getNetworkComponent().getDataModel();
+
+        // this contains the graph as states and transitions, it should be cleaned from x/y attributes, unneeded states,
+        // descriptions, semantic ids, (IO)VariableStates, FormatTimeUnits, detailed EnergyFlowInWatt (calculate
+        // average) from measurements (turn EnergyFlowMeasured into EnergyFlowGeneral), optionally introduce
+        // StatisticalEnergyFLow in the type of a Stock Chart/Kursdiagramm with Fehlerindikatoren (error bars, standard
+        // deviation/variance)
+//        getInternalDataModel().getOptionModelController().getTechnicalInterfaceConfiguration("Washing Program from openHAB handler");
+//        technicalSystem.get
+
+        System.out.println("SmartHomeAgent started");
 
         getEnergyAgentIO().onAgentStart();
     }
@@ -146,5 +165,11 @@ public class SmartifiedHomeAgent extends AbstractEnergyAgent {
     @Override
     public WashingMachineIO getEnergyAgentIO() {
         return (WashingMachineIO) super.getEnergyAgentIO();
+    }
+
+    public void requestRunScheduleFromGrid(TechnicalSystem technicalSystem) {
+        ACLMessage requestMessage = RequestRunSchedule.prepareRequestMessage(this, technicalSystem);
+        requestMessage.addReceiver(coordinatorAgentAID);
+        addBehaviour(new RequestRunSchedule(this, requestMessage));
     }
 }

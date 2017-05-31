@@ -17,10 +17,13 @@ import org.eclipse.smarthome.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.unidue.stud.sehawagn.energy.DomesticLoadCoordinatorAgent;
 import de.unidue.stud.sehawagn.openhab.channelmirror.ChannelMirror;
+import hygrid.env.agentConfig.controller.AgentConfigController;
 import hygrid.env.agentConfig.dataModel.AgentConfig;
 import hygrid.env.agentConfig.dataModel.AgentOperatingMode;
 import hygrid.env.agentConfig.dataModel.CentralAgentAID;
+import jade.core.AID;
 import jade.core.Profile;
 import jade.osgi.service.runtime.JadeRuntimeService;
 import jade.util.leap.Properties;
@@ -146,6 +149,12 @@ public class JADEBridgeHandler extends ConfigStatusBridgeHandler {
         agentConfig.setTrustStore(null);
 
         return agentConfig;
+    }
+
+    public AID getCoordinatorAgentAID() {
+        AgentConfig remoteAgentConfig = getGeneralAgentConfig(DomesticLoadCoordinatorAgent.AGENT_ID);
+        remoteAgentConfig.getCentralAgentAID().setAgentName(DomesticLoadCoordinatorAgent.AGENT_ID);
+        return AgentConfigController.getAIDFromRemoteAgentConfig(remoteAgentConfig.getCentralAgentAID());
     }
 
     public boolean stopAgent(SmartifiedHomeESHHandler smartHomeAgentHandler) throws StaleProxyException {

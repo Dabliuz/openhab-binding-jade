@@ -95,7 +95,7 @@ public class SmartifiedHomeESHHandler extends BaseThingHandler implements Channe
         this.channelTypeProvider = channelTypeProvider;
     }
 
-    private synchronized JADEBridgeHandler getBridgeHandler() {
+    public synchronized JADEBridgeHandler getBridgeHandler() {
         if (bridgeHandler == null) {
             Bridge bridge = getBridge();
             if (bridge == null) {
