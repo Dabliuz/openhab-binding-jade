@@ -16,7 +16,7 @@ public class SimulationIOBehaviour extends AbstractIOSimulated implements Washin
     private static final long serialVersionUID = -6149499361123282249L;
 
     public SimulationIOBehaviour(SmartifiedHomeAgent agent, AbstractInternalDataModel internalDataModel) {
-        super(agent, internalDataModel);
+        super(agent);
     }
 
     /*
@@ -80,6 +80,7 @@ public class SimulationIOBehaviour extends AbstractIOSimulated implements Washin
     public void setPoweredOn(Boolean poweredOn) {
     }
 
+    @Override
     public void setUnlocked() {
     }
 
