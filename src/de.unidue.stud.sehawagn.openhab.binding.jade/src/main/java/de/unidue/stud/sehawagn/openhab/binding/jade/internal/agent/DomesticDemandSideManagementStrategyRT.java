@@ -11,19 +11,18 @@ import energy.optionModel.FixedBoolean;
 import energy.optionModel.FixedInteger;
 import energy.optionModel.TechnicalSystemStateEvaluation;
 import hygrid.agent.AbstractEnergyAgent;
-import hygrid.agent.AbstractInternalDataModel;
 
 public class DomesticDemandSideManagementStrategyRT extends AbstractEvaluationStrategyRT {
 
     protected boolean switchingNecessary = false;
-    protected AbstractInternalDataModel agentDataModel = null;
+    protected InternalDataModel agentDataModel = null;
     private TechnicalSystemStateEvaluation nextTSSE = null;
 
     public DomesticDemandSideManagementStrategyRT(OptionModelController optionModelController) {
         super(optionModelController);
         if (optionModelController.getControllingAgent() instanceof AbstractEnergyAgent) {
             AbstractEnergyAgent energyAgent = (AbstractEnergyAgent) optionModelController.getControllingAgent();
-            agentDataModel = energyAgent.getInternalDataModel();
+            agentDataModel = (InternalDataModel) energyAgent.getInternalDataModel();
         }
     }
 

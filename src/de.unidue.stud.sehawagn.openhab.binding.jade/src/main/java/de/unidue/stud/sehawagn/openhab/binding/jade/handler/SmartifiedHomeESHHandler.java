@@ -307,6 +307,7 @@ public class SmartifiedHomeESHHandler extends BaseThingHandler implements Channe
                 }
                 case CHANNEL_DEVICE_STATE: {
                     newState = new StringType(currentDeviceState);
+                    logger.info("New state " + currentDeviceState);
                     break;
                 }
                 case CHANNEL_MANAGED_FROM_OUTSIDE: {
@@ -319,7 +320,7 @@ public class SmartifiedHomeESHHandler extends BaseThingHandler implements Channe
                 }
             }
             if (newState != null) {
-//                logger.info("REFRESH command for " + channelUID + ": " + newState + " (should have been handled OK)");
+                logger.info("REFRESH command for " + channelUID + ": " + newState + " (should have been handled OK)");
                 updateState(channelUID.getId(), newState);
             }
         } else {
@@ -370,11 +371,11 @@ public class SmartifiedHomeESHHandler extends BaseThingHandler implements Channe
 
     // called by the agent (via one of it's behaviours) and the handler when receiving a command from the actuateChannel
     public void setActuateChannelValue(boolean actuateValue, boolean calledFromOutside) {
-//        System.out.println("setActuateChannelValue=" + actuateValue + ", calledFromOutside=" + calledFromOutside);
+        System.out.println("setActuateChannelValue=" + actuateValue + ", calledFromOutside=" + calledFromOutside);
         if (!calledFromOutside || (calledFromOutside && outsideManagementAllowed)) {
             actuateChannelValue = actuateValue;
             postCommand(actuateMirrorChannelUID, boolToState(actuateValue));
-//            System.out.println("and command actually sent!");
+            System.out.println("and command actually sent!");
         }
     }
 

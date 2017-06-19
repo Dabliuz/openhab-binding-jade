@@ -123,7 +123,7 @@ public class ESHIOBehaviour extends AbstractIOReal implements WashingMachineIO {
 
     @Override
     public void setPoweredOn(Boolean poweredOn) {
-        myESHHandler.setActuateChannelValue(poweredOn, true);
+        myESHHandler.setActuateChannelValue(poweredOn, true); // 2nd parameter=calledFromOutside
     }
 
     @Override

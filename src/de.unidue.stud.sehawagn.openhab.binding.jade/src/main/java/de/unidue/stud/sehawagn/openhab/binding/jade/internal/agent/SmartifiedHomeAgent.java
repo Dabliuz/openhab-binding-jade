@@ -141,15 +141,16 @@ public class SmartifiedHomeAgent extends AbstractEnergyAgent {
      * Start real time control behaviour MonitoringBehaviourRT, if not already done.
      */
     @Override
-    protected void startMonitoringBehaviourRT() {
+    public MonitoringBehaviourRT getMonitoringBehaviourRT() {
         if (monitoringBehaviourRT == null) {
             monitoringBehaviourRT = new MonitoringBehaviourRT(getInternalDataModel(), getEnergyAgentIO());
             monitoringBehaviourRT.addMonitoringListener(new MonitoringListenerForLogging());
             monitoringBehaviourRT.addMonitoringListener(new MonitoringListenerForProxy(simulationConnector).overrideMeasurementVariable(InternalDataModel.VAR_POWER_CONSUMPTION));
             getInternalDataModel().addObserver(monitoringBehaviourRT);
-            addBehaviour(monitoringBehaviourRT);
+            monitoringBehaviourRT.addMonitoringListener(getInternalDataModel());
             monitoringBehaviourRT.getMonitoringStrategyRT().setOptionModelCalculationClass(SmartifiedHomeCalculation.class);
         }
+        return monitoringBehaviourRT;
     }
 
     @Override
