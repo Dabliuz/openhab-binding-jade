@@ -44,6 +44,7 @@ public class JADEBindingConstants {
     public static final String CONFKEY_REMOTE_MTP_PORT = "remoteMTPPort";
     public static final String CONFKEY_REMOTE_MTP_PROTOCOL = "remoteMTPProtocol";
     public static final String CONFKEY_REMOTE_PLATFORM_NAME = "remotePlatformName";
+    public static final String CONFKEY_REMOTE_GROUP_ADMIN_NAME = "remoteGroupAdminName";
     public static final String CONFKEY_REMOTE_GROUP_COORDINATOR_NAME = "remoteGroupCoordinatorName";
 
     // public static final String CONFKEY_POLLING_INTERVAL = "pollingInterval";

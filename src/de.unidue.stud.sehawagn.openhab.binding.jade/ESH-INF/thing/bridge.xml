@@ -16,23 +16,23 @@
 				<context>network_address</context>
 				<label>Local MTP Address</label>
 				<description>The local host interface (IP address/hostname) where the JADE MTP should bind/listen to. (e.g.
-					132.252.61.116)
+					132.252.61.116, 192.168.42.20 or 192.168.42.123)
 				</description>
 				<required>true</required>
 				<default>192.168.42.20</default>
 			</parameter>
 			<parameter name="remoteMTPAddress" type="text">
 				<context>network_address</context>
-				<label>MTP Address</label>
+				<label>Remote MTP Address</label>
 				<description>The address of the JADE MTP (message transport protocol), where the GroupCoordinator agent is
-					available. (e.g. 132.252.61.126)
+					available. (e.g. 132.252.61.126 or 192.168.42.20)
 				</description>
 				<required>true</required>
 				<default>192.168.42.20</default>
 			</parameter>
 			<parameter name="remoteMTPPort" type="text">
 				<context>network_address</context>
-				<label>MTP Port</label>
+				<label>Remote MTP Port</label>
 				<description>The port of the JADE MTP (message transport protocol), where the GroupCoordinator agent is available.
 					(e.g. 6778)
 				</description>
@@ -48,20 +48,27 @@
 			</parameter>
 			<parameter name="remotePlatformName" type="text">
 				<context>network_address</context>
-				<label>Platform Name</label>
+				<label>Remote Platform Name</label>
 				<description>The name of the JADE platform, where the GroupCoordinator agent is available. (e.g.
 					132.252.61.126:6099/JADE)
 				</description>
 				<required>true</required>
 				<default>192.168.42.20:6099/JADE</default>
 			</parameter>
-			<parameter name="remoteGroupCoordinatorName" type="text">
+			<parameter name="remoteGroupAdminName" type="text">
 				<context>network_address</context>
-				<label>GroupCoordinator Agent Name</label>
-				<description>The name of the GroupCoordinator. (e.g. CeExAg)</description>
+				<label>Remote GroupAdmin Agent Name</label>
+				<description>The name of the Group Administrator. (e.g. CeExAg)</description>
 				<required>true</required>
 				<default>CeExAg</default>
 			</parameter>
+			<parameter name="remoteGroupCoordinatorName" type="text">
+                <context>network_address</context>
+                <label>Remote GroupCoordinator Agent Name</label>
+                <description>The name of the Domestic Load Group Coordinator. (e.g. GrCoAg or DoLoCoAg)</description>
+                <required>true</required>
+                <default>n105</default>
+            </parameter>
 		</config-description>
 	</bridge-type>
 </thing:thing-descriptions>

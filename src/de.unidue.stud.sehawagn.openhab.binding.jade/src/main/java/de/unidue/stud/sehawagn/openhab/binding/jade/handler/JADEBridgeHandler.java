@@ -17,7 +17,6 @@ import org.eclipse.smarthome.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.unidue.stud.sehawagn.energy.DomesticLoadCoordinatorAgent;
 import de.unidue.stud.sehawagn.openhab.channelmirror.ChannelMirror;
 import hygrid.env.agentConfig.controller.AgentConfigController;
 import hygrid.env.agentConfig.dataModel.AgentConfig;
@@ -134,7 +133,7 @@ public class JADEBridgeHandler extends ConfigStatusBridgeHandler {
     private AgentConfig getGeneralAgentConfig(String agentName) {
 
         CentralAgentAID centralAgentAID = new CentralAgentAID();
-        centralAgentAID.setAgentName((String) getConfig().get(CONFKEY_REMOTE_GROUP_COORDINATOR_NAME));
+        centralAgentAID.setAgentName((String) getConfig().get(CONFKEY_REMOTE_GROUP_ADMIN_NAME));
         centralAgentAID.setPlatformName((String) getConfig().get(CONFKEY_REMOTE_PLATFORM_NAME));
         centralAgentAID.setUrlOrIp((String) getConfig().get(CONFKEY_REMOTE_MTP_ADDRESS));
         centralAgentAID.setPort(1099);
@@ -152,8 +151,9 @@ public class JADEBridgeHandler extends ConfigStatusBridgeHandler {
     }
 
     public AID getCoordinatorAgentAID() {
-        AgentConfig remoteAgentConfig = getGeneralAgentConfig(DomesticLoadCoordinatorAgent.AGENT_ID);
-        remoteAgentConfig.getCentralAgentAID().setAgentName(DomesticLoadCoordinatorAgent.AGENT_ID);
+        AgentConfig remoteAgentConfig = getGeneralAgentConfig((String) getConfig().get(CONFKEY_REMOTE_GROUP_COORDINATOR_NAME)); // 105
+                                                                                                                                // DomesticLoadCoordinatorAgent.AGENT_ID
+        // remoteAgentConfig.getCentralAgentAID().setAgentName("n105"); // DomesticLoadCoordinatorAgent.AGENT_ID
         return AgentConfigController.getAIDFromRemoteAgentConfig(remoteAgentConfig.getCentralAgentAID());
     }
 

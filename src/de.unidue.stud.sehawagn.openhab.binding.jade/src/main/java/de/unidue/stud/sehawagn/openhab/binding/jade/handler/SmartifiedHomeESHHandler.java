@@ -307,7 +307,7 @@ public class SmartifiedHomeESHHandler extends BaseThingHandler implements Channe
                 }
                 case CHANNEL_DEVICE_STATE: {
                     newState = new StringType(currentDeviceState);
-                    logger.info("New state " + currentDeviceState);
+//                    logger.info("New state " + currentDeviceState);
                     break;
                 }
                 case CHANNEL_MANAGED_FROM_OUTSIDE: {
@@ -320,7 +320,7 @@ public class SmartifiedHomeESHHandler extends BaseThingHandler implements Channe
                 }
             }
             if (newState != null) {
-                logger.info("REFRESH command for " + channelUID + ": " + newState + " (should have been handled OK)");
+//                logger.info("REFRESH command for " + channelUID + ": " + newState + " (should have been handled OK)");
                 updateState(channelUID.getId(), newState);
             }
         } else {
@@ -348,7 +348,7 @@ public class SmartifiedHomeESHHandler extends BaseThingHandler implements Channe
                 }
                 case CHANNEL_MANAGED_FROM_OUTSIDE: {
                     outsideManagementAllowed = stateToBool(command);
-                    setChannelReadOnly(actuateMirrorChannelUID, stateToBool(command));
+                    // setChannelReadOnly(actuateMirrorChannelUID, stateToBool(command));
                     break;
                 }
                 default: {
@@ -483,7 +483,7 @@ public class SmartifiedHomeESHHandler extends BaseThingHandler implements Channe
         ThingBuilder thingBuilder = editThing();
         thingBuilder.withChannels(newChannels);
 
-        logger.error("Channel " + channelUID + " updated to ro=" + newReadOnly);
+//        logger.error("Channel " + channelUID + " updated to ro=" + newReadOnly);
 
         updateThing(thingBuilder.build());
 
