@@ -1,7 +1,9 @@
 package de.unidue.stud.sehawagn.openhab.binding.jade.internal.agent;
 
+import de.unidue.stud.sehawagn.energy.Flexibility;
 import de.unidue.stud.sehawagn.energy.Helper;
 import de.unidue.stud.sehawagn.energy.RequestRunSchedule;
+import de.unidue.stud.sehawagn.energy.ScheduleRequester;
 import de.unidue.stud.sehawagn.openhab.binding.jade.handler.SmartifiedHomeESHHandler;
 import energy.optionModel.TechnicalSystem;
 import hygrid.agent.AbstractEnergyAgent;
@@ -21,7 +23,7 @@ import jade.lang.acl.MessageTemplate;
 /**
  * An energy agent, representing a "smart home", using the configured EOM.
  */
-public class SmartifiedHomeAgent extends AbstractEnergyAgent {
+public class SmartifiedHomeAgent extends AbstractEnergyAgent implements ScheduleRequester {
 
     private static final long serialVersionUID = 1730951019391324601L;
 
@@ -79,18 +81,6 @@ public class SmartifiedHomeAgent extends AbstractEnergyAgent {
         }
 
         addBehaviour(new OperationCommandReceiveBehaviour(this));
-
-        TechnicalSystem technicalSystem = getInternalDataModel().getOptionModelController().getTechnicalSystem();
-        requestRunScheduleFromGrid(technicalSystem);
-//        TechnicalSystem technicalSystem=(TechnicalSystem) getInternalDataModel().getNetworkComponent().getDataModel();
-
-        // this contains the graph as states and transitions, it should be cleaned from x/y attributes, unneeded states,
-        // descriptions, semantic ids, (IO)VariableStates, FormatTimeUnits, detailed EnergyFlowInWatt (calculate
-        // average) from measurements (turn EnergyFlowMeasured into EnergyFlowGeneral), optionally introduce
-        // StatisticalEnergyFLow in the type of a Stock Chart/Kursdiagramm with Fehlerindikatoren (error bars, standard
-        // deviation/variance)
-//        getInternalDataModel().getOptionModelController().getTechnicalInterfaceConfiguration("Washing Program from openHAB handler");
-//        technicalSystem.get
 
         System.out.println("SmartHomeAgent started");
 
@@ -169,8 +159,35 @@ public class SmartifiedHomeAgent extends AbstractEnergyAgent {
     }
 
     public void requestRunScheduleFromGrid(TechnicalSystem technicalSystem) {
-        ACLMessage requestMessage = RequestRunSchedule.prepareRequestMessage(this, technicalSystem);
+        int ticIndex = getInternalDataModel().getOptionModelController().getIndexOfTechnicalInterfaceConfiguration(getInternalDataModel().getTechnicalSystemStateEvaluation().getConfigID());
+        Flexibility flexibility = new Flexibility(technicalSystem);
+        flexibility.selectInterface(ticIndex);
+        flexibility.pruneForControllableStates(InternalDataModel.VAR_LOCKED_N_LOADED, InternalDataModel.VAR_POWERED_ON);
+        ACLMessage requestMessage = RequestRunSchedule.prepareRequestMessage(this, flexibility);
         requestMessage.addReceiver(coordinatorAgentAID);
-        addBehaviour(new RequestRunSchedule(this, requestMessage));
+        addBehaviour(new RequestRunSchedule(this, requestMessage, this));
+    }
+
+    @Override
+    public void processReceivedSchedule(Flexibility schedule) {
+        int ticIndex = getInternalDataModel().getOptionModelController().getIndexOfTechnicalInterfaceConfiguration(getInternalDataModel().getTechnicalSystemStateEvaluation().getConfigID());
+
+        schedule.applyTo(getInternalDataModel().getOptionModelController().getTechnicalSystem(), ticIndex);
+        internalDataModel.waitForCoordination = false;
+    }
+
+    public void coordinateWithGrid() {
+        TechnicalSystem technicalSystem = getInternalDataModel().getOptionModelController().getTechnicalSystem();
+        requestRunScheduleFromGrid(technicalSystem);
+//        TechnicalSystem technicalSystem=(TechnicalSystem) getInternalDataModel().getNetworkComponent().getDataModel();
+
+        // this contains the graph as states and transitions, it should be cleaned from x/y attributes, unneeded states,
+        // descriptions, semantic ids, (IO)VariableStates, FormatTimeUnits, detailed EnergyFlowInWatt (calculate
+        // average) from measurements (turn EnergyFlowMeasured into EnergyFlowGeneral), optionally introduce
+        // StatisticalEnergyFLow in the type of a Stock Chart/Kursdiagramm with Fehlerindikatoren (error bars, standard
+        // deviation/variance)
+//        getInternalDataModel().getOptionModelController().getTechnicalInterfaceConfiguration("Washing Program from openHAB handler");
+//        technicalSystem.get
+
     }
 }

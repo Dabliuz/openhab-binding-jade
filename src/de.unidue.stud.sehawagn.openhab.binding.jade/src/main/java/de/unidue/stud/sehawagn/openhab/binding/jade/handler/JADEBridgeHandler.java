@@ -151,9 +151,10 @@ public class JADEBridgeHandler extends ConfigStatusBridgeHandler {
     }
 
     public AID getCoordinatorAgentAID() {
+        System.out.println("CONFKEY_REMOTE_GROUP_COORDINATOR_NAME " + CONFKEY_REMOTE_GROUP_COORDINATOR_NAME + " " + getConfig().get(CONFKEY_REMOTE_GROUP_COORDINATOR_NAME));
         AgentConfig remoteAgentConfig = getGeneralAgentConfig((String) getConfig().get(CONFKEY_REMOTE_GROUP_COORDINATOR_NAME)); // 105
                                                                                                                                 // DomesticLoadCoordinatorAgent.AGENT_ID
-        // remoteAgentConfig.getCentralAgentAID().setAgentName("n105"); // DomesticLoadCoordinatorAgent.AGENT_ID
+        remoteAgentConfig.getCentralAgentAID().setAgentName((String) getConfig().get(CONFKEY_REMOTE_GROUP_COORDINATOR_NAME)); // DomesticLoadCoordinatorAgent.AGENT_ID
         return AgentConfigController.getAIDFromRemoteAgentConfig(remoteAgentConfig.getCentralAgentAID());
     }
 

@@ -38,15 +38,20 @@ public class DomesticDemandSideManagementStrategyRT extends AbstractEvaluationSt
 
     @Override
     public void runEvaluation() {
+
 //        String echoString = "DomesticDSMStrategy: runEvaluation(), ";
         if (isStopEvaluation() == true) {
             return; // if interrupted from outside (by simulation UI)
         }
 
+        switchingNecessary = false;
+
+        if (agentDataModel.waitForCoordination) {
+            System.err.println("waitingForCoordination");
+            return;
+        }
         // Initialize search
         TechnicalSystemStateEvaluation tsse = getSystemState();
-
-        switchingNecessary = false;
 
         long remainingTimeInState = this.calculateEvaluationPause(tsse, evaluationStepEndTime);
         if (remainingTimeInState > 0) {
@@ -90,6 +95,10 @@ public class DomesticDemandSideManagementStrategyRT extends AbstractEvaluationSt
 
             // Set next state as new current state
             switchingNecessary = true;
+            if (!agentDataModel.programRunning) {
+                agentDataModel.startProgramAndExternalCoordination();
+
+            }
         }
 //        System.out.println(echoString);
     }

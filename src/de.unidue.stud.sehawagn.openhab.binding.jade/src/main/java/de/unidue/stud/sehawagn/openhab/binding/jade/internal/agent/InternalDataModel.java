@@ -41,6 +41,10 @@ public class InternalDataModel extends AbstractInternalDataModel implements Moni
 
     TechnicalSystemStateEvaluation technicalSystemStateEvaluation = null;
 
+    public boolean waitForCoordination = false;
+
+    public boolean programRunning = false;
+
     /**
      * @param agent the agent
      */
@@ -170,5 +174,11 @@ public class InternalDataModel extends AbstractInternalDataModel implements Moni
 
     public TechnicalSystemStateEvaluation getTechnicalSystemStateEvaluation() {
         return technicalSystemStateEvaluation;
+    }
+
+    public void startProgramAndExternalCoordination() {
+
+        myAgent.coordinateWithGrid();
+        programRunning = true;
     }
 }
