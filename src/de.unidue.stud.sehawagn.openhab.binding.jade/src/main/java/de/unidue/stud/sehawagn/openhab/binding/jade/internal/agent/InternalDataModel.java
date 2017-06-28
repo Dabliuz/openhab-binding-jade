@@ -117,6 +117,7 @@ public class InternalDataModel extends AbstractInternalDataModel implements Moni
 //        return deriveVariable(variableList, variableID, Boolean.class);
 //    }
 
+    @SuppressWarnings("unchecked")
     public static <T> T deriveVariable(FixedVariableList variableList, String variableID) {
         Object returnObject = null;
         Class<T> clazz = null;
@@ -128,7 +129,7 @@ public class InternalDataModel extends AbstractInternalDataModel implements Moni
             returnObject = ((FixedInteger) sP1).getValue();
             clazz = (Class<T>) Integer.class;
         } else if (sP1 == null) {
-            System.out.println("deriveVariable() " + variableID + " not found! :-(");
+            System.err.println("deriveVariable() " + variableID + " not found! :-(");
             return null;
         } else {
             return null;

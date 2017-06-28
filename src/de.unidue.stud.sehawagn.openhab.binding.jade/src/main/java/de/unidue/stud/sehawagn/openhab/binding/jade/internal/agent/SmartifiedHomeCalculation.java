@@ -19,6 +19,7 @@ import energy.optionModel.TechnicalSystemStateEvaluation;
  * This class calculates the energy flows of a smart house.
  */
 public class SmartifiedHomeCalculation extends AbstractOptionModelCalculation {
+    @SuppressWarnings("unused")
     private static final double FAKE_FACTOR = 500.0; // this is some arbitrarily chosen value to put the measured value
                                                      // in a range, which makes it interesting for the environment model
 

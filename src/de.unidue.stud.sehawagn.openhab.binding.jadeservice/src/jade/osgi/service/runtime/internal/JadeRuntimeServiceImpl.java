@@ -20,9 +20,6 @@ import jade.wrapper.StaleProxyException;
 
 public class JadeRuntimeServiceImpl implements JadeRuntimeService {
 
-    private static final String PROFILE_PARAMETER_PREFIX = "jade.";
-    private static final String JADE_CONF = PROFILE_PARAMETER_PREFIX + "conf";
-
     private ContainerController container;
     private AgentManager agentManager;
     private Bundle bundle;
@@ -148,6 +145,7 @@ public class JadeRuntimeServiceImpl implements JadeRuntimeService {
         return false;
     }
 
+    @SuppressWarnings("unused") // TODO use Terminator
     private class Terminator implements Runnable {
         @Override
         public void run() {

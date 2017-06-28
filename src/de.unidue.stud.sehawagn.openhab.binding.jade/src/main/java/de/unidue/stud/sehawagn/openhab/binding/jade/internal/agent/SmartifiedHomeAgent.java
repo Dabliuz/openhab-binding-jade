@@ -82,7 +82,7 @@ public class SmartifiedHomeAgent extends AbstractEnergyAgent implements Schedule
 
         addBehaviour(new OperationCommandReceiveBehaviour(this));
 
-        System.out.println("SmartHomeAgent started");
+//        System.out.println("SmartHomeAgent started");
 
         getEnergyAgentIO().onAgentStart();
     }

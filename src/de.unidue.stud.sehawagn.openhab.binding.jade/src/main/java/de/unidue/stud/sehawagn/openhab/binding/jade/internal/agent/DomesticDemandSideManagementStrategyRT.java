@@ -47,7 +47,7 @@ public class DomesticDemandSideManagementStrategyRT extends AbstractEvaluationSt
         switchingNecessary = false;
 
         if (agentDataModel.waitForCoordination) {
-            System.err.println("waitingForCoordination");
+//            System.err.println("waitingForCoordination");
             return;
         }
         // Initialize search

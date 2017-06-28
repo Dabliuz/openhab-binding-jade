@@ -371,11 +371,11 @@ public class SmartifiedHomeESHHandler extends BaseThingHandler implements Channe
 
     // called by the agent (via one of it's behaviours) and the handler when receiving a command from the actuateChannel
     public void setActuateChannelValue(boolean actuateValue, boolean calledFromOutside) {
-        System.out.println("setActuateChannelValue=" + actuateValue + ", calledFromOutside=" + calledFromOutside);
+//        System.out.println("setActuateChannelValue=" + actuateValue + ", calledFromOutside=" + calledFromOutside);
         if (!calledFromOutside || (calledFromOutside && outsideManagementAllowed)) {
             actuateChannelValue = actuateValue;
             postCommand(actuateMirrorChannelUID, boolToState(actuateValue));
-            System.out.println("and command actually sent!");
+//            System.out.println("and command actually sent!");
         }
     }
 
@@ -409,6 +409,7 @@ public class SmartifiedHomeESHHandler extends BaseThingHandler implements Channe
         return lastItem;
     }
 
+    @SuppressWarnings("unused")
     private void setChannelReadOnly(ChannelUID channelUID, Boolean newReadOnly) {
         logger.error("update Channel " + channelUID + " to ro=" + newReadOnly);
 
