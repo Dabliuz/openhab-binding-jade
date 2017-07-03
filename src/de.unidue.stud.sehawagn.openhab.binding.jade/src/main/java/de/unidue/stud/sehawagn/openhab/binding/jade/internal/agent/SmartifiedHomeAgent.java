@@ -52,11 +52,11 @@ public class SmartifiedHomeAgent extends AbstractEnergyAgent implements Schedule
 
         Helper.enableForCommunication(this);
 
-//        ContentManager contentManager = getContentManager();
+        // ContentManager contentManager = getContentManager();
 
         // prepare communication with other platforms
-//        contentManager.registerLanguage(new SLCodec());
-//        contentManager.registerOntology(HyGridOntology.getInstance());
+        // contentManager.registerLanguage(new SLCodec());
+        // contentManager.registerOntology(HyGridOntology.getInstance());
 
         // If in testbed messages from the central agent are handled by a different behaviour
         AgentOperatingMode operatingMode = getAgentOperatingMode();
@@ -82,7 +82,7 @@ public class SmartifiedHomeAgent extends AbstractEnergyAgent implements Schedule
 
         addBehaviour(new OperationCommandReceiveBehaviour(this));
 
-//        System.out.println("SmartHomeAgent started");
+        // System.out.println("SmartHomeAgent started");
 
         getEnergyAgentIO().onAgentStart();
     }
@@ -109,7 +109,7 @@ public class SmartifiedHomeAgent extends AbstractEnergyAgent implements Schedule
                     break;
             }
         }
-//        System.out.println("SmartHomeAgent stopped");
+        // System.out.println("SmartHomeAgent stopped");
         getEnergyAgentIO().onAgentStop();
     }
 
@@ -135,10 +135,12 @@ public class SmartifiedHomeAgent extends AbstractEnergyAgent implements Schedule
         if (monitoringBehaviourRT == null) {
             monitoringBehaviourRT = new MonitoringBehaviourRT(getInternalDataModel(), getEnergyAgentIO());
             monitoringBehaviourRT.addMonitoringListener(new MonitoringListenerForLogging());
-            monitoringBehaviourRT.addMonitoringListener(new MonitoringListenerForProxy(simulationConnector).overrideMeasurementVariable(InternalDataModel.VAR_POWER_CONSUMPTION));
+            monitoringBehaviourRT.addMonitoringListener(new MonitoringListenerForProxy(simulationConnector)
+                    .overrideMeasurementVariable(InternalDataModel.VAR_POWER_CONSUMPTION));
             getInternalDataModel().addObserver(monitoringBehaviourRT);
             monitoringBehaviourRT.addMonitoringListener(getInternalDataModel());
-            monitoringBehaviourRT.getMonitoringStrategyRT().setOptionModelCalculationClass(SmartifiedHomeCalculation.class);
+            monitoringBehaviourRT.getMonitoringStrategyRT()
+                    .setOptionModelCalculationClass(SmartifiedHomeCalculation.class);
         }
         return monitoringBehaviourRT;
     }
@@ -159,18 +161,21 @@ public class SmartifiedHomeAgent extends AbstractEnergyAgent implements Schedule
     }
 
     public void requestRunScheduleFromGrid(TechnicalSystem technicalSystem) {
-        int ticIndex = getInternalDataModel().getOptionModelController().getIndexOfTechnicalInterfaceConfiguration(getInternalDataModel().getTechnicalSystemStateEvaluation().getConfigID());
+        int ticIndex = getInternalDataModel().getOptionModelController().getIndexOfTechnicalInterfaceConfiguration(
+                getInternalDataModel().getTechnicalSystemStateEvaluation().getConfigID());
         Flexibility flexibility = new Flexibility(technicalSystem);
         flexibility.selectInterface(ticIndex);
         flexibility.pruneForControllableStates(InternalDataModel.VAR_LOCKED_N_LOADED, InternalDataModel.VAR_POWERED_ON);
         ACLMessage requestMessage = RequestRunSchedule.prepareRequestMessage(this, flexibility);
         requestMessage.addReceiver(coordinatorAgentAID);
         addBehaviour(new RequestRunSchedule(this, requestMessage, this));
+        internalDataModel.waitForCoordination = true;
     }
 
     @Override
     public void processReceivedSchedule(Flexibility schedule) {
-        int ticIndex = getInternalDataModel().getOptionModelController().getIndexOfTechnicalInterfaceConfiguration(getInternalDataModel().getTechnicalSystemStateEvaluation().getConfigID());
+        int ticIndex = getInternalDataModel().getOptionModelController().getIndexOfTechnicalInterfaceConfiguration(
+                getInternalDataModel().getTechnicalSystemStateEvaluation().getConfigID());
 
         schedule.applyTo(getInternalDataModel().getOptionModelController().getTechnicalSystem(), ticIndex);
         internalDataModel.waitForCoordination = false;
@@ -179,15 +184,17 @@ public class SmartifiedHomeAgent extends AbstractEnergyAgent implements Schedule
     public void coordinateWithGrid() {
         TechnicalSystem technicalSystem = getInternalDataModel().getOptionModelController().getTechnicalSystem();
         requestRunScheduleFromGrid(technicalSystem);
-//        TechnicalSystem technicalSystem=(TechnicalSystem) getInternalDataModel().getNetworkComponent().getDataModel();
+        // TechnicalSystem technicalSystem=(TechnicalSystem)
+        // getInternalDataModel().getNetworkComponent().getDataModel();
 
         // this contains the graph as states and transitions, it should be cleaned from x/y attributes, unneeded states,
         // descriptions, semantic ids, (IO)VariableStates, FormatTimeUnits, detailed EnergyFlowInWatt (calculate
         // average) from measurements (turn EnergyFlowMeasured into EnergyFlowGeneral), optionally introduce
         // StatisticalEnergyFLow in the type of a Stock Chart/Kursdiagramm with Fehlerindikatoren (error bars, standard
         // deviation/variance)
-//        getInternalDataModel().getOptionModelController().getTechnicalInterfaceConfiguration("Washing Program from openHAB handler");
-//        technicalSystem.get
+        // getInternalDataModel().getOptionModelController().getTechnicalInterfaceConfiguration("Washing Program from
+        // openHAB handler");
+        // technicalSystem.get
 
     }
 }
