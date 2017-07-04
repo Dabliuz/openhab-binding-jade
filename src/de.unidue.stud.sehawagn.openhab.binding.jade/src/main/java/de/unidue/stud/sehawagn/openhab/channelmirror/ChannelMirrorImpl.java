@@ -18,54 +18,58 @@ import org.eclipse.smarthome.core.types.State;
 public class ChannelMirrorImpl extends AbstractItemEventSubscriber implements ChannelMirror {
 //    private final Logger logger = LoggerFactory.getLogger(ChannelMirrorImpl.class);
 
-    private ItemRegistry itemRegistry;
+	private ItemRegistry itemRegistry;
 
-    private HashMap<String, ArrayList<ChannelMirrorReceiver>> mirrorRoutes = new HashMap<String, ArrayList<ChannelMirrorReceiver>>();
+	private HashMap<String, ArrayList<ChannelMirrorReceiver>> mirrorRoutes = new HashMap<String, ArrayList<ChannelMirrorReceiver>>();
 
-    protected void setItemRegistry(ItemRegistry itemRegistry) {
-        this.itemRegistry = itemRegistry;
-    }
+	protected void setItemRegistry(ItemRegistry itemRegistry) {
+		this.itemRegistry = itemRegistry;
+	}
 
-    protected void unsetItemRegistry(ItemRegistry itemRegistry) {
-        this.itemRegistry = null;
-    }
+	protected void unsetItemRegistry(ItemRegistry itemRegistry) {
+		this.itemRegistry = null;
+	}
 
-    @Override
-    protected void receiveUpdate(ItemStateEvent updateEvent) {
-        State stateUpdate = updateEvent.getItemState();
-        String sourceChannel = updateEvent.getSource();
+	@Override
+	protected void receiveUpdate(ItemStateEvent updateEvent) {
+		State stateUpdate = updateEvent.getItemState();
+//		String sourceChannel = updateEvent.getSource(); // problem: source is not kodi itself anymore, but autoupdate
 
-        if (itemRegistry != null) {
-            ArrayList<ChannelMirrorReceiver> mirrorReceivers = mirrorRoutes.get(sourceChannel);
-            if (mirrorReceivers != null) {
-                for (ChannelMirrorReceiver mirrorReceiver : mirrorReceivers) {
-                    mirrorReceiver.receiveFromMirroredChannel(sourceChannel, stateUpdate);
-                }
-            }
-        }
-    }
+		String sourceChannel = updateEvent.getItemName();
+//		System.out.println("receiveUpdate " + updateEvent + ", " + sourceChannel + ", " + updateEvent.getSource() + ", " + stateUpdate);
+		sourceChannel = sourceChannel.replace("_", ":");
 
-    @Override
-    public void mirrorChannel(ChannelUID sourceChannel, ChannelMirrorReceiver updateMonitorRecevier) {
-        ArrayList<ChannelMirrorReceiver> receivers = getMirrorReceivers(sourceChannel);
-        if (receivers == null) {
-            receivers = new ArrayList<ChannelMirrorReceiver>();
-        }
-        receivers.add(updateMonitorRecevier);
-        mirrorRoutes.put(sourceChannel.getAsString(), receivers);
-    }
+		if (itemRegistry != null) {
+			ArrayList<ChannelMirrorReceiver> mirrorReceivers = mirrorRoutes.get(sourceChannel);
+			if (mirrorReceivers != null) {
+				for (ChannelMirrorReceiver mirrorReceiver : mirrorReceivers) {
+					mirrorReceiver.receiveFromMirroredChannel(sourceChannel, stateUpdate);
+				}
+			}
+		}
+	}
 
-    @Override
-    public void unMirrorChannel(ChannelUID sourceChannel, ChannelMirrorReceiver updateMonitorRecevier) {
-        ArrayList<ChannelMirrorReceiver> receivers = getMirrorReceivers(sourceChannel);
-        if (receivers != null) {
-            receivers.remove(updateMonitorRecevier);
-        }
-        mirrorRoutes.put(sourceChannel.getAsString(), receivers);
-    }
+	@Override
+	public void mirrorChannel(ChannelUID sourceChannel, ChannelMirrorReceiver updateMonitorRecevier) {
+		ArrayList<ChannelMirrorReceiver> receivers = getMirrorReceivers(sourceChannel);
+		if (receivers == null) {
+			receivers = new ArrayList<ChannelMirrorReceiver>();
+		}
+		receivers.add(updateMonitorRecevier);
+		mirrorRoutes.put(sourceChannel.getAsString(), receivers);
+	}
 
-    private ArrayList<ChannelMirrorReceiver> getMirrorReceivers(ChannelUID sourceChannel) {
-        return mirrorRoutes.get(sourceChannel.getAsString());
-    }
+	@Override
+	public void unMirrorChannel(ChannelUID sourceChannel, ChannelMirrorReceiver updateMonitorRecevier) {
+		ArrayList<ChannelMirrorReceiver> receivers = getMirrorReceivers(sourceChannel);
+		if (receivers != null) {
+			receivers.remove(updateMonitorRecevier);
+		}
+		mirrorRoutes.put(sourceChannel.getAsString(), receivers);
+	}
+
+	private ArrayList<ChannelMirrorReceiver> getMirrorReceivers(ChannelUID sourceChannel) {
+		return mirrorRoutes.get(sourceChannel.getAsString());
+	}
 
 }

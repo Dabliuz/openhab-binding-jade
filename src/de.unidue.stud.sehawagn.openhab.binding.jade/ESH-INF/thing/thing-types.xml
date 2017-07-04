@@ -37,19 +37,25 @@
 				<label>Actuate Channel UID</label>
 				<description>The channel used by the agent to switch the device on and off.</description>
 				<required>false</required>
-				<context>Channel</context>
-				<filter>
-					<criteria name="kind">STATE</criteria>
-				</filter>
+<!-- 
+                <context>Channel</context>
+                <filter>
+                    <criteria name="kind">STATE</criteria>
+                </filter>
+ -->
+
 			</parameter>
 			<parameter name="measurementChannelUID" type="text">
 				<label>Measurement Channel UID</label>
 				<description>The channel read and used by the agent to determine the current power consumption.</description>
 				<required>true</required>
-				<context>Channel</context>
-				<filter>
-					<criteria name="kind">STATE</criteria>
-				</filter>
+<!-- 
+                <context>Channel</context>
+                <filter>
+                    <criteria name="kind">STATE</criteria>
+                </filter>
+ -->
+
 			</parameter>
 		</config-description>
 	</thing-type>

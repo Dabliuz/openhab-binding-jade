@@ -136,7 +136,8 @@ public class SmartifiedHomeAgent extends AbstractEnergyAgent implements Schedule
             monitoringBehaviourRT = new MonitoringBehaviourRT(getInternalDataModel(), getEnergyAgentIO());
             monitoringBehaviourRT.addMonitoringListener(new MonitoringListenerForLogging());
             monitoringBehaviourRT.addMonitoringListener(new MonitoringListenerForProxy(simulationConnector)
-                    .overrideMeasurementVariable(InternalDataModel.VAR_POWER_CONSUMPTION));
+            // .overrideMeasurementVariable(InternalDataModel.VAR_POWER_CONSUMPTION)
+            );
             getInternalDataModel().addObserver(monitoringBehaviourRT);
             monitoringBehaviourRT.addMonitoringListener(getInternalDataModel());
             monitoringBehaviourRT.getMonitoringStrategyRT()
