@@ -31,146 +31,148 @@ import jade.wrapper.StaleProxyException;
 
 public class JADEBridgeHandler extends ConfigStatusBridgeHandler {
 
-    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_JADE_CONTAINER);
+	public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_JADE_CONTAINER);
 
-    private final static String BUNDLE_SYMBOLIC_NAME = "de.unidue.stud.sehawagn.openhab.binding.jade";
+	private final static String BUNDLE_SYMBOLIC_NAME = "de.unidue.stud.sehawagn.openhab.binding.jade";
 
-    private Logger logger = LoggerFactory.getLogger(JADEBridgeHandler.class);
+	private Logger logger = LoggerFactory.getLogger(JADEBridgeHandler.class);
 
-    @SuppressWarnings("unused")
-    private ChannelMirror channelMirror; // for later use
+	@SuppressWarnings("unused")
+	private ChannelMirror channelMirror; // for later use
 
 //    private HashMap<Integer, AgentController> myAgents = new HashMap<Integer, AgentController>();
 
-    private JadeRuntimeService jrs;
+	private JadeRuntimeService jrs;
 
-    public JADEBridgeHandler(Bridge bridge, ChannelMirror channelMirror, JadeRuntimeService jrs) {
-        super(bridge);
-        this.channelMirror = channelMirror;
-        this.jrs = jrs;
-    }
+	public JADEBridgeHandler(Bridge bridge, ChannelMirror channelMirror, JadeRuntimeService jrs) {
+		super(bridge);
+		this.channelMirror = channelMirror;
+		this.jrs = jrs;
+	}
 
-    @Override
-    public Collection<ConfigStatusMessage> getConfigStatus() {
-        return Collections.emptyList(); // all good, otherwise add some messages
-    }
+	@Override
+	public Collection<ConfigStatusMessage> getConfigStatus() {
+		return Collections.emptyList(); // all good, otherwise add some messages
+	}
 
-    @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        // not needed...?
-    }
+	@Override
+	public void handleCommand(ChannelUID channelUID, Command command) {
+		// not needed...?
+	}
 
-    @Override
-    public void initialize() {
-        logger.info("Initializing JADE bridge handler.");
-        if (getConfig().containsKey(CONFKEY_LOCAL_MTP_ADDRESS) && getConfig().containsKey(CONFKEY_REMOTE_MTP_ADDRESS)) {
-            // Initialize jade container profile and start it
+	@Override
+	public void initialize() {
+		logger.info("Initializing JADE bridge handler.");
+		if (getConfig().containsKey(CONFKEY_LOCAL_MTP_ADDRESS) && getConfig().containsKey(CONFKEY_LOCAL_MTP_PORT) && getConfig().containsKey(CONFKEY_LOCAL_MAIN_PORT)) {
+			// Initialize jade container profile and start it
 
-            Properties jadeProperties = new Properties();
+			Properties jadeProperties = new Properties();
 
-            jadeProperties.put(Profile.MTPS, String.format(JADE_MTP_STRING_HTTP, getConfig().get(CONFKEY_LOCAL_MTP_ADDRESS)));
+			jadeProperties.put(Profile.MTPS, String.format(JADE_MTP_STRING_HTTP, getConfig().get(CONFKEY_LOCAL_MTP_ADDRESS), getConfig().get(CONFKEY_LOCAL_MTP_PORT)));
+			jadeProperties.put(Profile.PLATFORM_ID, JADE_PLATFORMID_PREFIX + "-" + getThing().getUID().getId());
+			jadeProperties.put(Profile.MAIN_PORT, getConfig().get(CONFKEY_LOCAL_MAIN_PORT));
 
-            startJadeContainer(jadeProperties);
-            updateStatus(ThingStatus.ONLINE);
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "Cannot start JADE bridge container. Some parameter not given.");
-        }
-    }
+			startJadeContainer(jadeProperties);
+			updateStatus(ThingStatus.ONLINE);
+		} else {
+			updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+					"Cannot start JADE bridge container. Some parameter not given.");
+		}
+	}
 
-    @Override
-    public void dispose() {
-        logger.info("JADE bridge handler disposed, kill JADE container/runtime.");
+	@Override
+	public void dispose() {
+		logger.info("JADE bridge handler disposed, kill JADE container/runtime.");
 
-        try {
-            if (jrs != null) {
-                jrs.kill();
-                logger.info("jrs.kill()");
-            } else {
-                logger.info("jrs should be killed, but not available");
-            }
-        } catch (Exception e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-                    "container dispose failed: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
+		try {
+			if (jrs != null) {
+				jrs.kill();
+				logger.info("jrs.kill()");
+			} else {
+				logger.info("jrs should be killed, but not available");
+			}
+		} catch (Exception e) {
+			updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
+					"container dispose failed: " + e.getMessage());
+			e.printStackTrace();
+		}
+	}
 
-    private void startJadeContainer(Properties props) {
-        logger.info("Starting new JADE container.");
-        if (jrs != null) {
-            jrs.startPlatform(props);
-            try {
-                AgentController keepOpenAgent = jrs.createNewAgent("KeepOpen", de.unidue.stud.sehawagn.openhab.binding.jade.internal.agent.PerpetualAgent.class.getName(), null, BUNDLE_SYMBOLIC_NAME); // jade.tools.rma.rma
-                keepOpenAgent.start();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        logger.info("JADE container should be started.");
-    }
+	private void startJadeContainer(Properties props) {
+		logger.info("Starting new JADE container.");
+		if (jrs != null) {
+			jrs.startPlatform(props);
+			try {
+				AgentController keepOpenAgent = jrs.createNewAgent("KeepOpen", de.unidue.stud.sehawagn.openhab.binding.jade.internal.agent.PerpetualAgent.class.getName(), null, BUNDLE_SYMBOLIC_NAME); // jade.tools.rma.rma
+				keepOpenAgent.start();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		logger.info("JADE container should be started.");
+	}
 
-    public AgentController startAgent(String agentName, String agentClassName,
-            SmartifiedHomeESHHandler smartHomeAgentHandler) throws Exception {
-        AgentController agent = smartHomeAgentHandler.getAgent();
+	public AgentController startAgent(String agentName, String agentClassName,
+			SmartifiedHomeESHHandler smartHomeAgentHandler) throws Exception {
+		AgentController agent = smartHomeAgentHandler.getAgent();
 
-        if (agent == null) {
-            logger.info("Hiermit kreiere ich einen neuen Agenten.");
-            if (jrs != null) {
-                agent = jrs.createNewAgent(agentName, agentClassName, new Object[] { getGeneralAgentConfig(agentName), smartHomeAgentHandler }, BUNDLE_SYMBOLIC_NAME);
-                logger.info("Agent state:" + agent.getState());
-                agent.start();
-                logger.info("Agent sollte gestartet worden sein.");
-            } else {
-                logger.error("JADE runtime service == null, agent can't be created, please try again later");
-            }
-        } else {
-            logger.info("Agent nicht neu gestartet, sondern war schon da: " + agent.getName() + " - " + agent.getState());
-        }
-        return agent;
-    }
+		if (agent == null) {
+			logger.info("Hiermit kreiere ich einen neuen Agenten.");
+			if (jrs != null) {
+				agent = jrs.createNewAgent(agentName, agentClassName, new Object[] { getGeneralAgentConfig(agentName), smartHomeAgentHandler }, BUNDLE_SYMBOLIC_NAME);
+				logger.info("Agent state:" + agent.getState());
+				agent.start();
+				logger.info("Agent sollte gestartet worden sein.");
+			} else {
+				logger.error("JADE runtime service == null, agent can't be created, please try again later");
+			}
+		} else {
+			logger.info("Agent nicht neu gestartet, sondern war schon da: " + agent.getName() + " - " + agent.getState());
+		}
+		return agent;
+	}
 
-    private AgentConfig getGeneralAgentConfig(String agentName) {
+	private AgentConfig getGeneralAgentConfig(String agentName) {
 
-        CentralAgentAID centralAgentAID = new CentralAgentAID();
-        centralAgentAID.setAgentName((String) getConfig().get(CONFKEY_REMOTE_GROUP_ADMIN_NAME));
-        centralAgentAID.setPlatformName((String) getConfig().get(CONFKEY_REMOTE_PLATFORM_NAME));
-        centralAgentAID.setUrlOrIp((String) getConfig().get(CONFKEY_REMOTE_MTP_ADDRESS));
-        centralAgentAID.setPort(1099);
-        centralAgentAID.setMtpPort(Integer.parseInt((String) getConfig().get(CONFKEY_REMOTE_MTP_PORT)));
-        centralAgentAID.setHttp4Mtp((String) getConfig().get(CONFKEY_REMOTE_MTP_PROTOCOL));
+		CentralAgentAID centralAgentAID = new CentralAgentAID();
+		centralAgentAID.setAgentName((String) getConfig().get(CONFKEY_REMOTE_GROUP_ADMIN_NAME));
+		centralAgentAID.setPlatformName((String) getConfig().get(CONFKEY_REMOTE_PLATFORM_NAME));
+		centralAgentAID.setUrlOrIp((String) getConfig().get(CONFKEY_REMOTE_MTP_ADDRESS));
+		centralAgentAID.setPort(1099);
+		centralAgentAID.setMtpPort(Integer.parseInt((String) getConfig().get(CONFKEY_REMOTE_MTP_PORT)));
+		centralAgentAID.setHttp4Mtp((String) getConfig().get(CONFKEY_REMOTE_MTP_PROTOCOL));
 
-        AgentConfig agentConfig = new AgentConfig();
-        agentConfig.setAgentID(agentName);
-        agentConfig.setCentralAgentAID(centralAgentAID);
-        agentConfig.setAgentOperatingMode(AgentOperatingMode.TestBedReal); // RealSystem
-        agentConfig.setKeyStore(null);
-        agentConfig.setTrustStore(null);
+		AgentConfig agentConfig = new AgentConfig();
+		agentConfig.setAgentID(agentName);
+		agentConfig.setCentralAgentAID(centralAgentAID);
+		agentConfig.setAgentOperatingMode(AgentOperatingMode.TestBedReal); // RealSystem
+		agentConfig.setKeyStore(null);
+		agentConfig.setTrustStore(null);
 
-        return agentConfig;
-    }
+		return agentConfig;
+	}
 
-    public AID getCoordinatorAgentAID() {
+	public AID getCoordinatorAgentAID() {
 //        System.out.println("CONFKEY_REMOTE_GROUP_COORDINATOR_NAME " + CONFKEY_REMOTE_GROUP_COORDINATOR_NAME + " " + getConfig().get(CONFKEY_REMOTE_GROUP_COORDINATOR_NAME));
-        AgentConfig remoteAgentConfig = getGeneralAgentConfig((String) getConfig().get(CONFKEY_REMOTE_GROUP_COORDINATOR_NAME)); // 105
-                                                                                                                                // DomesticLoadCoordinatorAgent.AGENT_ID
-        remoteAgentConfig.getCentralAgentAID().setAgentName((String) getConfig().get(CONFKEY_REMOTE_GROUP_COORDINATOR_NAME)); // DomesticLoadCoordinatorAgent.AGENT_ID
-        return AgentConfigController.getAIDFromRemoteAgentConfig(remoteAgentConfig.getCentralAgentAID());
-    }
+		AgentConfig remoteAgentConfig = getGeneralAgentConfig((String) getConfig().get(CONFKEY_REMOTE_GROUP_COORDINATOR_NAME)); // 105
+																																 // DomesticLoadCoordinatorAgent.AGENT_ID
+		remoteAgentConfig.getCentralAgentAID().setAgentName((String) getConfig().get(CONFKEY_REMOTE_GROUP_COORDINATOR_NAME)); // DomesticLoadCoordinatorAgent.AGENT_ID
+		return AgentConfigController.getAIDFromRemoteAgentConfig(remoteAgentConfig.getCentralAgentAID());
+	}
 
-    public boolean stopAgent(SmartifiedHomeESHHandler smartHomeAgentHandler) throws StaleProxyException {
-        logger.info("stopping agent");
+	public boolean stopAgent(SmartifiedHomeESHHandler smartHomeAgentHandler) throws StaleProxyException {
+		logger.info("stopping agent");
 
-        if (jrs == null) {
-            logger.error("Container not yet ready, please try again later");
-        }
-        AgentController agent = smartHomeAgentHandler.getAgent();
-        if (agent != null) {
-            logger.info("killing agent");
-            agent.kill();
-            logger.info("agent killed and removed");
-            return true;
-        }
-        return false;
-    }
+		if (jrs == null) {
+			logger.error("Container not yet ready, please try again later");
+		}
+		AgentController agent = smartHomeAgentHandler.getAgent();
+		if (agent != null) {
+			logger.info("killing agent");
+			agent.kill();
+			logger.info("agent killed and removed");
+			return true;
+		}
+		return false;
+	}
 }
