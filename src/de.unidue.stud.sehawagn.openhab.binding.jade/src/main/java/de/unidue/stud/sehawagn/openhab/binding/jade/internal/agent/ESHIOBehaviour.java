@@ -2,7 +2,9 @@ package de.unidue.stud.sehawagn.openhab.binding.jade.internal.agent;
 
 import de.unidue.stud.sehawagn.openhab.binding.jade.handler.SmartifiedHomeESHHandler;
 import energy.FixedVariableList;
+import energy.optionModel.TechnicalSystemStateEvaluation;
 import hygrid.agent.AbstractIOReal;
+import hygrid.agent.monitoring.MonitoringEvent;
 
 /**
  * This class is used if the agent is run inside an openHAB instance
@@ -18,6 +20,8 @@ public class ESHIOBehaviour extends AbstractIOReal implements WashingMachineIO {
     protected InternalDataModel internalDataModel = null;
 
     protected SmartifiedHomeESHHandler myESHHandler;
+
+    protected TechnicalSystemStateEvaluation eomState = null;
 
     /**
      * @param agent the agent
@@ -38,7 +42,8 @@ public class ESHIOBehaviour extends AbstractIOReal implements WashingMachineIO {
     public void action() {
         // access the data in openHAB's AgentHandler
         FixedVariableList measurements;
-        measurements = InternalDataModel.produceVariableList(getPowerConsumption(), InternalDataModel.VAR_POWER_CONSUMPTION);
+        measurements = InternalDataModel.produceVariableList(getPowerConsumption(),
+                InternalDataModel.VAR_POWER_CONSUMPTION);
         setMeasurementsFromSystem(measurements);
 
         updateEOMState();
@@ -46,7 +51,7 @@ public class ESHIOBehaviour extends AbstractIOReal implements WashingMachineIO {
         block(MEASURING_INTERVAL);
     }
 
-    // unused
+    // called by MonitoringBehaviour
     @Override
     public FixedVariableList getMeasurementsFromSystem() {
         return internalDataModel.getMeasurementsFromSystem();
@@ -77,10 +82,14 @@ public class ESHIOBehaviour extends AbstractIOReal implements WashingMachineIO {
         boolean lockedNLoaded = InternalDataModel.deriveVariable(newSetPoints, InternalDataModel.VAR_LOCKED_N_LOADED);
         Integer washingProgram = InternalDataModel.deriveVariable(newSetPoints, InternalDataModel.VAR_WASHING_PROGRAM);
         setPoweredOn(poweredOn);
-        if (poweredOn && !lockedNLoaded && washingProgram == 4 && getEOMState() == InternalDataModel.EOM_STATE_AUTOMATIC_END) {
-            setUnlocked();
+        // TODO implement automatic switchoff at the end
+        /*
+         * if (poweredOn && !lockedNLoaded && washingProgram == 4 && getEOMState() ==
+         * InternalDataModel.EOM_STATE_AUTOMATIC_END) {
+         * setUnlocked();
+         * }
+         */
         }
-    }
 
     @Override
     public void onAgentStart() {
@@ -131,14 +140,28 @@ public class ESHIOBehaviour extends AbstractIOReal implements WashingMachineIO {
         myESHHandler.setLockedNLoadedValue(false, true); // 2nd parameter=calledFromOutside
     }
 
+    @Override
     public void updateEOMState() {
-        myESHHandler.setDeviceState(getEOMState());
+        String eomStateString = InternalDataModel.EOM_STATE_UNSET;
+        if (getEOMState() != null) {
+            eomStateString = getEOMState().getStateID();
+        }
+        myESHHandler.setDeviceState(eomStateString);
+
     }
 
-    private String getEOMState() {
-        if (internalDataModel.getTechnicalSystemStateEvaluation() != null) {
-            return internalDataModel.getTechnicalSystemStateEvaluation().getStateID();
+    @Override
+    public void setEOMState(TechnicalSystemStateEvaluation eomState) {
+        this.eomState = eomState;
+    }
+
+    @Override
+    public TechnicalSystemStateEvaluation getEOMState() {
+        return eomState;
         }
-        return InternalDataModel.EOM_STATE_UNSET;
+
+    @Override
+    public void onMonitoringEvent(MonitoringEvent monitoringEvent) {
+        setEOMState(monitoringEvent.getTSSE());
     }
 }

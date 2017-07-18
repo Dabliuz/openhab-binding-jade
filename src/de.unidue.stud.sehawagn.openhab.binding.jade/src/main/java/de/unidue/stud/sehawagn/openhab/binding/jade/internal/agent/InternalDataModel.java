@@ -10,8 +10,6 @@ import energy.optionModel.FixedInteger;
 import energy.optionModel.FixedVariable;
 import energy.optionModel.TechnicalSystemStateEvaluation;
 import hygrid.agent.AbstractInternalDataModel;
-import hygrid.agent.monitoring.MonitoringEvent;
-import hygrid.agent.monitoring.MonitoringListener;
 
 /**
  * This class represents the internal data model of the agent.
@@ -19,7 +17,7 @@ import hygrid.agent.monitoring.MonitoringListener;
  * Only use these String constants when assigning values to the fixedVariableListMeasurements within IOBehaviours
  *
  */
-public class InternalDataModel extends AbstractInternalDataModel implements MonitoringListener {
+public class InternalDataModel extends AbstractInternalDataModel {
     private static final long serialVersionUID = 3913554312467337020L;
 
     /**
@@ -159,22 +157,6 @@ public class InternalDataModel extends AbstractInternalDataModel implements Moni
             }
         }
         System.out.println(variableString);
-    }
-
-    @Override
-    public void onMonitoringEvent(MonitoringEvent monitoringEvent) {
-        // TODO Auto-generated method stub
-        TechnicalSystemStateEvaluation tsse = monitoringEvent.getTSSE();
-        if (tsse != null && technicalSystemStateEvaluation != null && tsse.getStateID().equals(technicalSystemStateEvaluation.getStateID())) {
-            // do not set, if the same as before
-            return;
-        }
-        technicalSystemStateEvaluation = tsse;
-        notifyObservers();
-    }
-
-    public TechnicalSystemStateEvaluation getTechnicalSystemStateEvaluation() {
-        return technicalSystemStateEvaluation;
     }
 
     public void startProgramAndExternalCoordination() {

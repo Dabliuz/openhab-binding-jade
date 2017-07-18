@@ -3,8 +3,10 @@ package de.unidue.stud.sehawagn.openhab.binding.jade.internal.agent;
 import agentgui.envModel.graph.networkModel.NetworkModel;
 import agentgui.simulationService.transaction.EnvironmentNotification;
 import de.unidue.stud.sehawagn.openhab.binding.jade.handler.SmartifiedHomeESHHandler;
+import energy.optionModel.TechnicalSystemStateEvaluation;
 import hygrid.agent.AbstractIOSimulated;
 import hygrid.agent.AbstractInternalDataModel;
+import hygrid.agent.monitoring.MonitoringEvent;
 
 /**
  * The class IOSimulated is used if the current project setup is run as a simulation
@@ -84,4 +86,21 @@ public class SimulationIOBehaviour extends AbstractIOSimulated implements Washin
     public void setUnlocked() {
     }
 
+    @Override
+    public void onMonitoringEvent(MonitoringEvent monitoringEvent) {
+    }
+
+    @Override
+    public void updateEOMState() {
+
+    }
+
+    @Override
+    public void setEOMState(TechnicalSystemStateEvaluation eomState) {
+    }
+
+    @Override
+    public TechnicalSystemStateEvaluation getEOMState() {
+        return null;
+    }
 }

@@ -12,7 +12,7 @@ public class SmartifiedHomeOptionModelController extends OptionModelController {
     }
 
     @Override
-    public AbstractEvaluationStrategy getEvaluationStrategy() {
+    public DomesticDemandSideManagementStrategyRT getEvaluationStrategy() {
         if (evaluationStrategy == null) {
             evaluationStrategy = new DomesticDemandSideManagementStrategyRT(this);
         }
