@@ -9,11 +9,11 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="lib/AgentGui.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/AgentHyGrid.jar" sourcepath="/home/friesenkiwi/workspace/HyGrid"/>
+	<classpathentry exported="true" kind="lib" path="lib/AgentHyGrid.jar" sourcepath="/mnt/quickdata/eclipse-workspace/HyGrid"/>
 	<classpathentry exported="true" kind="lib" path="lib/collections-generic-4.01.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/eom4AgentGui.jar" sourcepath="/home/friesenkiwi/workspace/EnergyOptionModel"/>
+	<classpathentry exported="true" kind="lib" path="lib/eom4AgentGui.jar" sourcepath="/mnt/quickdata/eclipse-workspace/EnergyOptionModel"/>
 	<classpathentry exported="true" kind="lib" path="lib/jung-api-2.0.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jung-graph-impl-2.0.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/groupcoordinator-0.0.1-SNAPSHOT.jar" sourcepath="/home/friesenkiwi/Schreibtisch/workspace/groupcoordinator"/>
+	<classpathentry exported="true" kind="lib" path="lib/groupcoordinator-0.0.1-SNAPSHOT.jar" sourcepath="/mnt/quickdata/eclipse-workspace/groupcoordinator"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
