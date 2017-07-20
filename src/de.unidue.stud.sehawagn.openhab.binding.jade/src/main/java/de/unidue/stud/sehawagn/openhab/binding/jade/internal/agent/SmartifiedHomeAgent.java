@@ -5,6 +5,7 @@ import de.unidue.stud.sehawagn.energy.Helper;
 import de.unidue.stud.sehawagn.energy.RequestRunSchedule;
 import de.unidue.stud.sehawagn.energy.ScheduleRequester;
 import de.unidue.stud.sehawagn.openhab.binding.jade.handler.SmartifiedHomeESHHandler;
+import energy.OptionModelController;
 import energy.optionModel.TechnicalSystem;
 import hygrid.agent.AbstractEnergyAgent;
 import hygrid.agent.AbstractIOReal;
@@ -174,26 +175,17 @@ public class SmartifiedHomeAgent extends AbstractEnergyAgent implements Schedule
 
 	@Override
 	public void processReceivedSchedule(Flexibility schedule) {
-		int ticIndex = getInternalDataModel().getOptionModelController().getIndexOfTechnicalInterfaceConfiguration(getEnergyAgentIO().getEOMState().getConfigID());
+		OptionModelController omc = getInternalDataModel().getOptionModelController();
+		int ticIndex = omc.getIndexOfTechnicalInterfaceConfiguration(getEnergyAgentIO().getEOMState().getConfigID());
 
-		schedule.applyTo(getInternalDataModel().getOptionModelController().getTechnicalSystem(), ticIndex);
+		schedule.applyTo(omc.getTechnicalSystem(), ticIndex);
+		schedule.applyTo(getMonitoringBehaviourRT().getOptionModelController().getTechnicalSystem(), ticIndex);
+
 		internalDataModel.waitForCoordination = false;
 	}
 
 	public void coordinateWithGrid() {
 		TechnicalSystem technicalSystem = getInternalDataModel().getOptionModelController().getTechnicalSystem();
 		requestRunScheduleFromGrid(technicalSystem);
-		// TechnicalSystem technicalSystem=(TechnicalSystem)
-		// getInternalDataModel().getNetworkComponent().getDataModel();
-
-		// this contains the graph as states and transitions, it should be cleaned from x/y attributes, unneeded states,
-		// descriptions, semantic ids, (IO)VariableStates, FormatTimeUnits, detailed EnergyFlowInWatt (calculate
-		// average) from measurements (turn EnergyFlowMeasured into EnergyFlowGeneral), optionally introduce
-		// StatisticalEnergyFLow in the type of a Stock Chart/Kursdiagramm with Fehlerindikatoren (error bars, standard
-		// deviation/variance)
-		// getInternalDataModel().getOptionModelController().getTechnicalInterfaceConfiguration("Washing Program from
-		// openHAB handler");
-		// technicalSystem.get
-
 	}
 }
