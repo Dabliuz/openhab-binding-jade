@@ -1,5 +1,6 @@
 package de.unidue.stud.sehawagn.openhab.binding.jade.internal.agent;
 
+import agentgui.simulationService.environment.EnvironmentModel;
 import de.unidue.stud.sehawagn.energy.Flexibility;
 import de.unidue.stud.sehawagn.energy.Helper;
 import de.unidue.stud.sehawagn.energy.RequestRunSchedule;
@@ -35,6 +36,8 @@ public class SmartifiedHomeAgent extends AbstractEnergyAgent implements Schedule
 
 	protected AID coordinatorAgentAID;
 
+	protected boolean monitoringStarted = false;
+
 	/*
 	 * @see jade.core.Agent#setup()
 	 */
@@ -61,8 +64,7 @@ public class SmartifiedHomeAgent extends AbstractEnergyAgent implements Schedule
 
 		// If in testbed messages from the central agent are handled by a different behaviour
 		AgentOperatingMode operatingMode = getAgentOperatingMode();
-		if (operatingMode == AgentOperatingMode.TestBedSimulation || operatingMode == AgentOperatingMode.TestBedReal
-				|| operatingMode == AgentOperatingMode.RealSystem) {
+		if (operatingMode == AgentOperatingMode.TestBedSimulation || operatingMode == AgentOperatingMode.TestBedReal || operatingMode == AgentOperatingMode.RealSystem) {
 			AID centralAgent = getAgentConfigController().getCentralAgentAID();
 			messageTemplate = MessageTemplate.not(MessageTemplate.MatchSender(centralAgent));
 		}
@@ -75,7 +77,10 @@ public class SmartifiedHomeAgent extends AbstractEnergyAgent implements Schedule
 		getEnergyAgentIO().setESHHandler(myESHHandler);
 		if (myESHHandler != null) { // don't do it in case of the simulation, where the OH/ESH classes are not available
 			coordinatorAgentAID = myESHHandler.getBridgeHandler().getCoordinatorAgentAID();
+		} else {
+			coordinatorAgentAID = new AID("n105", false);  // FIXME this is only a quick hack for simulation
 		}
+
 		Behaviour ioBehaviour = (Behaviour) getEnergyAgentIO();
 		if (ioBehaviour != null) {
 			addBehaviour(ioBehaviour);
@@ -83,7 +88,7 @@ public class SmartifiedHomeAgent extends AbstractEnergyAgent implements Schedule
 
 		addBehaviour(new OperationCommandReceiveBehaviour(this));
 
-		// System.out.println("SmartHomeAgent started");
+		System.out.println("SmartHomeAgent started");
 
 		getEnergyAgentIO().onAgentStart();
 	}
@@ -136,15 +141,30 @@ public class SmartifiedHomeAgent extends AbstractEnergyAgent implements Schedule
 		if (monitoringBehaviourRT == null) {
 			monitoringBehaviourRT = new MonitoringBehaviourRT(getInternalDataModel(), getEnergyAgentIO());
 			monitoringBehaviourRT.addMonitoringListener(new MonitoringListenerForLogging());
-			monitoringBehaviourRT.addMonitoringListener(new MonitoringListenerForProxy(simulationConnector)
-			// .overrideMeasurementVariable(InternalDataModel.VAR_POWER_CONSUMPTION)
-			);
+			if (getAgentOperatingMode() != AgentOperatingMode.Simulation) {
+				monitoringBehaviourRT.addMonitoringListener(new MonitoringListenerForProxy(simulationConnector)
+				// .overrideMeasurementVariable(InternalDataModel.VAR_POWER_CONSUMPTION)
+				);
+			}
 			monitoringBehaviourRT.addMonitoringListener(getEnergyAgentIO());
 
 			getInternalDataModel().addObserver(monitoringBehaviourRT);
 			monitoringBehaviourRT.getMonitoringStrategyRT().setOptionModelCalculationClass(SmartifiedHomeCalculation.class);
 		}
 		return monitoringBehaviourRT;
+	}
+
+	@Override
+	protected void startMonitoringBehaviourRT() {
+		// start monitoring in any case, not only TestBedReal
+		addBehaviour(getMonitoringBehaviourRT());
+	}
+
+	public void startMonitoring(EnvironmentModel myEnvironmentModel) {
+		if (monitoringStarted == false && myEnvironmentModel != null) {
+			startMonitoringBehaviourRT();
+			monitoringStarted = true;
+		}
 	}
 
 	@Override

@@ -3,6 +3,7 @@ package de.unidue.stud.sehawagn.openhab.binding.jade.internal.agent;
 import agentgui.envModel.graph.networkModel.NetworkModel;
 import agentgui.simulationService.transaction.EnvironmentNotification;
 import de.unidue.stud.sehawagn.openhab.binding.jade.handler.SmartifiedHomeESHHandler;
+import energy.FixedVariableList;
 import energy.optionModel.TechnicalSystemStateEvaluation;
 import hygrid.agent.AbstractIOSimulated;
 import hygrid.agent.AbstractInternalDataModel;
@@ -15,92 +16,193 @@ import hygrid.agent.monitoring.MonitoringEvent;
  */
 public class SimulationIOBehaviour extends AbstractIOSimulated implements WashingMachineIO {
 
-    private static final long serialVersionUID = -6149499361123282249L;
+	private static final long serialVersionUID = -6149499361123282249L;
+	private Boolean poweredOn = true;
+	private Integer washingProgram = 0;
+	private Boolean lockedNLoaded = false;
+	private Double powerConsumption = 0.0;
 
-    public SimulationIOBehaviour(SmartifiedHomeAgent agent, AbstractInternalDataModel internalDataModel) {
-        super(agent);
-    }
+	protected SmartifiedHomeAgent myAgent;
 
-    /*
-     * @see agentgui.simulationService.behaviour.SimulationServiceBehaviour#onEnvironmentNotification(agentgui.
-     * simulationService.transaction.EnvironmentNotification)
-     */
-    @Override
-    protected EnvironmentNotification onEnvironmentNotification(EnvironmentNotification notification) {
-        return super.onEnvironmentNotification(notification);
-    }
+	protected TechnicalSystemStateEvaluation eomState = null;
 
-    /*
-     * @see hygrid.agent.AbstractIOSimulated#commitMeasurementsToAgentsManually()
-     */
-    @Override
-    protected boolean commitMeasurementsToAgentsManually() {
-        return false;
-    }
+	public SimulationIOBehaviour(SmartifiedHomeAgent agent, AbstractInternalDataModel internalDataModel) {
+		super(agent);
+		myAgent = agent;
+	}
 
-    /*
-     * @see hygrid.agent.AbstractIOSimulated#prepareForSimulation(agentgui.envModel.graph.networkModel.NetworkModel)
-     */
-    @Override
-    protected void prepareForSimulation(NetworkModel networkModel) {
-    }
+	@Override
+	public void action() {
+		// access the data in openHAB's AgentHandler
+		FixedVariableList measurements;
+		measurements = InternalDataModel.produceVariableList(getPowerConsumption(), InternalDataModel.VAR_POWER_CONSUMPTION);
+		setMeasurementsFromSystem(measurements);
 
-    @Override
-    public void setESHHandler(SmartifiedHomeESHHandler myAgentHandler) {
-        // not necessary / possible in simulation
-    }
+		updateEOMState();
 
-    @Override
-    public void onAgentStart() {
-    }
+		myAgent.startMonitoring(myEnvironmentModel);
 
-    @Override
-    public void onAgentStop() {
-    }
+		// System.out.println(myEnvironmentModel);
 
-    @Override
-    public Integer getWashingProgram() {
-        return 0;
-    }
+		block(ESHIOBehaviour.MEASURING_INTERVAL);
+	}
 
-    @Override
-    public boolean getLockedNLoaded() {
-        return false;
-    }
+	// called by MonitoringBehaviour
+	@Override
+	public FixedVariableList getMeasurementsFromSystem() {
+		return internalDataModel.getMeasurementsFromSystem();
+	}
 
-    @Override
-    public double getPowerConsumption() {
-        return 0;
-    }
+	// only used internally
+	@Override
+	public void setMeasurementsFromSystem(FixedVariableList newMeasurements) {
+		// important because of observable pattern: every time the measurements are set, the ControlBehaviour is triggered
+		internalDataModel.setMeasurementsFromSystem(newMeasurements);
+	}
 
-    @Override
-    public boolean getPoweredOn() {
-        return false;
-    }
+	// called by MonitoringBehaviour
+	@Override
+	public FixedVariableList getSetPointsToSystem() {
+		FixedVariableList setPoints = null;
+		setPoints = InternalDataModel.produceVariableList(getWashingProgram(), InternalDataModel.VAR_WASHING_PROGRAM);
+		setPoints.add(InternalDataModel.produceVariable(getLockedNLoaded(), InternalDataModel.VAR_LOCKED_N_LOADED));
+		setPoints.add(InternalDataModel.produceVariable(getPoweredOn(), InternalDataModel.VAR_POWERED_ON));
+		return setPoints;
+	}
 
-    @Override
-    public void setPoweredOn(Boolean poweredOn) {
-    }
+	// called by ControlBehaviourRT
+	@Override
+	public void setSetPointsToSystem(FixedVariableList newSetPoints) {
+		boolean poweredOn = InternalDataModel.deriveVariable(newSetPoints, InternalDataModel.VAR_POWERED_ON);
+		boolean lockedNLoaded = InternalDataModel.deriveVariable(newSetPoints, InternalDataModel.VAR_LOCKED_N_LOADED);
+		Integer washingProgram = InternalDataModel.deriveVariable(newSetPoints, InternalDataModel.VAR_WASHING_PROGRAM);
+		setPoweredOn(poweredOn);
+	}
 
-    @Override
-    public void setUnlocked() {
-    }
+	@Override
+	public void setESHHandler(SmartifiedHomeESHHandler myAgentHandler) {
+		System.err.println("SimulationIOBehaviour: Trying to set ESH handler " + myAgentHandler + " in simulation. Never mind.");
+		// not necessary / possible in simulation
+	}
 
-    @Override
-    public void onMonitoringEvent(MonitoringEvent monitoringEvent) {
-    }
+	@Override
+	public void onAgentStart() {
+//		System.out.println("SimulationIOBehaviour: Agent started.");
+	}
 
-    @Override
-    public void updateEOMState() {
+	@Override
+	public void onAgentStop() {
+//		System.out.println("SimulationIOBehaviour: Agent stopped.");
+	}
 
-    }
+	@Override
+	public Integer getWashingProgram() {
+//		System.out.println("SimulationIOBehaviour: washingProgram==" + washingProgram);
+		return washingProgram;
+	}
 
-    @Override
-    public void setEOMState(TechnicalSystemStateEvaluation eomState) {
-    }
+	@Override
+	public boolean getLockedNLoaded() {
+//		System.out.println("SimulationIOBehaviour: lockedNLoaded==" + lockedNLoaded);
+		return lockedNLoaded;
+	}
 
-    @Override
-    public TechnicalSystemStateEvaluation getEOMState() {
-        return null;
-    }
+	@Override
+	public double getPowerConsumption() {
+//		System.out.println("SimulationIOBehaviour: powerConsumption==" + powerConsumption);
+		return powerConsumption;
+	}
+
+	@Override
+	public boolean getPoweredOn() {
+//		System.out.println("SimulationIOBehaviour: poweredOn==" + poweredOn);
+		return poweredOn;
+	}
+
+	@Override
+	public void setPoweredOn(Boolean poweredOn) {
+		this.poweredOn = poweredOn;
+	}
+
+	@Override
+	public void setUnlocked() {
+		lockedNLoaded = false;
+	}
+
+	@Override
+	public void onMonitoringEvent(MonitoringEvent monitoringEvent) {
+		setEOMState(monitoringEvent.getTSSE());
+	}
+
+	@Override
+	public void updateEOMState() {
+		String eomStateString = InternalDataModel.EOM_STATE_UNSET;
+		if (getEOMState() != null) {
+			eomStateString = getEOMState().getStateID();
+		}
+//		System.out.println("SimulationIOBehaviour: updateEOMState==" + eomStateString);
+		if (eomStateString.equals("Off") || eomStateString.equals("Standby")) {
+			nextSetting();
+		}
+	}
+
+	@Override
+	public void setEOMState(TechnicalSystemStateEvaluation eomState) {
+		this.eomState = eomState;
+	}
+
+	@Override
+	public TechnicalSystemStateEvaluation getEOMState() {
+		return eomState;
+	}
+
+	@Override
+	protected EnvironmentNotification onEnvironmentNotification(EnvironmentNotification notification) {
+		return super.onEnvironmentNotification(notification);
+	}
+
+	@Override
+	protected boolean commitMeasurementsToAgentsManually() {
+		return false;
+	}
+
+	@Override
+	protected void prepareForSimulation(NetworkModel networkModel) {
+	}
+
+	@Override
+	public Long getTime() {
+		return System.currentTimeMillis();
+	}
+
+	@Override
+	public void onEnvironmentStimulus() {
+		System.out.println("SimulationIOBehaviour: onEnvironmentStimulus");
+		getEnergyAgent().addBehaviour(getEnergyAgent().getMonitoringBehaviourRT());
+	}
+
+	public void nextSetting() {
+//		System.out.println("SimulationIOBehaviour: nextSetting()");
+
+		if (poweredOn == true && washingProgram == 0 && lockedNLoaded == false) { // Off
+			poweredOn = true;
+			washingProgram = 4;
+			lockedNLoaded = false; // Standby
+		} else if (poweredOn == true && washingProgram == 4 && lockedNLoaded == false) {
+			poweredOn = true;
+			washingProgram = 4;
+			lockedNLoaded = true; // Ready
+		} else {
+			System.err.println("SimulationIOBehaviour: nextSetting - not applicable");
+
+			/*
+			if (poweredOn == true && washingProgram == 4 && lockedNLoaded == true) { // Active
+				poweredOn = false;
+				washingProgram = 4;
+				lockedNLoaded = true; // Waiting
+			}
+			*/
+		}
+	}
+
 }
