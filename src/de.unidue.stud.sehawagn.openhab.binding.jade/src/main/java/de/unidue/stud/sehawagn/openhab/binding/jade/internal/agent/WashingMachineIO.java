@@ -7,28 +7,32 @@ import hygrid.agent.monitoring.MonitoringListener;
 
 public interface WashingMachineIO extends EnergyAgentIO, MonitoringListener {
 
-    void setESHHandler(SmartifiedHomeESHHandler myAgentHandler);
+	void setESHHandler(SmartifiedHomeESHHandler myAgentHandler);
 
-    void onAgentStart();
+	void onAgentStart();
 
-    void onAgentStop();
+	void onAgentStop();
 
-    Integer getWashingProgram();
+	Integer getWashingProgram();
 
-    boolean getLockedNLoaded();
+	boolean getLockedNLoaded();
 
-    double getPowerConsumption();
+	double getPowerConsumption();
 
-    boolean getPoweredOn();
+	boolean getPoweredOn();
 
-    void setPoweredOn(Boolean poweredOn);
+	void setPoweredOn(Boolean poweredOn);
 
-    void setUnlocked();
+	void setUnlocked();
 
-    void updateEOMState();
+	void updateEOMState();
 
-    void setEOMState(TechnicalSystemStateEvaluation eomState);
+	void setEOMState(TechnicalSystemStateEvaluation eomState);
 
-    TechnicalSystemStateEvaluation getEOMState();
+	TechnicalSystemStateEvaluation getEOMState();
+
+	double getEndTimeTolerance();
+
+	double getEndTime();
 
 }

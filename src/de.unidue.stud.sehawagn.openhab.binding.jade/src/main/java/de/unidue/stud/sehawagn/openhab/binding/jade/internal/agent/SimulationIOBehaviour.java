@@ -205,4 +205,16 @@ public class SimulationIOBehaviour extends AbstractIOSimulated implements Washin
 		}
 	}
 
+	@Override
+	public double getEndTimeTolerance() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public double getEndTime() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 }

@@ -114,6 +114,16 @@ public class ESHIOBehaviour extends AbstractIOReal implements WashingMachineIO {
 	}
 
 	@Override
+	public double getEndTimeTolerance() {
+		return myESHHandler.getEndTimeToleranceValue();
+	}
+
+	@Override
+	public double getEndTime() {
+		return myESHHandler.getEndTimeValue();
+	}
+
+	@Override
 	public double getPowerConsumption() {
 		double mPowerConsumption = myESHHandler.getMeasurementChannelValue();
 		if (mPowerConsumption == Double.NEGATIVE_INFINITY) {

@@ -388,15 +388,35 @@ System.out.println("channelTypeProvider =" + channelTypeProvider);
 	}
 
 	public boolean getLockedNLoadedValue() {
-		Item lastChannelItem = getLastChannelItem(lockedNLoadedChannelUID);
+		return getBooleanValue(lockedNLoadedChannelUID);
+	}
+
+	public boolean getBooleanValue(ChannelUID channel) {
+		Item lastChannelItem = getLastChannelItem(channel);
 		if (lastChannelItem != null && lastChannelItem.getState() instanceof OnOffType) {
 			return stateToBool(lastChannelItem.getState());
 		}
 		return false;
 	}
 
+	public Double getDecimalValue(ChannelUID channel) {
+		Item lastChannelItem = getLastChannelItem(channel);
+		if (lastChannelItem != null && lastChannelItem.getState() instanceof DecimalType) {
+			return stateToDecimal(lastChannelItem.getState());
+		}
+		return -1.0;
+	}
+
 	public void setLockedNLoadedValue(boolean lockedNLoadedValue, boolean calledFromOutside) {
 		handleCommand(lockedNLoadedChannelUID, boolToState(lockedNLoadedValue));
+	}
+
+	public double getEndTimeToleranceValue() {
+		return getDecimalValue(endTimeToleranceChannelUID);
+	}
+
+	public double getEndTimeValue() {
+		return getDecimalValue(endTimeChannelUID);
 	}
 
 	public Integer getWashingProgramValue() {
@@ -514,10 +534,19 @@ System.out.println("channelTypeProvider =" + channelTypeProvider);
 		return false;
 	}
 
+	private static double stateToDecimal(Object state) {
+		if (state instanceof DecimalType) {
+			DecimalType decimalState = (DecimalType) state;
+			return decimalState.doubleValue();
+		}
+		return -1;
+	}
+
 	private static OnOffType boolToState(boolean bool) {
 		if (bool) {
 			return OnOffType.ON;
 		}
 		return OnOffType.OFF;
 	}
+
 }

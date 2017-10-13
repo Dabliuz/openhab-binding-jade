@@ -116,7 +116,9 @@ public class SmartifiedHomeAgent extends AbstractEnergyAgent implements Schedule
 			}
 		}
 		// System.out.println("SmartHomeAgent stopped");
-		getEnergyAgentIO().onAgentStop();
+		if (getEnergyAgentIO() != null) {
+			getEnergyAgentIO().onAgentStop();
+		}
 	}
 
 	/**
@@ -187,6 +189,8 @@ public class SmartifiedHomeAgent extends AbstractEnergyAgent implements Schedule
 		Flexibility flexibility = new Flexibility(technicalSystem);
 		flexibility.selectInterface(ticIndex);
 		flexibility.pruneForControllableStates(InternalDataModel.VAR_LOCKED_N_LOADED, InternalDataModel.VAR_POWERED_ON);
+		flexibility.setEndTime(getEnergyAgentIO().getEndTime());
+		flexibility.setEndTimeTolerance(getEnergyAgentIO().getEndTimeTolerance());
 		ACLMessage requestMessage = RequestRunSchedule.prepareRequestMessage(this, flexibility);
 		requestMessage.addReceiver(coordinatorAgentAID);
 		addBehaviour(new RequestRunSchedule(this, requestMessage, this));
