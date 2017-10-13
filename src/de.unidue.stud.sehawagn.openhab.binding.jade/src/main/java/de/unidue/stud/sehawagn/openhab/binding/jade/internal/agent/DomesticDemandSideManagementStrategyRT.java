@@ -56,7 +56,7 @@ public class DomesticDemandSideManagementStrategyRT extends AbstractEvaluationSt
 		// Initialize search
 		TechnicalSystemStateEvaluation tsse = getSystemState();
 
-		long remainingTimeInState = calculateEvaluationPause(tsse, evaluationStepEndTime);
+		long remainingTimeInState = getRemainingPeriodUntilStateTransition(tsse);
 		if (remainingTimeInState > 0) {
 			// too early, state still valid, no need for new evaluation step
 			DateFormat f = new SimpleDateFormat("HH:mm:ss.SSS");
