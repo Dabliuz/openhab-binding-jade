@@ -1,0 +1,965 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<class-diagram version="1.2.1" icons="true" always-add-relationships="true" generalizations="true" realizations="true" 
+  associations="true" dependencies="true" nesting-relationships="true" router="FAN">  
+  <class id="1" language="java" name="de.unidue.stud.sehawagn.openhab.binding.jade.internal.agent.PerpetualAgent" 
+    project="de.unidue.stud.sehawagn.openhab.binding.jade" 
+    file="/de.unidue.stud.sehawagn.openhab.binding.jade/src/main/java/de/unidue/stud/sehawagn/openhab/binding/jade/internal/agent/PerpetualAgent.java" 
+    binary="false" corner="BOTTOM_RIGHT">    
+    <position height="54" width="265" x="393" y="1025"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="false" static="false"/>    
+    </display>  
+  </class>  
+  <interface id="2" language="java" name="de.unidue.stud.sehawagn.openhab.binding.jade.internal.agent.WashingMachineIO" 
+    project="de.unidue.stud.sehawagn.openhab.binding.jade" 
+    file="/de.unidue.stud.sehawagn.openhab.binding.jade/src/main/java/de/unidue/stud/sehawagn/openhab/binding/jade/internal/agent/WashingMachineIO.java" 
+    binary="false" corner="BOTTOM_RIGHT">    
+    <position height="54" width="265" x="750" y="811"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="false" static="false"/>    
+    </display>  
+  </interface>  
+  <class id="3" language="java" 
+    name="de.unidue.stud.sehawagn.openhab.binding.jade.internal.agent.DomesticDemandSideManagementStrategyRT" 
+    project="de.unidue.stud.sehawagn.openhab.binding.jade" 
+    file="/de.unidue.stud.sehawagn.openhab.binding.jade/src/main/java/de/unidue/stud/sehawagn/openhab/binding/jade/internal/agent/DomesticDemandSideManagementStrategyRT.java" 
+    binary="false" corner="BOTTOM_RIGHT">    
+    <position height="54" width="291" x="273" y="493"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="false" static="false"/>    
+    </display>  
+  </class>  
+  <class id="4" language="java" name="de.unidue.stud.sehawagn.openhab.binding.jade.internal.agent.ESHIOBehaviour" 
+    project="de.unidue.stud.sehawagn.openhab.binding.jade" 
+    file="/de.unidue.stud.sehawagn.openhab.binding.jade/src/main/java/de/unidue/stud/sehawagn/openhab/binding/jade/internal/agent/ESHIOBehaviour.java" 
+    binary="false" corner="BOTTOM_RIGHT">    
+    <position height="54" width="265" x="424" y="131"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="false" static="false"/>    
+    </display>  
+  </class>  
+  <class id="5" language="java" 
+    name="de.unidue.stud.sehawagn.openhab.binding.jade.internal.agent.PerpetualSmartGridConnector" 
+    project="de.unidue.stud.sehawagn.openhab.binding.jade" 
+    file="/de.unidue.stud.sehawagn.openhab.binding.jade/src/main/java/de/unidue/stud/sehawagn/openhab/binding/jade/internal/agent/PerpetualSmartGridConnector.java" 
+    binary="false" corner="BOTTOM_RIGHT">    
+    <position height="54" width="265" x="477" y="399"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="false" static="false"/>    
+    </display>  
+  </class>  
+  <class id="6" language="java" 
+    name="de.unidue.stud.sehawagn.openhab.binding.jade.internal.agent.SmartifiedHomeCalculation" 
+    project="de.unidue.stud.sehawagn.openhab.binding.jade" 
+    file="/de.unidue.stud.sehawagn.openhab.binding.jade/src/main/java/de/unidue/stud/sehawagn/openhab/binding/jade/internal/agent/SmartifiedHomeCalculation.java" 
+    binary="false" corner="BOTTOM_RIGHT">    
+    <position height="54" width="265" x="86" y="811"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="false" static="false"/>    
+    </display>  
+  </class>  
+  <class id="7" language="java" name="de.unidue.stud.sehawagn.openhab.binding.jade.internal.agent.InternalDataModel" 
+    project="de.unidue.stud.sehawagn.openhab.binding.jade" 
+    file="/de.unidue.stud.sehawagn.openhab.binding.jade/src/main/java/de/unidue/stud/sehawagn/openhab/binding/jade/internal/agent/InternalDataModel.java" 
+    binary="false" corner="BOTTOM_RIGHT">    
+    <position height="90" width="265" x="86" y="587"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="false" static="false"/>    
+    </display>  
+  </class>  
+  <class id="8" language="java" name="de.unidue.stud.sehawagn.openhab.binding.jade.internal.agent.SimulationIOBehaviour" 
+    project="de.unidue.stud.sehawagn.openhab.binding.jade" 
+    file="/de.unidue.stud.sehawagn.openhab.binding.jade/src/main/java/de/unidue/stud/sehawagn/openhab/binding/jade/internal/agent/SimulationIOBehaviour.java" 
+    binary="false" corner="BOTTOM_RIGHT">    
+    <position height="54" width="265" x="233" y="37"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="false" static="false"/>    
+    </display>  
+  </class>  
+  <class id="9" language="java" 
+    name="de.unidue.stud.sehawagn.openhab.binding.jade.internal.agent.SmartifiedHomeOptionModelController" 
+    project="de.unidue.stud.sehawagn.openhab.binding.jade" 
+    file="/de.unidue.stud.sehawagn.openhab.binding.jade/src/main/java/de/unidue/stud/sehawagn/openhab/binding/jade/internal/agent/SmartifiedHomeOptionModelController.java" 
+    binary="false" corner="BOTTOM_RIGHT">    
+    <position height="54" width="265" x="86" y="717"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="false" static="false"/>    
+    </display>  
+  </class>  
+  <class id="10" language="java" 
+    name="de.unidue.stud.sehawagn.openhab.binding.jade.internal.agent.OperationCommandReceiveBehaviour" 
+    project="de.unidue.stud.sehawagn.openhab.binding.jade" 
+    file="/de.unidue.stud.sehawagn.openhab.binding.jade/src/main/java/de/unidue/stud/sehawagn/openhab/binding/jade/internal/agent/OperationCommandReceiveBehaviour.java" 
+    binary="false" corner="BOTTOM_RIGHT">    
+    <position height="54" width="265" x="729" y="131"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="false" static="false"/>    
+    </display>  
+  </class>  
+  <class id="11" language="java" name="de.unidue.stud.sehawagn.openhab.binding.jade.internal.agent.SmartifiedHomeAgent" 
+    project="de.unidue.stud.sehawagn.openhab.binding.jade" 
+    file="/de.unidue.stud.sehawagn.openhab.binding.jade/src/main/java/de/unidue/stud/sehawagn/openhab/binding/jade/internal/agent/SmartifiedHomeAgent.java" 
+    binary="false" corner="BOTTOM_RIGHT">    
+    <position height="54" width="265" x="233" y="225"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="false" static="false"/>    
+    </display>  
+  </class>  
+  <interface id="12" language="java" name="de.unidue.stud.sehawagn.openhab.channelmirror.ChannelMirror" 
+    project="de.unidue.stud.sehawagn.openhab.binding.jade" 
+    file="/de.unidue.stud.sehawagn.openhab.binding.jade/src/main/java/de/unidue/stud/sehawagn/openhab/channelmirror/ChannelMirror.java" 
+    binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="719" y="1025"/>    
+    <display autosize="false" stereotype="true" package="false" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="false" static="false"/>    
+    </display>  
+  </interface>  
+  <class id="13" language="java" name="de.unidue.stud.sehawagn.openhab.channelmirror.ChannelMirrorImpl" 
+    project="de.unidue.stud.sehawagn.openhab.binding.jade" 
+    file="/de.unidue.stud.sehawagn.openhab.binding.jade/src/main/java/de/unidue/stud/sehawagn/openhab/channelmirror/ChannelMirrorImpl.java" 
+    binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="679" y="985"/>    
+    <display autosize="false" stereotype="true" package="false" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="false" static="false"/>    
+    </display>  
+  </class>  
+  <interface id="14" language="java" name="de.unidue.stud.sehawagn.openhab.channelmirror.ChannelMirrorReceiver" 
+    project="de.unidue.stud.sehawagn.openhab.binding.jade" 
+    file="/de.unidue.stud.sehawagn.openhab.binding.jade/src/main/java/de/unidue/stud/sehawagn/openhab/channelmirror/ChannelMirrorReceiver.java" 
+    binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="719" y="1119"/>    
+    <display autosize="false" stereotype="true" package="false" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="false" static="false"/>    
+    </display>  
+  </interface>  
+  <class id="15" language="java" name="de.unidue.stud.sehawagn.openhab.binding.jade.internal.JADEHandlerFactory" 
+    project="de.unidue.stud.sehawagn.openhab.binding.jade" 
+    file="/de.unidue.stud.sehawagn.openhab.binding.jade/src/main/java/de/unidue/stud/sehawagn/openhab/binding/jade/internal/JADEHandlerFactory.java" 
+    binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="699" y="945"/>    
+    <display autosize="false" stereotype="true" package="false" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="false" static="false"/>    
+    </display>  
+  </class>  
+  <class id="16" language="java" name="de.unidue.stud.sehawagn.openhab.binding.jade.handler.JADEBridgeHandler" 
+    project="de.unidue.stud.sehawagn.openhab.binding.jade" 
+    file="/de.unidue.stud.sehawagn.openhab.binding.jade/src/main/java/de/unidue/stud/sehawagn/openhab/binding/jade/handler/JADEBridgeHandler.java" 
+    binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="640" y="985"/>    
+    <display autosize="false" stereotype="true" package="false" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="false" static="false"/>    
+    </display>  
+  </class>  
+  <class id="17" language="java" name="de.unidue.stud.sehawagn.openhab.binding.jade.handler.SmartifiedHomeESHHandler" 
+    project="de.unidue.stud.sehawagn.openhab.binding.jade" 
+    file="/de.unidue.stud.sehawagn.openhab.binding.jade/src/main/java/de/unidue/stud/sehawagn/openhab/binding/jade/handler/SmartifiedHomeESHHandler.java" 
+    binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="741" y="905"/>    
+    <display autosize="false" stereotype="true" package="false" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="false" static="false"/>    
+    </display>  
+  </class>  
+  <class id="18" language="java" name="jade.core.Agent" project="de.unidue.stud.sehawagn.openhab.binding.jadeservice" 
+    file="/de.unidue.stud.sehawagn.openhab.binding.jadeservice/lib/jade.jar" binary="true" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="435" y="717"/>    
+    <display autosize="false" stereotype="true" package="false" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="false" static="false"/>    
+    </display>  
+  </class>  
+  <class id="19" language="java" name="hygrid.agent.AbstractEnergyAgent" 
+    project="de.unidue.stud.sehawagn.openhab.binding.jadeservice" 
+    file="/de.unidue.stud.sehawagn.openhab.binding.jadeservice/lib/AgentHyGrid.jar" binary="true" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="625" y="493"/>    
+    <display autosize="false" stereotype="true" package="false" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="false" static="false"/>    
+    </display>  
+  </class>  
+  <class id="20" language="java" name="hygrid.agent.AbstractInternalDataModel" 
+    project="de.unidue.stud.sehawagn.openhab.binding.jadeservice" 
+    file="/de.unidue.stud.sehawagn.openhab.binding.jadeservice/lib/AgentHyGrid.jar" binary="true" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="294" y="399"/>    
+    <display autosize="false" stereotype="true" package="false" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="false" static="false"/>    
+    </display>  
+  </class>  
+  <class id="21" language="java" name="hygrid.agent.AbstractIOReal" 
+    project="de.unidue.stud.sehawagn.openhab.binding.jadeservice" 
+    file="/de.unidue.stud.sehawagn.openhab.binding.jadeservice/lib/AgentHyGrid.jar" binary="true" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="785" y="587"/>    
+    <display autosize="false" stereotype="true" package="false" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="false" static="false"/>    
+    </display>  
+  </class>  
+  <class id="22" language="java" name="hygrid.agent.AbstractIOSimulated" 
+    project="de.unidue.stud.sehawagn.openhab.binding.jadeservice" 
+    file="/de.unidue.stud.sehawagn.openhab.binding.jadeservice/lib/AgentHyGrid.jar" binary="true" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="122" y="361"/>    
+    <display autosize="false" stereotype="true" package="false" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="false" static="false"/>    
+    </display>  
+  </class>  
+  <class id="23" language="java" name="jade.core.behaviours.CyclicBehaviour" 
+    project="de.unidue.stud.sehawagn.openhab.binding.jadeservice" 
+    file="/de.unidue.stud.sehawagn.openhab.binding.jadeservice/lib/jade.jar" binary="true" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="1036" y="37"/>    
+    <display autosize="false" stereotype="true" package="false" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="false" static="false"/>    
+    </display>  
+  </class>  
+  <class id="24" language="java" name="hygrid.agent.ControlBehaviourRT" 
+    project="de.unidue.stud.sehawagn.openhab.binding.jadeservice" 
+    file="/de.unidue.stud.sehawagn.openhab.binding.jadeservice/lib/AgentHyGrid.jar" binary="true" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="826" y="359"/>    
+    <display autosize="false" stereotype="true" package="false" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="false" static="false"/>    
+    </display>  
+  </class>  
+  <interface id="25" language="java" name="hygrid.agent.EnergyAgentIO" 
+    project="de.unidue.stud.sehawagn.openhab.binding.jadeservice" 
+    file="/de.unidue.stud.sehawagn.openhab.binding.jadeservice/lib/AgentHyGrid.jar" binary="true" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="785" y="717"/>    
+    <display autosize="false" stereotype="true" package="false" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="false" static="false"/>    
+    </display>  
+  </interface>  
+  <class id="26" language="java" name="hygrid.agent.SimulationConnectorRemoteForIOReal" 
+    project="de.unidue.stud.sehawagn.openhab.binding.jadeservice" 
+    file="/de.unidue.stud.sehawagn.openhab.binding.jadeservice/lib/AgentHyGrid.jar" binary="true" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="457" y="359"/>    
+    <display autosize="false" stereotype="true" package="false" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="false" static="false"/>    
+    </display>  
+  </class>  
+  <class id="27" language="java" name="energy.evaluation.AbstractEvaluationStrategyRT" 
+    project="de.unidue.stud.sehawagn.openhab.binding.jadeservice" 
+    file="/de.unidue.stud.sehawagn.openhab.binding.jadeservice/lib/eom4AgentGui.jar" binary="true" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="293" y="474"/>    
+    <display autosize="false" stereotype="true" package="false" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="false" static="false"/>    
+    </display>  
+  </class>  
+  <class id="28" language="java" name="jade.core.behaviours.Behaviour" 
+    project="de.unidue.stud.sehawagn.openhab.binding.jadeservice" 
+    file="/de.unidue.stud.sehawagn.openhab.binding.jadeservice/lib/jade.jar" binary="true" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="273" y="319"/>    
+    <display autosize="false" stereotype="true" package="false" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="false" static="false"/>    
+    </display>  
+  </class>  
+  <class id="29" language="java" name="energy.calculations.AbstractOptionModelCalculation" 
+    project="de.unidue.stud.sehawagn.openhab.binding.jadeservice" 
+    file="/de.unidue.stud.sehawagn.openhab.binding.jadeservice/lib/eom4AgentGui.jar" binary="true" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="219" y="977"/>    
+    <display autosize="false" stereotype="true" package="false" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="false" static="false"/>    
+    </display>  
+  </class>  
+  <class id="30" language="java" name="energy.OptionModelController" 
+    project="de.unidue.stud.sehawagn.openhab.binding.jadeservice" 
+    file="/de.unidue.stud.sehawagn.openhab.binding.jadeservice/lib/eom4AgentGui.jar" binary="true" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="250" y="1068"/>    
+    <display autosize="false" stereotype="true" package="false" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="false" static="false"/>    
+    </display>  
+  </class>  
+  <association id="31">    
+    <bendpoint x="158" y="319"/>    
+    <bendpoint x="158" y="359"/>    
+    <bendpoint x="158" y="399"/>    
+    <bendpoint x="158" y="493"/>    
+    <end type="SOURCE" refId="11" navigable="false">      
+      <attribute id="32" name="internalDataModel"/>      
+      <multiplicity id="33" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="7" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <generalization id="34">    
+    <bendpoint x="877" y="493"/>    
+    <bendpoint x="940" y="399"/>    
+    <bendpoint x="961" y="359"/>    
+    <bendpoint x="982" y="319"/>    
+    <bendpoint x="1045" y="225"/>    
+    <bendpoint x="1087" y="131"/>    
+    <end type="SOURCE" refId="21"/>    
+    <end type="TARGET" refId="23"/>  
+  </generalization>  
+  <dependency id="35">    
+    <end type="SOURCE" refId="11"/>    
+    <end type="TARGET" refId="28"/>  
+  </dependency>  
+  <association id="36">    
+    <end type="SOURCE" refId="17" navigable="false">      
+      <attribute id="37" name="channelTypeProvider"/>      
+      <multiplicity id="38" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="15" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="39">    
+    <end type="SOURCE" refId="21"/>    
+    <end type="TARGET" refId="18"/>  
+  </dependency>  
+  <dependency id="40">    
+    <end type="SOURCE" refId="12"/>    
+    <end type="TARGET" refId="14"/>  
+  </dependency>  
+  <association id="41">    
+    <end type="SOURCE" refId="16" navigable="false">      
+      <attribute id="42" name="channelMirror"/>      
+      <multiplicity id="43" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="12" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="44">    
+    <bendpoint x="814" y="399"/>    
+    <bendpoint x="814" y="493"/>    
+    <bendpoint x="814" y="587"/>    
+    <end type="SOURCE" refId="26"/>    
+    <end type="TARGET" refId="25"/>  
+  </dependency>  
+  <dependency id="45">    
+    <bendpoint x="116" y="319"/>    
+    <bendpoint x="116" y="359"/>    
+    <bendpoint x="116" y="399"/>    
+    <bendpoint x="74" y="493"/>    
+    <bendpoint x="55" y="587"/>    
+    <bendpoint x="55" y="717"/>    
+    <bendpoint x="55" y="811"/>    
+    <bendpoint x="239" y="905"/>    
+    <bendpoint x="423" y="945"/>    
+    <end type="SOURCE" refId="11"/>    
+    <end type="TARGET" refId="16"/>  
+  </dependency>  
+  <realization id="46">    
+    <bendpoint x="1024" y="131"/>    
+    <bendpoint x="1024" y="225"/>    
+    <bendpoint x="1024" y="319"/>    
+    <bendpoint x="1003" y="359"/>    
+    <bendpoint x="1003" y="399"/>    
+    <bendpoint x="1003" y="493"/>    
+    <bendpoint x="982" y="587"/>    
+    <bendpoint x="982" y="717"/>    
+    <end type="SOURCE" refId="8"/>    
+    <end type="TARGET" refId="2"/>  
+  </realization>  
+  <generalization id="47">    
+    <end type="SOURCE" refId="10"/>    
+    <end type="TARGET" refId="23"/>  
+  </generalization>  
+  <association id="48">    
+    <end type="SOURCE" refId="20" navigable="false">      
+      <attribute id="49" name="myAgent"/>      
+      <multiplicity id="50" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="19" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <generalization id="51">    
+    <bendpoint x="898" y="225"/>    
+    <bendpoint x="898" y="319"/>    
+    <bendpoint x="887" y="359"/>    
+    <bendpoint x="877" y="399"/>    
+    <bendpoint x="835" y="493"/>    
+    <end type="SOURCE" refId="4"/>    
+    <end type="TARGET" refId="21"/>  
+  </generalization>  
+  <dependency id="52">    
+    <end type="SOURCE" refId="19"/>    
+    <end type="TARGET" refId="30"/>  
+  </dependency>  
+  <generalization id="53">    
+    <end type="SOURCE" refId="22"/>    
+    <end type="TARGET" refId="28"/>  
+  </generalization>  
+  <dependency id="54">    
+    <bendpoint x="688" y="1025"/>    
+    <end type="SOURCE" refId="13"/>    
+    <end type="TARGET" refId="14"/>  
+  </dependency>  
+  <dependency id="55">    
+    <bendpoint x="95" y="319"/>    
+    <bendpoint x="95" y="359"/>    
+    <bendpoint x="74" y="399"/>    
+    <bendpoint x="32" y="493"/>    
+    <bendpoint x="32" y="587"/>    
+    <bendpoint x="32" y="717"/>    
+    <end type="SOURCE" refId="11"/>    
+    <end type="TARGET" refId="6"/>  
+  </dependency>  
+  <association id="56">    
+    <bendpoint x="158" y="225"/>    
+    <bendpoint x="74" y="319"/>    
+    <bendpoint x="74" y="359"/>    
+    <bendpoint x="95" y="399"/>    
+    <bendpoint x="95" y="493"/>    
+    <end type="SOURCE" refId="4" navigable="false">      
+      <attribute id="57" name="internalDataModel"/>      
+      <multiplicity id="58" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="7" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="59">    
+    <bendpoint x="877" y="319"/>    
+    <bendpoint x="908" y="359"/>    
+    <bendpoint x="919" y="399"/>    
+    <bendpoint x="919" y="493"/>    
+    <bendpoint x="919" y="587"/>    
+    <bendpoint x="919" y="717"/>    
+    <end type="SOURCE" refId="11"/>    
+    <end type="TARGET" refId="2"/>  
+  </dependency>  
+  <dependency id="60">    
+    <end type="SOURCE" refId="9"/>    
+    <end type="TARGET" refId="29"/>  
+  </dependency>  
+  <realization id="61">    
+    <bendpoint x="750" y="945"/>    
+    <bendpoint x="750" y="985"/>    
+    <bendpoint x="750" y="1025"/>    
+    <end type="SOURCE" refId="17"/>    
+    <end type="TARGET" refId="14"/>  
+  </realization>  
+  <association id="62">    
+    <bendpoint x="772" y="399"/>    
+    <end type="SOURCE" refId="19" navigable="false">      
+      <attribute id="63" name="controlBehaviourRT"/>      
+      <multiplicity id="64" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="24" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <generalization id="65">    
+    <bendpoint x="221" y="493"/>    
+    <end type="SOURCE" refId="7"/>    
+    <end type="TARGET" refId="20"/>  
+  </generalization>  
+  <generalization id="66">    
+    <end type="SOURCE" refId="3"/>    
+    <end type="TARGET" refId="27"/>  
+  </generalization>  
+  <association id="67">    
+    <bendpoint x="668" y="945"/>    
+    <end type="SOURCE" refId="17" navigable="false">      
+      <attribute id="68" name="bridgeHandler"/>      
+      <multiplicity id="69" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="16" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="70">    
+    <end type="SOURCE" refId="24" navigable="false">      
+      <attribute id="71" name="omc"/>      
+      <multiplicity id="72" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="30" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <realization id="73">    
+    <bendpoint x="940" y="225"/>    
+    <bendpoint x="940" y="319"/>    
+    <bendpoint x="940" y="359"/>    
+    <bendpoint x="961" y="399"/>    
+    <bendpoint x="961" y="493"/>    
+    <bendpoint x="961" y="587"/>    
+    <bendpoint x="961" y="717"/>    
+    <end type="SOURCE" refId="4"/>    
+    <end type="TARGET" refId="2"/>  
+  </realization>  
+  <dependency id="74">    
+    <end type="SOURCE" refId="16"/>    
+    <end type="TARGET" refId="1"/>  
+  </dependency>  
+  <dependency id="75">    
+    <end type="SOURCE" refId="8"/>    
+    <end type="TARGET" refId="4"/>  
+  </dependency>  
+  <generalization id="76">    
+    <end type="SOURCE" refId="6"/>    
+    <end type="TARGET" refId="29"/>  
+  </generalization>  
+  <dependency id="77">    
+    <end type="SOURCE" refId="9"/>    
+    <end type="TARGET" refId="6"/>  
+  </dependency>  
+  <dependency id="78">    
+    <end type="SOURCE" refId="15"/>    
+    <end type="TARGET" refId="16"/>  
+  </dependency>  
+  <association id="79">    
+    <end type="SOURCE" refId="4" navigable="false">      
+      <attribute id="80" name="myAgent"/>      
+      <multiplicity id="81" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="11" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="82">    
+    <bendpoint x="961" y="225"/>    
+    <bendpoint x="961" y="319"/>    
+    <bendpoint x="982" y="359"/>    
+    <bendpoint x="982" y="399"/>    
+    <bendpoint x="982" y="493"/>    
+    <bendpoint x="1003" y="587"/>    
+    <bendpoint x="1045" y="717"/>    
+    <bendpoint x="1045" y="811"/>    
+    <end type="SOURCE" refId="4" navigable="false">      
+      <attribute id="83" name="myESHHandler"/>      
+      <multiplicity id="84" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="17" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="85">    
+    <bendpoint x="221" y="399"/>    
+    <bendpoint x="242" y="359"/>    
+    <bendpoint x="242" y="319"/>    
+    <end type="SOURCE" refId="3" navigable="false">      
+      <attribute id="86" name="smartifiedHomeAgent"/>      
+      <multiplicity id="87" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="11" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <generalization id="88">    
+    <end type="SOURCE" refId="5"/>    
+    <end type="TARGET" refId="26"/>  
+  </generalization>  
+  <realization id="89">    
+    <end type="SOURCE" refId="13"/>    
+    <end type="TARGET" refId="12"/>  
+  </realization>  
+  <dependency id="90">    
+    <end type="SOURCE" refId="22"/>    
+    <end type="TARGET" refId="30"/>  
+  </dependency>  
+  <dependency id="91">    
+    <bendpoint x="242" y="399"/>    
+    <bendpoint x="242" y="493"/>    
+    <bendpoint x="423" y="587"/>    
+    <end type="SOURCE" refId="22"/>    
+    <end type="TARGET" refId="18"/>  
+  </dependency>  
+  <dependency id="92">    
+    <bendpoint x="425" y="319"/>    
+    <bendpoint x="425" y="359"/>    
+    <bendpoint x="425" y="399"/>    
+    <bendpoint x="654" y="493"/>    
+    <end type="SOURCE" refId="11"/>    
+    <end type="TARGET" refId="21"/>  
+  </dependency>  
+  <dependency id="93">    
+    <end type="SOURCE" refId="27"/>    
+    <end type="TARGET" refId="30"/>  
+  </dependency>  
+  <generalization id="94">    
+    <bendpoint x="402" y="985"/>    
+    <bendpoint x="402" y="945"/>    
+    <bendpoint x="402" y="905"/>    
+    <bendpoint x="402" y="811"/>    
+    <end type="SOURCE" refId="1"/>    
+    <end type="TARGET" refId="18"/>  
+  </generalization>  
+  <dependency id="95">    
+    <bendpoint x="53" y="131"/>    
+    <bendpoint x="53" y="225"/>    
+    <bendpoint x="53" y="319"/>    
+    <bendpoint x="53" y="359"/>    
+    <bendpoint x="53" y="399"/>    
+    <bendpoint x="53" y="493"/>    
+    <end type="SOURCE" refId="8"/>    
+    <end type="TARGET" refId="7"/>  
+  </dependency>  
+  <association id="96">    
+    <bendpoint x="402" y="587"/>    
+    <end type="SOURCE" refId="9" navigable="false">      
+      <attribute id="97" name="evaluationStrategy"/>      
+      <multiplicity id="98" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="3" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="99">    
+    <end type="SOURCE" refId="3"/>    
+    <end type="TARGET" refId="30"/>  
+  </dependency>  
+  <association id="100">    
+    <bendpoint x="754" y="587"/>    
+    <end type="SOURCE" refId="19" navigable="false">      
+      <attribute id="101" name="agentIOBehaviour"/>      
+      <multiplicity id="102" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="25" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="103">    
+    <bendpoint x="302" y="319"/>    
+    <end type="SOURCE" refId="11"/>    
+    <end type="TARGET" refId="22"/>  
+  </dependency>  
+  <association id="104">    
+    <end type="SOURCE" refId="10" navigable="false">      
+      <attribute id="105" name="myAgent"/>      
+      <multiplicity id="106" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="11" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="107">    
+    <end type="SOURCE" refId="22" navigable="false">      
+      <attribute id="108" name="internalDataModel"/>      
+      <multiplicity id="109" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="20" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="110">    
+    <end type="SOURCE" refId="2"/>    
+    <end type="TARGET" refId="17"/>  
+  </dependency>  
+  <dependency id="111">    
+    <end type="SOURCE" refId="7"/>    
+    <end type="TARGET" refId="30"/>  
+  </dependency>  
+  <dependency id="112">    
+    <end type="SOURCE" refId="19"/>    
+    <end type="TARGET" refId="21"/>  
+  </dependency>  
+  <dependency id="113">    
+    <bendpoint x="446" y="399"/>    
+    <end type="SOURCE" refId="26"/>    
+    <end type="TARGET" refId="19"/>  
+  </dependency>  
+  <association id="114">    
+    <end type="SOURCE" refId="29" navigable="false">      
+      <attribute id="115" name="optionModelController"/>      
+      <multiplicity id="116" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="30" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="117">    
+    <end type="SOURCE" refId="3" navigable="false">      
+      <attribute id="118" name="agentDataModel"/>      
+      <multiplicity id="119" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="7" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <generalization id="120">    
+    <bendpoint x="541" y="587"/>    
+    <end type="SOURCE" refId="19"/>    
+    <end type="TARGET" refId="18"/>  
+  </generalization>  
+  <dependency id="121">    
+    <end type="SOURCE" refId="22"/>    
+    <end type="TARGET" refId="27"/>  
+  </dependency>  
+  <realization id="122">    
+    <end type="SOURCE" refId="21"/>    
+    <end type="TARGET" refId="25"/>  
+  </realization>  
+  <generalization id="123">    
+    <bendpoint x="383" y="319"/>    
+    <bendpoint x="383" y="359"/>    
+    <bendpoint x="383" y="399"/>    
+    <end type="SOURCE" refId="11"/>    
+    <end type="TARGET" refId="19"/>  
+  </generalization>  
+  <association id="124">    
+    <end type="SOURCE" refId="7" navigable="false">      
+      <attribute id="125" name="optionModelController"/>      
+      <multiplicity id="126" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="9" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="127">    
+    <end type="SOURCE" refId="24" navigable="false">      
+      <attribute id="128" name="rtEvaluationStrategy"/>      
+      <multiplicity id="129" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="27" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="130">    
+    <bendpoint x="793" y="399"/>    
+    <bendpoint x="793" y="493"/>    
+    <end type="SOURCE" refId="26"/>    
+    <end type="TARGET" refId="21"/>  
+  </dependency>  
+  <association id="131">    
+    <end type="SOURCE" refId="20" navigable="false">      
+      <attribute id="132" name="optionModelController"/>      
+      <multiplicity id="133" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="30" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <generalization id="134">    
+    <bendpoint x="202" y="131"/>    
+    <bendpoint x="202" y="225"/>    
+    <bendpoint x="221" y="319"/>    
+    <end type="SOURCE" refId="8"/>    
+    <end type="TARGET" refId="22"/>  
+  </generalization>  
+  <dependency id="135">    
+    <bendpoint x="856" y="319"/>    
+    <bendpoint x="866" y="359"/>    
+    <bendpoint x="898" y="399"/>    
+    <bendpoint x="898" y="493"/>    
+    <bendpoint x="898" y="587"/>    
+    <end type="SOURCE" refId="11"/>    
+    <end type="TARGET" refId="25"/>  
+  </dependency>  
+  <association id="136">    
+    <end type="SOURCE" refId="24" navigable="false">      
+      <attribute id="137" name="internalDatModel"/>      
+      <multiplicity id="138" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="20" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <generalization id="139">    
+    <bendpoint x="919" y="319"/>    
+    <bendpoint x="982" y="225"/>    
+    <bendpoint x="1045" y="131"/>    
+    <end type="SOURCE" refId="24"/>    
+    <end type="TARGET" refId="23"/>  
+  </generalization>  
+  <dependency id="140">    
+    <bendpoint x="520" y="587"/>    
+    <bendpoint x="520" y="717"/>    
+    <end type="SOURCE" refId="3"/>    
+    <end type="TARGET" refId="2"/>  
+  </dependency>  
+  <dependency id="141">    
+    <end type="SOURCE" refId="5"/>    
+    <end type="TARGET" refId="19"/>  
+  </dependency>  
+  <dependency id="142">    
+    <bendpoint x="381" y="811"/>    
+    <bendpoint x="381" y="717"/>    
+    <bendpoint x="381" y="587"/>    
+    <bendpoint x="200" y="493"/>    
+    <bendpoint x="200" y="399"/>    
+    <bendpoint x="200" y="359"/>    
+    <bendpoint x="200" y="319"/>    
+    <end type="SOURCE" refId="17"/>    
+    <end type="TARGET" refId="11"/>  
+  </dependency>  
+  <generalization id="143">    
+    <end type="SOURCE" refId="2"/>    
+    <end type="TARGET" refId="25"/>  
+  </generalization>  
+  <association id="144">    
+    <bendpoint x="708" y="985"/>    
+    <end type="SOURCE" refId="15" navigable="false">      
+      <attribute id="145" name="channelMirror"/>      
+      <multiplicity id="146" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="12" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="147">    
+    <bendpoint x="179" y="493"/>    
+    <bendpoint x="179" y="399"/>    
+    <bendpoint x="179" y="359"/>    
+    <bendpoint x="179" y="319"/>    
+    <end type="SOURCE" refId="7" navigable="false">      
+      <attribute id="148" name="myAgent"/>      
+      <multiplicity id="149" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="11" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="150">    
+    <bendpoint x="393" y="131"/>    
+    <bendpoint x="528" y="225"/>    
+    <bendpoint x="465" y="319"/>    
+    <bendpoint x="404" y="359"/>    
+    <bendpoint x="404" y="399"/>    
+    <end type="SOURCE" refId="8"/>    
+    <end type="TARGET" refId="19"/>  
+  </dependency>  
+  <dependency id="151">    
+    <bendpoint x="835" y="399"/>    
+    <bendpoint x="772" y="493"/>    
+    <bendpoint x="733" y="587"/>    
+    <end type="SOURCE" refId="24"/>    
+    <end type="TARGET" refId="18"/>  
+  </dependency>  
+  <realization id="152">    
+    <bendpoint x="263" y="399"/>    
+    <bendpoint x="594" y="493"/>    
+    <bendpoint x="594" y="587"/>    
+    <end type="SOURCE" refId="22"/>    
+    <end type="TARGET" refId="25"/>  
+  </realization>  
+  <dependency id="153">    
+    <bendpoint x="1003" y="225"/>    
+    <bendpoint x="1003" y="319"/>    
+    <bendpoint x="1024" y="359"/>    
+    <bendpoint x="1024" y="399"/>    
+    <bendpoint x="1024" y="493"/>    
+    <bendpoint x="1024" y="587"/>    
+    <bendpoint x="1024" y="717"/>    
+    <end type="SOURCE" refId="10"/>    
+    <end type="TARGET" refId="2"/>  
+  </dependency>  
+  <dependency id="154">    
+    <end type="SOURCE" refId="11"/>    
+    <end type="TARGET" refId="30"/>  
+  </dependency>  
+  <association id="155">    
+    <bendpoint x="242" y="131"/>    
+    <end type="SOURCE" refId="8" navigable="false">      
+      <attribute id="156" name="myAgent"/>      
+      <multiplicity id="157" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="11" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="158">    
+    <bendpoint x="729" y="945"/>    
+    <bendpoint x="729" y="985"/>    
+    <end type="SOURCE" refId="17" navigable="false">      
+      <attribute id="159" name="channelMirror"/>      
+      <multiplicity id="160" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="12" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="161">    
+    <bendpoint x="486" y="319"/>    
+    <bendpoint x="486" y="359"/>    
+    <end type="SOURCE" refId="11"/>    
+    <end type="TARGET" refId="5"/>  
+  </dependency>  
+  <dependency id="162">    
+    <bendpoint x="1066" y="131"/>    
+    <bendpoint x="1066" y="225"/>    
+    <bendpoint x="1066" y="319"/>    
+    <bendpoint x="1066" y="359"/>    
+    <bendpoint x="1066" y="399"/>    
+    <bendpoint x="1066" y="493"/>    
+    <bendpoint x="1066" y="587"/>    
+    <bendpoint x="1066" y="717"/>    
+    <bendpoint x="1066" y="811"/>    
+    <end type="SOURCE" refId="8"/>    
+    <end type="TARGET" refId="17"/>  
+  </dependency>  
+  <generalization id="163">    
+    <end type="SOURCE" refId="9"/>    
+    <end type="TARGET" refId="30"/>  
+  </generalization>  
+  <dependency id="164">    
+    <bendpoint x="323" y="399"/>    
+    <end type="SOURCE" refId="22"/>    
+    <end type="TARGET" refId="19"/>  
+  </dependency>  
+  <dependency id="165">    
+    <bendpoint x="444" y="587"/>    
+    <end type="SOURCE" refId="3"/>    
+    <end type="TARGET" refId="18"/>  
+  </dependency>  
+  <dependency id="166">    
+    <bendpoint x="137" y="131"/>    
+    <bendpoint x="137" y="225"/>    
+    <bendpoint x="137" y="319"/>    
+    <bendpoint x="221" y="359"/>    
+    <end type="SOURCE" refId="8"/>    
+    <end type="TARGET" refId="20"/>  
+  </dependency>  
+  <dependency id="167">    
+    <end type="SOURCE" refId="6"/>    
+    <end type="TARGET" refId="30"/>  
+  </dependency>  
+  <association id="168">    
+    <bendpoint x="856" y="399"/>    
+    <bendpoint x="856" y="493"/>    
+    <bendpoint x="856" y="587"/>    
+    <end type="SOURCE" refId="24" navigable="false">      
+      <attribute id="169" name="agentIOBehaviour"/>      
+      <multiplicity id="170" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="25" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="171">    
+    <end type="SOURCE" refId="26" navigable="false">      
+      <attribute id="172" name="internalDataModel"/>      
+      <multiplicity id="173" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="20" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <classifier-display autosize="false" stereotype="true" package="false" initial-value="false" signature="true" 
+    sort-features="false" accessors="true" visibility="true">    
+    <attributes public="true" package="false" protected="false" private="false" static="false"/>    
+    <operations public="false" package="false" protected="false" private="false" static="false"/>  
+  </classifier-display>  
+  <association-display labels="true" multiplicity="true"/>
+</class-diagram>

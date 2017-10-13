@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<class-diagram version="1.2.1" icons="true" always-add-relationships="false" generalizations="true" realizations="true" 
+  associations="true" dependencies="true" nesting-relationships="false" router="FAN">  
+  <class id="1" language="java" name="de.unidue.stud.sehawagn.openhab.binding.jade.internal.agent.PerpetualAgent" 
+    project="de.unidue.stud.sehawagn.openhab.binding.jade" 
+    file="/de.unidue.stud.sehawagn.openhab.binding.jade/src/main/java/de/unidue/stud/sehawagn/openhab/binding/jade/internal/agent/PerpetualAgent.java" 
+    binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="67" y="100"/>    
+    <display autosize="true" stereotype="true" package="false" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="false" static="false"/>    
+    </display>  
+  </class>  
+  <interface id="2" language="java" name="de.unidue.stud.sehawagn.openhab.binding.jade.internal.agent.WashingMachineIO" 
+    project="de.unidue.stud.sehawagn.openhab.binding.jade" 
+    file="/de.unidue.stud.sehawagn.openhab.binding.jade/src/main/java/de/unidue/stud/sehawagn/openhab/binding/jade/internal/agent/WashingMachineIO.java" 
+    binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="413" y="192"/>    
+    <display autosize="true" stereotype="true" package="false" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="false" static="false"/>    
+    </display>  
+  </interface>  
+  <class id="3" language="java" name="de.unidue.stud.sehawagn.openhab.binding.jade.internal.agent.ESHIOBehaviour" 
+    project="de.unidue.stud.sehawagn.openhab.binding.jade" 
+    file="/de.unidue.stud.sehawagn.openhab.binding.jade/src/main/java/de/unidue/stud/sehawagn/openhab/binding/jade/internal/agent/ESHIOBehaviour.java" 
+    binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="244" y="196"/>    
+    <display autosize="true" stereotype="true" package="false" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="false" static="false"/>    
+    </display>  
+  </class>  
+  <class id="4" language="java" name="de.unidue.stud.sehawagn.openhab.binding.jade.internal.agent.SimulationIOBehaviour" 
+    project="de.unidue.stud.sehawagn.openhab.binding.jade" 
+    file="/de.unidue.stud.sehawagn.openhab.binding.jade/src/main/java/de/unidue/stud/sehawagn/openhab/binding/jade/internal/agent/SimulationIOBehaviour.java" 
+    binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="596" y="195"/>    
+    <display autosize="true" stereotype="true" package="false" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="false" static="false"/>    
+    </display>  
+  </class>  
+  <class id="5" language="java" 
+    name="de.unidue.stud.sehawagn.openhab.binding.jade.internal.agent.OperationCommandReceiveBehaviour" 
+    project="de.unidue.stud.sehawagn.openhab.binding.jade" 
+    file="/de.unidue.stud.sehawagn.openhab.binding.jade/src/main/java/de/unidue/stud/sehawagn/openhab/binding/jade/internal/agent/OperationCommandReceiveBehaviour.java" 
+    binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="809" y="286"/>    
+    <display autosize="true" stereotype="true" package="false" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="false" static="false"/>    
+    </display>  
+  </class>  
+  <class id="6" language="java" name="de.unidue.stud.sehawagn.openhab.binding.jade.internal.agent.SmartifiedHomeAgent" 
+    project="de.unidue.stud.sehawagn.openhab.binding.jade" 
+    file="/de.unidue.stud.sehawagn.openhab.binding.jade/src/main/java/de/unidue/stud/sehawagn/openhab/binding/jade/internal/agent/SmartifiedHomeAgent.java" 
+    binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="600" y="30"/>    
+    <display autosize="true" stereotype="true" package="false" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="false" static="false"/>    
+    </display>  
+  </class>  
+  <class id="7" language="java" name="jade.core.Agent" project="de.unidue.stud.sehawagn.openhab.binding.jadeservice" 
+    file="/de.unidue.stud.sehawagn.openhab.binding.jadeservice/lib/jade.jar" binary="true" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="68" y="36"/>    
+    <display autosize="false" stereotype="true" package="false" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="false" static="false"/>    
+    </display>  
+  </class>  
+  <class id="8" language="java" name="hygrid.agent.AbstractEnergyAgent" 
+    project="de.unidue.stud.sehawagn.openhab.binding.jadeservice" 
+    file="/de.unidue.stud.sehawagn.openhab.binding.jadeservice/lib/AgentHyGrid.jar" binary="true" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="241" y="34"/>    
+    <display autosize="false" stereotype="true" package="false" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="false" static="false"/>    
+    </display>  
+  </class>  
+  <class id="9" language="java" name="hygrid.agent.AbstractIOReal" 
+    project="de.unidue.stud.sehawagn.openhab.binding.jadeservice" 
+    file="/de.unidue.stud.sehawagn.openhab.binding.jadeservice/lib/AgentHyGrid.jar" binary="true" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="245" y="292"/>    
+    <display autosize="false" stereotype="true" package="false" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="false" static="false"/>    
+    </display>  
+  </class>  
+  <class id="10" language="java" name="hygrid.agent.AbstractIOSimulated" 
+    project="de.unidue.stud.sehawagn.openhab.binding.jadeservice" 
+    file="/de.unidue.stud.sehawagn.openhab.binding.jadeservice/lib/AgentHyGrid.jar" binary="true" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="596" y="283"/>    
+    <display autosize="false" stereotype="true" package="false" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="false" static="false"/>    
+    </display>  
+  </class>  
+  <class id="11" language="java" name="hygrid.agent.ControlBehaviourRT" 
+    project="de.unidue.stud.sehawagn.openhab.binding.jadeservice" 
+    file="/de.unidue.stud.sehawagn.openhab.binding.jadeservice/lib/AgentHyGrid.jar" binary="true" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="96" y="197"/>    
+    <display autosize="false" stereotype="true" package="false" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="false" static="false"/>    
+    </display>  
+  </class>  
+  <interface id="12" language="java" name="hygrid.agent.EnergyAgentIO" 
+    project="de.unidue.stud.sehawagn.openhab.binding.jadeservice" 
+    file="/de.unidue.stud.sehawagn.openhab.binding.jadeservice/lib/AgentHyGrid.jar" binary="true" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="414" y="285"/>    
+    <display autosize="false" stereotype="true" package="false" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="false" static="false"/>    
+    </display>  
+  </interface>  
+  <class id="13" language="java" name="hygrid.agent.monitoring.MonitoringBehaviourRT" 
+    project="de.unidue.stud.sehawagn.openhab.binding.jadeservice" 
+    file="/de.unidue.stud.sehawagn.openhab.binding.jadeservice/lib/AgentHyGrid.jar" binary="true" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="598" y="96"/>    
+    <display autosize="false" stereotype="true" package="false" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="false" static="false"/>    
+    </display>  
+  </class>  
+  <interface id="14" language="java" name="hygrid.agent.monitoring.MonitoringListener" 
+    project="de.unidue.stud.sehawagn.openhab.binding.jadeservice" 
+    file="/de.unidue.stud.sehawagn.openhab.binding.jadeservice/lib/AgentHyGrid.jar" binary="true" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="413" y="93"/>    
+    <display autosize="false" stereotype="true" package="false" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="false" static="false"/>    
+    </display>  
+  </interface>  
+  <class id="15" language="java" name="de.unidue.stud.sehawagn.energy.RequestRunSchedule" 
+    project="de.unidue.stud.sehawagn.openhab.binding.jadeservice" 
+    file="/de.unidue.stud.sehawagn.openhab.binding.jadeservice/lib/groupcoordinator-0.0.1-SNAPSHOT.jar" binary="true" 
+    corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="777" y="97"/>    
+    <display autosize="false" stereotype="true" package="false" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="false" static="false"/>    
+    </display>  
+  </class>  
+  <class id="16" language="java" name="de.unidue.stud.sehawagn.openhab.binding.jade.handler.SmartifiedHomeESHHandler" 
+    project="de.unidue.stud.sehawagn.openhab.binding.jade" 
+    file="/de.unidue.stud.sehawagn.openhab.binding.jade/src/main/java/de/unidue/stud/sehawagn/openhab/binding/jade/handler/SmartifiedHomeESHHandler.java" 
+    binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="79" y="291"/>    
+    <display autosize="false" stereotype="true" package="false" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="false" protected="false" private="false" static="false"/>      
+      <operations public="false" package="false" protected="false" private="false" static="false"/>    
+    </display>  
+  </class>  
+  <generalization id="17">    
+    <end type="SOURCE" refId="6"/>    
+    <end type="TARGET" refId="8"/>  
+  </generalization>  
+  <association id="18">    
+    <end type="SOURCE" refId="8" navigable="false">      
+      <attribute id="19" name="controlBehaviourRT">        
+        <position height="0" width="0" x="-202" y="-207"/>      
+      </attribute>      
+      <multiplicity id="20" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-202" y="-207"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="11" navigable="true"/>    
+    <display labels="false" multiplicity="false"/>  
+  </association>  
+  <realization id="21">    
+    <end type="SOURCE" refId="3"/>    
+    <end type="TARGET" refId="2"/>  
+  </realization>  
+  <dependency id="22">    
+    <end type="SOURCE" refId="6"/>    
+    <end type="TARGET" refId="5"/>  
+  </dependency>  
+  <association id="23">    
+    <end type="SOURCE" refId="8" navigable="false">      
+      <attribute id="24" name="agentIOBehaviour">        
+        <position height="0" width="0" x="-166" y="-4"/>      
+      </attribute>      
+      <multiplicity id="25" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-166" y="-4"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="12" navigable="true"/>    
+    <display labels="false" multiplicity="false"/>  
+  </association>  
+  <association id="26">    
+    <end type="SOURCE" refId="6" navigable="false">      
+      <attribute id="27" name="monitoringBehaviourRT">        
+        <position height="0" width="0" x="412" y="-387"/>      
+      </attribute>      
+      <multiplicity id="28" minimum="0" maximum="1">        
+        <position height="0" width="0" x="412" y="-387"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="13" navigable="true"/>    
+    <display labels="false" multiplicity="false"/>  
+  </association>  
+  <dependency id="29">    
+    <end type="SOURCE" refId="4"/>    
+    <end type="TARGET" refId="13"/>  
+  </dependency>  
+  <generalization id="30">    
+    <end type="SOURCE" refId="2"/>    
+    <end type="TARGET" refId="12"/>  
+  </generalization>  
+  <dependency id="31">    
+    <end type="SOURCE" refId="6"/>    
+    <end type="TARGET" refId="15"/>  
+  </dependency>  
+  <generalization id="32">    
+    <end type="SOURCE" refId="3"/>    
+    <end type="TARGET" refId="9"/>  
+  </generalization>  
+  <generalization id="33">    
+    <end type="SOURCE" refId="2"/>    
+    <end type="TARGET" refId="14"/>  
+  </generalization>  
+  <association id="34">    
+    <end type="SOURCE" refId="13" navigable="false">      
+      <attribute id="35" name="agentIOBehaviour">        
+        <position height="0" width="0" x="-166" y="-4"/>      
+      </attribute>      
+      <multiplicity id="36" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-166" y="-4"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="12" navigable="true"/>    
+    <display labels="false" multiplicity="false"/>  
+  </association>  
+  <association id="37">    
+    <end type="SOURCE" refId="11" navigable="false">      
+      <attribute id="38" name="agentIOBehaviour">        
+        <position height="0" width="0" x="-166" y="-4"/>      
+      </attribute>      
+      <multiplicity id="39" minimum="0" maximum="1">        
+        <position height="0" width="0" x="-166" y="-4"/>      
+      </multiplicity>    
+    </end>    
+    <end type="TARGET" refId="12" navigable="true"/>    
+    <display labels="false" multiplicity="false"/>  
+  </association>  
+  <association id="40">    
+    <end type="SOURCE" refId="3" navigable="false">      
+      <attribute id="41" name="myESHHandler"/>      
+      <multiplicity id="42" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="16" navigable="true"/>    
+    <display labels="false" multiplicity="false"/>  
+  </association>  
+  <realization id="43">    
+    <end type="SOURCE" refId="10"/>    
+    <end type="TARGET" refId="12"/>  
+  </realization>  
+  <generalization id="44">    
+    <end type="SOURCE" refId="4"/>    
+    <end type="TARGET" refId="10"/>  
+  </generalization>  
+  <generalization id="45">    
+    <end type="SOURCE" refId="1"/>    
+    <end type="TARGET" refId="7"/>  
+  </generalization>  
+  <realization id="46">    
+    <end type="SOURCE" refId="4"/>    
+    <end type="TARGET" refId="2"/>  
+  </realization>  
+  <generalization id="47">    
+    <end type="SOURCE" refId="8"/>    
+    <end type="TARGET" refId="7"/>  
+  </generalization>  
+  <dependency id="48">    
+    <end type="SOURCE" refId="5"/>    
+    <end type="TARGET" refId="2"/>  
+  </dependency>  
+  <dependency id="49">    
+    <end type="SOURCE" refId="13"/>    
+    <end type="TARGET" refId="14"/>  
+  </dependency>  
+  <classifier-display autosize="false" stereotype="true" package="false" initial-value="false" signature="true" 
+    sort-features="false" accessors="true" visibility="true">    
+    <attributes public="true" package="false" protected="false" private="false" static="false"/>    
+    <operations public="false" package="false" protected="false" private="false" static="false"/>  
+  </classifier-display>  
+  <association-display labels="true" multiplicity="true"/>
+</class-diagram>
