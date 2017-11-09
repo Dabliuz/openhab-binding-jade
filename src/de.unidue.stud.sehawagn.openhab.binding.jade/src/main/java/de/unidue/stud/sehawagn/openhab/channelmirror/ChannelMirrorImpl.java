@@ -33,11 +33,15 @@ public class ChannelMirrorImpl extends AbstractItemEventSubscriber implements Ch
 	@Override
 	protected void receiveUpdate(ItemStateEvent updateEvent) {
 		State stateUpdate = updateEvent.getItemState();
-//		String sourceChannel = updateEvent.getSource(); // problem: source is not kodi itself anymore, but autoupdate
+		// ------ openHAB 2.0.0 -----
+		String sourceChannel = updateEvent.getSource(); // problem: source is not kodi itself anymore, but autoupdate
+		// ------ openHAB 2.0.0 -----
 
-		String sourceChannel = updateEvent.getItemName();
+		// ------ openHAB 2.1.0 -----
+//		String sourceChannel = updateEvent.getItemName();
 //		System.out.println("receiveUpdate " + updateEvent + ", " + sourceChannel + ", " + updateEvent.getSource() + ", " + stateUpdate);
-		sourceChannel = sourceChannel.replace("_", ":");
+//		sourceChannel = sourceChannel.replace("_", ":");
+		// ------ openHAB 2.1.0 -----
 
 		if (itemRegistry != null) {
 			ArrayList<ChannelMirrorReceiver> mirrorReceivers = mirrorRoutes.get(sourceChannel);

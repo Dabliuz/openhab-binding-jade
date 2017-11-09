@@ -200,6 +200,8 @@ System.out.println("channelTypeProvider =" + channelTypeProvider);
 
 	@Override
 	public void receiveFromMirroredChannel(String sourceChannel, State newState) {
+//		System.out.println("receiveFromMirroredChannel sourceChannel=" + sourceChannel + " newState=" + newState);
+
 		if (sourceChannel.equals(measurementOriginalChannelUID.getAsString())) {
 			if (newState instanceof DecimalType) {
 				DecimalType decimalItem = (DecimalType) newState;
