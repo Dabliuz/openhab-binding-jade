@@ -50,33 +50,48 @@ public class DomesticDemandSideManagementStrategyRT extends AbstractEvaluationSt
 		switchingNecessary = false;
 
 		if (agentDataModel.waitForCoordination) {
-			System.err.println("waitingForCoordination");
+//			System.err.println("waitingForCoordination");
 			return;
 		}
 		// Initialize search
 		TechnicalSystemStateEvaluation tsse = getSystemState();
+
+		if (tsse != null && tsse.getStateID().equals("Wait_0") && !agentDataModel.programRunning) {
+//			System.out.println("early check for Wait_0 state, start external coordination");
+			agentDataModel.startProgramAndExternalCoordination();
+		}
 
 		long remainingTimeInState = getRemainingPeriodUntilStateTransition(tsse);
 		if (remainingTimeInState > 0) {
 			// too early, state still valid, no need for new evaluation step
 			DateFormat f = new SimpleDateFormat("HH:mm:ss.SSS");
 			System.out.println("Remaining time in state: " + f.format(new Date(remainingTimeInState)));
+
 			return;
 		}
 
 		if (tsse != null && tsse.getGlobalTime() < evaluationStepEndTime) {
+//			System.out.println("TIME FOR SWITCHING!");
+
 			// echoString += "state=" + tsse.getStateID() + ", evaluating";
 
 			// Get the possible subsequent steps and states
 			long duration = evaluationStepEndTime - tsse.getGlobalTime();
-			Vector<TechnicalSystemStateDeltaEvaluation> deltaSteps = getAllDeltaEvaluationsStartingFromTechnicalSystemState(tsse, duration);
+			Vector<TechnicalSystemStateDeltaEvaluation> deltaSteps = getAllDeltaEvaluationsStartingFromTechnicalSystemState(tsse);
+//			Helper.dumpTSSEList(deltaSteps, "allDeltaSteps");
+			if (deltaSteps == null || deltaSteps.isEmpty()) {
+//				System.out.println("No next DeltaStep to be filtered :-(");
+			} else {
 
-			Vector<TechnicalSystemStateDeltaEvaluation> deltaStepsFiltered = filterForPowerSwitching(deltaSteps, tsse);
+				Vector<TechnicalSystemStateDeltaEvaluation> deltaStepsFiltered = filterForPowerSwitching(deltaSteps, tsse);
+//				Helper.dumpTSSEList(deltaStepsFiltered, "filteredForPowerSwitching");
 
-			if (deltaStepsFiltered == null || deltaStepsFiltered.isEmpty()) {
-				deltaStepsFiltered = filterForUnlocking(deltaSteps, tsse);
+				if (deltaStepsFiltered == null || deltaStepsFiltered.isEmpty()) {
+					deltaStepsFiltered = filterForUnlocking(deltaSteps, tsse);
+					// Helper.dumpTSSEList(deltaStepsFiltered, "filteredForUnlocking");
+				}
+				deltaSteps = deltaStepsFiltered;
 			}
-			deltaSteps = deltaStepsFiltered;
 
 			TechnicalSystemStateDeltaEvaluation tssDeltaDecision = null;
 
@@ -98,9 +113,10 @@ public class DomesticDemandSideManagementStrategyRT extends AbstractEvaluationSt
 
 			// Set next state as new current state
 			switchingNecessary = true;
-			if (!agentDataModel.programRunning) {
-				agentDataModel.startProgramAndExternalCoordination();
 
+			if (!agentDataModel.programRunning) {
+				System.out.println("late check for Wait_0 state, start external coordination");
+				agentDataModel.startProgramAndExternalCoordination();
 			}
 		}
 		// System.out.println(echoString);

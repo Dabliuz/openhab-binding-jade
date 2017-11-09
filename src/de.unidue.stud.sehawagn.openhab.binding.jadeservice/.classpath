@@ -15,5 +15,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/jung-api-2.0.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jung-graph-impl-2.0.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/groupcoordinator-0.0.1-SNAPSHOT.jar" sourcepath="/mnt/quickdata/eclipse-workspace/groupcoordinator"/>
+	<classpathentry kind="lib" path="lib/de.enflexit.common-1.0.0-SNAPSHOT.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

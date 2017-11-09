@@ -16,5 +16,20 @@
   <packaging>eclipse-plugin</packaging>
 
   <name>Eclipse SmartHome JADE binding</name>
-
+   <build>
+    <plugins>
+      <plugin>
+        <groupId>org.eclipse.tycho</groupId>
+        <artifactId>tycho-packaging-plugin</artifactId>
+        <version>0.25.0</version>
+        <configuration>
+          <archive>
+            <manifestEntries>
+              <Bundle-SymbolicName></Bundle-SymbolicName>
+            </manifestEntries>
+          </archive>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>

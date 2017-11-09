@@ -195,10 +195,14 @@ public class SmartifiedHomeAgent extends AbstractEnergyAgent implements Schedule
 		requestMessage.addReceiver(coordinatorAgentAID);
 		addBehaviour(new RequestRunSchedule(this, requestMessage, this));
 		internalDataModel.waitForCoordination = true;
+		System.out.println("requestRunScheduleFromGrid()");
+
 	}
 
 	@Override
 	public void processReceivedSchedule(Flexibility schedule) {
+		System.out.println("processReceivedSchedule()");
+
 		OptionModelController omc = getInternalDataModel().getOptionModelController();
 		int ticIndex = omc.getIndexOfTechnicalInterfaceConfiguration(getEnergyAgentIO().getEOMState().getConfigID());
 
@@ -209,6 +213,8 @@ public class SmartifiedHomeAgent extends AbstractEnergyAgent implements Schedule
 	}
 
 	public void coordinateWithGrid() {
+		System.out.println("coordinateWithGrid()");
+
 		TechnicalSystem technicalSystem = getInternalDataModel().getOptionModelController().getTechnicalSystem();
 		requestRunScheduleFromGrid(technicalSystem);
 	}
